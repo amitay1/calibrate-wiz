@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StandardSelector } from "@/components/StandardSelector";
 import { ProgressHeader } from "@/components/ProgressHeader";
 import { InspectionSetupTab } from "@/components/tabs/InspectionSetupTab";
 import { EquipmentTab } from "@/components/tabs/EquipmentTab";
+import { CalibrationTab } from "@/components/tabs/CalibrationTab";
+import { ScanParametersTab } from "@/components/tabs/ScanParametersTab";
+import { AcceptanceCriteriaTab } from "@/components/tabs/AcceptanceCriteriaTab";
+import { DocumentationTab } from "@/components/tabs/DocumentationTab";
 import { ThreeDViewer } from "@/components/ThreeDViewer";
 import { Button } from "@/components/ui/button";
 import { Save, FileDown, CheckCircle2, Target } from "lucide-react";
-import { StandardType, InspectionSetupData, EquipmentData } from "@/types/techniqueSheet";
+import { 
+  StandardType, 
+  InspectionSetupData, 
+  EquipmentData, 
+  CalibrationData,
+  ScanParametersData,
+  AcceptanceCriteriaData,
+  DocumentationData
+} from "@/types/techniqueSheet";
+import { toast } from "sonner";
 
 const Index = () => {
   const [standard, setStandard] = useState<StandardType>("MIL-STD-2154");
@@ -39,12 +52,92 @@ const Index = () => {
     backSurfaceResolution: 0.05,
   });
 
+  const [calibration, setCalibration] = useState<CalibrationData>({
+    standardType: "",
+    referenceMaterial: "",
+    fbhSizes: "",
+    metalTravelDistance: 0,
+    blockDimensions: "",
+    blockSerialNumber: "",
+    lastCalibrationDate: "",
+  });
+
+  const [scanParameters, setScanParameters] = useState<ScanParametersData>({
+    scanMethod: "",
+    scanType: "",
+    scanSpeed: 100,
+    scanIndex: 70,
+    coverage: 100,
+    scanPattern: "",
+    waterPath: 0,
+    pulseRepetitionRate: 1000,
+    gainSettings: "",
+    alarmGateSettings: "",
+  });
+
+  const [acceptanceCriteria, setAcceptanceCriteria] = useState<AcceptanceCriteriaData>({
+    acceptanceClass: "",
+    singleDiscontinuity: "",
+    multipleDiscontinuities: "",
+    linearDiscontinuity: "",
+    backReflectionLoss: 50,
+    noiseLevel: "",
+    specialRequirements: "",
+  });
+
+  const [documentation, setDocumentation] = useState<DocumentationData>({
+    inspectorName: "",
+    inspectorCertification: "",
+    inspectorLevel: "",
+    certifyingOrganization: "",
+    inspectionDate: new Date().toISOString().split('T')[0],
+    procedureNumber: "",
+    drawingReference: "",
+    revision: "A",
+    additionalNotes: "",
+    approvalRequired: false,
+  });
+
+  // Auto-save to localStorage
+  useEffect(() => {
+    const data = {
+      standard,
+      inspectionSetup,
+      equipment,
+      calibration,
+      scanParameters,
+      acceptanceCriteria,
+      documentation,
+    };
+    localStorage.setItem("techniqueSheet", JSON.stringify(data));
+  }, [standard, inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation]);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("techniqueSheet");
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setStandard(data.standard || "MIL-STD-2154");
+        setInspectionSetup(data.inspectionSetup || inspectionSetup);
+        setEquipment(data.equipment || equipment);
+        setCalibration(data.calibration || calibration);
+        setScanParameters(data.scanParameters || scanParameters);
+        setAcceptanceCriteria(data.acceptanceCriteria || acceptanceCriteria);
+        setDocumentation(data.documentation || documentation);
+        toast.success("Loaded saved technique sheet");
+      } catch (error) {
+        console.error("Failed to load saved data", error);
+      }
+    }
+  }, []);
+
   // Calculate completion
   const calculateCompletion = () => {
     let completed = 0;
-    let total = 15;
+    let total = 35; // Approximate total required fields across all tabs
 
-    // Count filled required fields
+    // Inspection Setup (6 fields)
     if (inspectionSetup.partNumber) completed++;
     if (inspectionSetup.partName) completed++;
     if (inspectionSetup.material) completed++;
@@ -52,16 +145,72 @@ const Index = () => {
     if (inspectionSetup.partType) completed++;
     if (inspectionSetup.partThickness >= 6.35) completed++;
     
+    // Equipment (8 fields)
     if (equipment.manufacturer) completed++;
     if (equipment.model) completed++;
     if (equipment.frequency) completed++;
     if (equipment.transducerType) completed++;
     if (equipment.couplant) completed++;
+    if (equipment.verticalLinearity) completed++;
+    if (equipment.horizontalLinearity) completed++;
+    if (equipment.transducerDiameter) completed++;
+
+    // Calibration (4 fields)
+    if (calibration.standardType) completed++;
+    if (calibration.referenceMaterial) completed++;
+    if (calibration.fbhSizes) completed++;
+    if (calibration.metalTravelDistance) completed++;
+
+    // Scan Parameters (6 fields)
+    if (scanParameters.scanMethod) completed++;
+    if (scanParameters.scanType) completed++;
+    if (scanParameters.scanSpeed) completed++;
+    if (scanParameters.scanIndex) completed++;
+    if (scanParameters.coverage) completed++;
+    if (scanParameters.scanPattern) completed++;
+
+    // Acceptance Criteria (6 fields)
+    if (acceptanceCriteria.acceptanceClass) completed++;
+    if (acceptanceCriteria.singleDiscontinuity) completed++;
+    if (acceptanceCriteria.multipleDiscontinuities) completed++;
+    if (acceptanceCriteria.linearDiscontinuity) completed++;
+    if (acceptanceCriteria.backReflectionLoss) completed++;
+    if (acceptanceCriteria.noiseLevel) completed++;
+
+    // Documentation (5 fields)
+    if (documentation.inspectorName) completed++;
+    if (documentation.inspectorCertification) completed++;
+    if (documentation.inspectorLevel) completed++;
+    if (documentation.inspectionDate) completed++;
+    if (documentation.revision) completed++;
 
     return { completed, total, percent: (completed / total) * 100 };
   };
 
   const completion = calculateCompletion();
+
+  const handleSave = () => {
+    toast.success("Technique sheet saved successfully!");
+  };
+
+  const handleExportPDF = () => {
+    toast.info("PDF export coming soon!");
+  };
+
+  const handleValidate = () => {
+    const missing = [];
+    if (!inspectionSetup.partNumber) missing.push("Part Number");
+    if (!equipment.manufacturer) missing.push("Equipment Manufacturer");
+    if (!calibration.standardType) missing.push("Calibration Standard");
+    if (!acceptanceCriteria.acceptanceClass) missing.push("Acceptance Class");
+    if (!documentation.inspectorName) missing.push("Inspector Name");
+
+    if (missing.length > 0) {
+      toast.error(`Missing required fields: ${missing.join(", ")}`);
+    } else {
+      toast.success("All required fields complete! ✓");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -79,15 +228,15 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleSave}>
                 <Save className="h-4 w-4 mr-2" />
                 Save Draft
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleExportPDF}>
                 <FileDown className="h-4 w-4 mr-2" />
                 Export PDF
               </Button>
-              <Button size="sm" className="gradient-primary">
+              <Button size="sm" className="gradient-primary" onClick={handleValidate}>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 Validate
               </Button>
@@ -152,30 +301,36 @@ const Index = () => {
                   />
                 </TabsContent>
 
-                <TabsContent value="calibration" className="m-0 p-6">
-                  <div className="text-center py-12">
-                    <Target className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Calibration Tab</h3>
-                    <p className="text-sm text-muted-foreground">Coming soon - Auto Calibration Recommender</p>
-                  </div>
+                <TabsContent value="calibration" className="m-0">
+                  <CalibrationTab
+                    data={calibration}
+                    onChange={setCalibration}
+                    inspectionSetup={inspectionSetup}
+                    acceptanceClass={acceptanceCriteria.acceptanceClass}
+                  />
                 </TabsContent>
 
-                <TabsContent value="scan" className="m-0 p-6">
-                  <div className="text-center py-12">
-                    <p className="text-sm text-muted-foreground">Scan Parameters tab - Coming soon</p>
-                  </div>
+                <TabsContent value="scan" className="m-0">
+                  <ScanParametersTab
+                    data={scanParameters}
+                    onChange={setScanParameters}
+                    standard={standard}
+                  />
                 </TabsContent>
 
-                <TabsContent value="acceptance" className="m-0 p-6">
-                  <div className="text-center py-12">
-                    <p className="text-sm text-muted-foreground">Acceptance Criteria tab - Coming soon</p>
-                  </div>
+                <TabsContent value="acceptance" className="m-0">
+                  <AcceptanceCriteriaTab
+                    data={acceptanceCriteria}
+                    onChange={setAcceptanceCriteria}
+                    material={inspectionSetup.materialSpec || inspectionSetup.material}
+                  />
                 </TabsContent>
 
-                <TabsContent value="docs" className="m-0 p-6">
-                  <div className="text-center py-12">
-                    <p className="text-sm text-muted-foreground">Documentation tab - Coming soon</p>
-                  </div>
+                <TabsContent value="docs" className="m-0">
+                  <DocumentationTab
+                    data={documentation}
+                    onChange={setDocumentation}
+                  />
                 </TabsContent>
               </div>
             </Tabs>
