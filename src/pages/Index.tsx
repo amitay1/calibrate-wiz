@@ -23,6 +23,7 @@ import {
 } from "@/types/techniqueSheet";
 import { toast } from "sonner";
 import { standardRules, getRecommendedFrequency, getCouplantRecommendation, calculateMetalTravel } from "@/utils/autoFillLogic";
+import { exportTechniqueSheetToPDF } from "@/utils/techniqueSheetExport";
 
 const Index = () => {
   const [standard, setStandard] = useState<StandardType>("AMS-STD-2154E");
@@ -253,7 +254,21 @@ const Index = () => {
   };
 
   const handleExportPDF = () => {
-    toast.info("PDF export coming soon!");
+    try {
+      exportTechniqueSheetToPDF({
+        standard,
+        inspectionSetup,
+        equipment,
+        calibration,
+        scanParameters,
+        acceptanceCriteria,
+        documentation,
+      });
+      toast.success("PDF exported successfully!");
+    } catch (error) {
+      console.error("Failed to export PDF:", error);
+      toast.error("Failed to export PDF. Please try again.");
+    }
   };
 
   const handleValidate = () => {
