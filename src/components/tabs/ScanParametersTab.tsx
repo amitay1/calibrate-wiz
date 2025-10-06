@@ -29,12 +29,14 @@ const FieldWithHelp = ({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+            <div className="inline-flex">
+              <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+            </div>
           </TooltipTrigger>
-          <TooltipContent side="right" className="max-w-xs">
+          <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
             <p className="text-xs">{help}</p>
           </TooltipContent>
         </Tooltip>

@@ -61,12 +61,14 @@ const FieldWithHelp = ({
           Auto-filled
         </Badge>
       )}
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+            <div className="inline-flex">
+              <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+            </div>
           </TooltipTrigger>
-          <TooltipContent side="right" className="max-w-xs">
+          <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
             <p className="text-xs">{help}</p>
             {materialInfo && (
               <div className="mt-2 pt-2 border-t text-xs text-muted-foreground">
