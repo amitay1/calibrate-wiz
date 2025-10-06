@@ -8,6 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Plus } from "lucide-react";
 import { CalibrationBlockType } from "@/types/techniqueSheet";
+import flatBlockImg from "@/assets/calibration-flat-block.png";
+import curvedBlockImg from "@/assets/calibration-curved-block.png";
+import cylinderFbhImg from "@/assets/calibration-cylinder-fbh.png";
+import angleBeamImg from "@/assets/calibration-angle-beam.png";
+import cylinderNotchedImg from "@/assets/calibration-cylinder-notched.png";
+import iivBlockImg from "@/assets/calibration-iiv-block.png";
 
 interface CalibrationModel {
   id: CalibrationBlockType | string;
@@ -33,7 +39,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 4",
     description: "Standard flat reference block with flat-bottom holes for straight beam inspection",
     beamType: "straight",
-    imageUrl: "/placeholder.svg",
+    imageUrl: flatBlockImg,
     applications: ["Plate inspection", "Bar inspection", "General straight beam calibration"]
   },
   {
@@ -42,7 +48,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 3",
     description: "Curved surface reference block matching part geometry for straight beam",
     beamType: "straight",
-    imageUrl: "/placeholder.svg",
+    imageUrl: curvedBlockImg,
     applications: ["Cylindrical parts", "Curved surfaces", "Forgings with radius"]
   },
   {
@@ -51,7 +57,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 6",
     description: "Hollow cylindrical block with flat-bottom holes for tube inspection",
     beamType: "straight",
-    imageUrl: "/placeholder.svg",
+    imageUrl: cylinderFbhImg,
     applications: ["Tube inspection", "Pipe calibration", "Hollow shaft inspection"]
   },
   {
@@ -60,7 +66,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 7",
     description: "Angle beam reference block for shear wave inspection with side-drilled holes",
     beamType: "angle",
-    imageUrl: "/placeholder.svg",
+    imageUrl: angleBeamImg,
     applications: ["Weld inspection", "Shear wave calibration", "Angle beam technique"]
   },
   {
@@ -69,7 +75,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 5",
     description: "Hollow cylindrical block with notches for angle beam inspection",
     beamType: "angle",
-    imageUrl: "/placeholder.svg",
+    imageUrl: cylinderNotchedImg,
     applications: ["Tube welds", "Pipe inspection", "Circumferential scanning"]
   },
   {
@@ -78,7 +84,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "IIW Standard",
     description: "International Institute of Welding calibration block for angle beam",
     beamType: "angle",
-    imageUrl: "/placeholder.svg",
+    imageUrl: iivBlockImg,
     applications: ["Weld inspection", "Beam angle verification", "Index point calibration"]
   }
 ];
