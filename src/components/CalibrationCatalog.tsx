@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Plus, Download } from "lucide-react";
+import { Sparkles, Plus, Download, Eye } from "lucide-react";
 import { generateCalibrationBlockPDF } from "@/utils/calibrationBlockExport";
 import { CalibrationBlockType } from "@/types/techniqueSheet";
 import flatBlockImg from "@/assets/calibration-flat-block.png";
@@ -97,6 +97,8 @@ export const CalibrationCatalog = ({
 }: CalibrationCatalogProps) => {
   const [activeTab, setActiveTab] = useState<"straight" | "angle">("straight");
   const [showCustomDialog, setShowCustomDialog] = useState(false);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [previewModel, setPreviewModel] = useState<CalibrationModel | null>(null);
   const [customModels, setCustomModels] = useState<CalibrationModel[]>([]);
   const [customForm, setCustomForm] = useState({
     name: "",
@@ -137,6 +139,12 @@ export const CalibrationCatalog = ({
   const allModels = [...calibrationModels, ...customModels];
   const straightModels = allModels.filter(m => m.beamType === "straight");
   const angleModels = allModels.filter(m => m.beamType === "angle");
+
+  const handlePreviewModel = (model: CalibrationModel, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPreviewModel(model);
+    setShowPreviewDialog(true);
+  };
 
   const handleExportModel = (model: CalibrationModel, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -228,15 +236,26 @@ export const CalibrationCatalog = ({
             )}
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full mt-3 gap-2"
-            onClick={(e) => handleExportModel(model, e)}
-          >
-            <Download className="h-4 w-4" />
-            Export PDF
-          </Button>
+          <div className="flex gap-2 mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-2"
+              onClick={(e) => handlePreviewModel(model, e)}
+            >
+              <Eye className="h-4 w-4" />
+              תצוגה מקדימה
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-2"
+              onClick={(e) => handleExportModel(model, e)}
+            >
+              <Download className="h-4 w-4" />
+              Export PDF
+            </Button>
+          </div>
         </div>
       </Card>
     );
@@ -288,6 +307,101 @@ export const CalibrationCatalog = ({
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>תצוגה מקדימה - {previewModel?.name}</DialogTitle>
+            <DialogDescription>
+              זוהי תצוגה מקדימה של המסמך שייווצר
+            </DialogDescription>
+          </DialogHeader>
+          
+          {previewModel && (
+            <div className="space-y-6 p-4 border rounded-lg bg-muted/20">
+              {/* Header Section */}
+              <div className="flex justify-between items-start border-b pb-4">
+                <div>
+                  <h3 className="text-lg font-bold">Calibration Block - {previewModel.id}</h3>
+                  <p className="text-sm text-muted-foreground">{previewModel.figure}</p>
+                </div>
+                <div className="text-right text-sm border rounded p-3">
+                  <div><strong>Document:</strong> CAL-001</div>
+                  <div><strong>Type:</strong> CALIBRATION BLOCK</div>
+                  <div><strong>Figure:</strong> {previewModel.figure}</div>
+                  <div><strong>Rev:</strong> 01</div>
+                </div>
+              </div>
+
+              {/* Block Specifications */}
+              <div>
+                <h4 className="font-semibold mb-2">Block Specifications</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="border rounded p-2">
+                    <strong>Standard Reference:</strong> ASTM E-127
+                  </div>
+                  <div className="border rounded p-2">
+                    <strong>Material:</strong> Aluminum 7075
+                  </div>
+                  <div className="border rounded p-2 col-span-2">
+                    <strong>Block Type:</strong> {previewModel.id}
+                  </div>
+                </div>
+              </div>
+
+              {/* Dimensions */}
+              <div>
+                <h4 className="font-semibold mb-2">Dimensions (mm)</h4>
+                <div className="grid grid-cols-3 gap-2 text-sm">
+                  <div className="border rounded p-2">
+                    <strong>Length:</strong> 100
+                  </div>
+                  <div className="border rounded p-2">
+                    <strong>Width:</strong> 50
+                  </div>
+                  <div className="border rounded p-2">
+                    <strong>Height:</strong> 25
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Preview */}
+              <div>
+                <h4 className="font-semibold mb-2">Technical Drawing</h4>
+                <div className="border rounded p-4 bg-white">
+                  <img 
+                    src={previewModel.imageUrl} 
+                    alt={previewModel.name}
+                    className="w-full h-64 object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Applications */}
+              <div>
+                <h4 className="font-semibold mb-2">Applications</h4>
+                <div className="flex flex-wrap gap-2">
+                  {previewModel.applications.map((app, idx) => (
+                    <Badge key={idx} variant="outline">{app}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <h4 className="font-semibold mb-2">Notes</h4>
+                <ul className="text-sm space-y-1 text-muted-foreground">
+                  <li>• All dimensions are in millimeters unless otherwise specified</li>
+                  <li>• Tolerance: ±0.1mm unless otherwise specified</li>
+                  <li>• Surface finish: Ra ≤ 6.3μm</li>
+                  <li>• Material certification required</li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Custom Model Dialog */}
       <Dialog open={showCustomDialog} onOpenChange={setShowCustomDialog}>
