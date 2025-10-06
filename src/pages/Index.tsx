@@ -8,9 +8,14 @@ import { CalibrationTab } from "@/components/tabs/CalibrationTab";
 import { ScanParametersTab } from "@/components/tabs/ScanParametersTab";
 import { AcceptanceCriteriaTab } from "@/components/tabs/AcceptanceCriteriaTab";
 import { DocumentationTab } from "@/components/tabs/DocumentationTab";
+import { CoverPageTab } from "@/components/tabs/CoverPageTab";
+import { PartDiagramTab } from "@/components/tabs/PartDiagramTab";
+import { ProbeDetailsTab } from "@/components/tabs/ProbeDetailsTab";
+import { ScansTab } from "@/components/tabs/ScansTab";
+import { RemarksTab } from "@/components/tabs/RemarksTab";
 import { ThreeDViewer } from "@/components/ThreeDViewer";
 import { Button } from "@/components/ui/button";
-import { Save, FileDown, CheckCircle2, Target } from "lucide-react";
+import { Save, FileDown, CheckCircle2, Target, FileText } from "lucide-react";
 import { 
   StandardType, 
   InspectionSetupData, 
@@ -21,13 +26,17 @@ import {
   DocumentationData,
   MaterialType
 } from "@/types/techniqueSheet";
+import { InspectionReportData, ScanData, ProbeDetails } from "@/types/inspectionReport";
 import { toast } from "sonner";
 import { standardRules, getRecommendedFrequency, getCouplantRecommendation, calculateMetalTravel } from "@/utils/autoFillLogic";
 import { exportTechniqueSheetToPDF } from "@/utils/techniqueSheetExport";
+import { exportInspectionReportToPDF } from "@/utils/inspectionReportExport";
+import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const [standard, setStandard] = useState<StandardType>("AMS-STD-2154E");
   const [activeTab, setActiveTab] = useState("setup");
+  const [reportMode, setReportMode] = useState<"technique" | "inspection">("technique");
   
   const [inspectionSetup, setInspectionSetup] = useState<InspectionSetupData>({
     partNumber: "",
@@ -99,6 +108,41 @@ const Index = () => {
     revision: "A",
     additionalNotes: "",
     approvalRequired: false,
+  });
+
+  // Inspection Report Data (19 pages)
+  const [inspectionReport, setInspectionReport] = useState<InspectionReportData>({
+    documentNo: "",
+    currentRevision: "0",
+    revisionDate: new Date().toISOString().split('T')[0],
+    testDate: new Date().toISOString().split('T')[0],
+    customerName: "",
+    poNumber: "",
+    itemDescription: "",
+    partNumber: "",
+    materialGrade: "",
+    drawingNumber: "",
+    workOrderNumber: "",
+    poSerialNumber: "",
+    quantity: "01 no",
+    samplePoSlNo: "",
+    sampleSerialNo: "01",
+    sampleQuantity: "01 No",
+    thickness: "",
+    typeOfScan: "Ring scan",
+    testingEquipment: "",
+    tcgApplied: "Yes",
+    techniqueSheetNumber: "",
+    testStandard: "",
+    acceptanceCriteria: "",
+    observations: "",
+    results: "Accepted",
+    testedBy: "",
+    approvedBy: "",
+    partDiagramImage: undefined,
+    probeDetails: [],
+    scans: [],
+    remarks: [],
   });
   
   // Auto-fill logic when standard changes
@@ -255,16 +299,21 @@ const Index = () => {
 
   const handleExportPDF = () => {
     try {
-      exportTechniqueSheetToPDF({
-        standard,
-        inspectionSetup,
-        equipment,
-        calibration,
-        scanParameters,
-        acceptanceCriteria,
-        documentation,
-      });
-      toast.success("PDF exported successfully!");
+      if (reportMode === "technique") {
+        exportTechniqueSheetToPDF({
+          standard,
+          inspectionSetup,
+          equipment,
+          calibration,
+          scanParameters,
+          acceptanceCriteria,
+          documentation,
+        });
+        toast.success("Technique Sheet PDF exported successfully!");
+      } else {
+        exportInspectionReportToPDF(inspectionReport);
+        toast.success("Inspection Report PDF exported successfully (19 pages)!");
+      }
     } catch (error) {
       console.error("Failed to export PDF:", error);
       toast.error("Failed to export PDF. Please try again.");
@@ -302,9 +351,30 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mr-4 px-3 py-1 bg-muted rounded-lg">
+                <span className="text-xs font-medium">Mode:</span>
+                <Button
+                  variant={reportMode === "technique" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setReportMode("technique")}
+                  className="h-7 text-xs"
+                >
+                  <FileText className="h-3 w-3 mr-1" />
+                  Technique
+                </Button>
+                <Button
+                  variant={reportMode === "inspection" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setReportMode("inspection")}
+                  className="h-7 text-xs"
+                >
+                  <FileDown className="h-3 w-3 mr-1" />
+                  Report (19p)
+                </Button>
+              </div>
               <Button variant="outline" size="sm" onClick={handleSave}>
                 <Save className="h-4 w-4 mr-2" />
-                Save Draft
+                Save
               </Button>
               <Button variant="outline" size="sm" onClick={handleExportPDF}>
                 <FileDown className="h-4 w-4 mr-2" />
@@ -337,78 +407,165 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Panel - Form */}
           <div className="lg:col-span-2">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 mb-4">
-                <TabsTrigger value="setup" className="text-xs">
-                  🔧 Setup
-                </TabsTrigger>
-                <TabsTrigger value="equipment" className="text-xs">
-                  ⚙️ Equipment
-                </TabsTrigger>
-                <TabsTrigger value="calibration" className="text-xs">
-                  📏 Calibration
-                </TabsTrigger>
-                <TabsTrigger value="scan" className="text-xs">
-                  📡 Scan
-                </TabsTrigger>
-                <TabsTrigger value="acceptance" className="text-xs">
-                  ✅ Criteria
-                </TabsTrigger>
-                <TabsTrigger value="docs" className="text-xs">
-                  📝 Docs
-                </TabsTrigger>
-              </TabsList>
+            {reportMode === "technique" ? (
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-6 mb-4">
+                  <TabsTrigger value="setup" className="text-xs">
+                    🔧 Setup
+                  </TabsTrigger>
+                  <TabsTrigger value="equipment" className="text-xs">
+                    ⚙️ Equipment
+                  </TabsTrigger>
+                  <TabsTrigger value="calibration" className="text-xs">
+                    📏 Calibration
+                  </TabsTrigger>
+                  <TabsTrigger value="scan" className="text-xs">
+                    📡 Scan
+                  </TabsTrigger>
+                  <TabsTrigger value="acceptance" className="text-xs">
+                    ✅ Criteria
+                  </TabsTrigger>
+                  <TabsTrigger value="docs" className="text-xs">
+                    📝 Docs
+                  </TabsTrigger>
+                </TabsList>
 
-              <div className="bg-card rounded-lg border border-border shadow-technical">
-                <TabsContent value="setup" className="m-0">
-                  <InspectionSetupTab 
-                    data={inspectionSetup} 
-                    onChange={setInspectionSetup}
-                  />
-                </TabsContent>
+                <div className="bg-card rounded-lg border border-border shadow-technical">
+                  <TabsContent value="setup" className="m-0">
+                    <InspectionSetupTab 
+                      data={inspectionSetup} 
+                      onChange={setInspectionSetup}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="equipment" className="m-0">
-                  <EquipmentTab 
-                    data={equipment} 
-                    onChange={setEquipment}
-                    partThickness={inspectionSetup.partThickness}
-                  />
-                </TabsContent>
+                  <TabsContent value="equipment" className="m-0">
+                    <EquipmentTab 
+                      data={equipment} 
+                      onChange={setEquipment}
+                      partThickness={inspectionSetup.partThickness}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="calibration" className="m-0">
-                  <CalibrationTab
-                    data={calibration}
-                    onChange={setCalibration}
-                    inspectionSetup={inspectionSetup}
-                    acceptanceClass={acceptanceCriteria.acceptanceClass}
-                  />
-                </TabsContent>
+                  <TabsContent value="calibration" className="m-0">
+                    <CalibrationTab
+                      data={calibration}
+                      onChange={setCalibration}
+                      inspectionSetup={inspectionSetup}
+                      acceptanceClass={acceptanceCriteria.acceptanceClass}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="scan" className="m-0">
-                  <ScanParametersTab
-                    data={scanParameters}
-                    onChange={setScanParameters}
-                    standard={standard}
-                  />
-                </TabsContent>
+                  <TabsContent value="scan" className="m-0">
+                    <ScanParametersTab
+                      data={scanParameters}
+                      onChange={setScanParameters}
+                      standard={standard}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="acceptance" className="m-0">
-                  <AcceptanceCriteriaTab
-                    data={acceptanceCriteria}
-                    onChange={setAcceptanceCriteria}
-                    material={inspectionSetup.materialSpec || inspectionSetup.material}
-                    standard={standard}
-                  />
-                </TabsContent>
+                  <TabsContent value="acceptance" className="m-0">
+                    <AcceptanceCriteriaTab
+                      data={acceptanceCriteria}
+                      onChange={setAcceptanceCriteria}
+                      material={inspectionSetup.materialSpec || inspectionSetup.material}
+                      standard={standard}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="docs" className="m-0">
-                  <DocumentationTab
-                    data={documentation}
-                    onChange={setDocumentation}
-                  />
-                </TabsContent>
-              </div>
-            </Tabs>
+                  <TabsContent value="docs" className="m-0">
+                    <DocumentationTab
+                      data={documentation}
+                      onChange={setDocumentation}
+                    />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            ) : (
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-5 mb-4">
+                  <TabsTrigger value="cover" className="text-xs">
+                    📄 Cover
+                  </TabsTrigger>
+                  <TabsTrigger value="diagram" className="text-xs">
+                    📐 Diagram
+                  </TabsTrigger>
+                  <TabsTrigger value="probes" className="text-xs">
+                    🔍 Probes
+                  </TabsTrigger>
+                  <TabsTrigger value="scans" className="text-xs">
+                    📊 Scans
+                  </TabsTrigger>
+                  <TabsTrigger value="remarks" className="text-xs">
+                    📝 Remarks
+                  </TabsTrigger>
+                </TabsList>
+
+                <div className="bg-card rounded-lg border border-border shadow-technical p-6">
+                  <TabsContent value="cover" className="m-0">
+                    <CoverPageTab
+                      data={{
+                        documentNo: inspectionReport.documentNo,
+                        currentRevision: inspectionReport.currentRevision,
+                        revisionDate: inspectionReport.revisionDate,
+                        testDate: inspectionReport.testDate,
+                        customerName: inspectionReport.customerName,
+                        poNumber: inspectionReport.poNumber,
+                        itemDescription: inspectionReport.itemDescription,
+                        partNumber: inspectionReport.partNumber,
+                        materialGrade: inspectionReport.materialGrade,
+                        drawingNumber: inspectionReport.drawingNumber,
+                        workOrderNumber: inspectionReport.workOrderNumber,
+                        poSerialNumber: inspectionReport.poSerialNumber,
+                        quantity: inspectionReport.quantity,
+                        samplePoSlNo: inspectionReport.samplePoSlNo,
+                        sampleSerialNo: inspectionReport.sampleSerialNo,
+                        sampleQuantity: inspectionReport.sampleQuantity,
+                        thickness: inspectionReport.thickness,
+                        typeOfScan: inspectionReport.typeOfScan,
+                        testingEquipment: inspectionReport.testingEquipment,
+                        tcgApplied: inspectionReport.tcgApplied,
+                        techniqueSheetNumber: inspectionReport.techniqueSheetNumber,
+                        testStandard: inspectionReport.testStandard,
+                        acceptanceCriteria: inspectionReport.acceptanceCriteria,
+                        observations: inspectionReport.observations,
+                        results: inspectionReport.results,
+                        testedBy: inspectionReport.testedBy,
+                        approvedBy: inspectionReport.approvedBy,
+                      }}
+                      onChange={(data) => setInspectionReport({ ...inspectionReport, ...data })}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="diagram" className="m-0">
+                    <PartDiagramTab
+                      partDiagramImage={inspectionReport.partDiagramImage}
+                      onChange={(image) => setInspectionReport({ ...inspectionReport, partDiagramImage: image })}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="probes" className="m-0">
+                    <ProbeDetailsTab
+                      probeDetails={inspectionReport.probeDetails}
+                      onChange={(probes) => setInspectionReport({ ...inspectionReport, probeDetails: probes })}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="scans" className="m-0">
+                    <ScansTab
+                      scans={inspectionReport.scans}
+                      onChange={(scans) => setInspectionReport({ ...inspectionReport, scans })}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="remarks" className="m-0">
+                    <RemarksTab
+                      remarks={inspectionReport.remarks}
+                      onChange={(remarks) => setInspectionReport({ ...inspectionReport, remarks })}
+                    />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            )}
           </div>
 
           {/* Right Panel - 3D Viewer */}
