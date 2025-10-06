@@ -378,7 +378,7 @@ const Index = () => {
               </Button>
               <Button variant="outline" size="sm" onClick={handleExportPDF}>
                 <FileDown className="h-4 w-4 mr-2" />
-                Export PDF
+                {reportMode === "technique" ? "Export PDF (1p)" : "Export PDF (19p)"}
               </Button>
               <Button size="sm" className="gradient-primary" onClick={handleValidate}>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
