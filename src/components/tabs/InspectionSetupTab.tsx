@@ -4,6 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { InspectionSetupData, MaterialType, PartGeometry } from "@/types/techniqueSheet";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { materialDatabase } from "@/utils/autoFillLogic";
 
 interface InspectionSetupTabProps {
   data: InspectionSetupData;
@@ -36,12 +38,16 @@ const materialSpecs: Record<MaterialType, string[]> = {
 const FieldWithHelp = ({ 
   label, 
   help, 
-  required, 
+  required,
+  autoFilled,
+  materialInfo,
   children 
 }: { 
   label: string; 
   help: string; 
-  required?: boolean; 
+  required?: boolean;
+  autoFilled?: boolean;
+  materialInfo?: string;
   children: React.ReactNode;
 }) => (
   <div className="space-y-2">
@@ -50,6 +56,11 @@ const FieldWithHelp = ({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
+      {autoFilled && (
+        <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent">
+          Auto-filled
+        </Badge>
+      )}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -57,6 +68,12 @@ const FieldWithHelp = ({
           </TooltipTrigger>
           <TooltipContent side="right" className="max-w-xs">
             <p className="text-xs">{help}</p>
+            {materialInfo && (
+              <div className="mt-2 pt-2 border-t text-xs text-muted-foreground">
+                <strong>Material Properties:</strong>
+                <div className="mt-1">{materialInfo}</div>
+              </div>
+            )}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -70,7 +87,14 @@ export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) 
     onChange({ ...data, [field]: value });
   };
 
+
   const showDiameter = data.partType === "tube" || data.partType === "ring";
+  
+  // Get material properties for info
+  const materialProps = data.material ? materialDatabase[data.material as MaterialType] : null;
+  const materialInfo = materialProps ? 
+    `Velocity: ${materialProps.velocity} mm/µs | Density: ${materialProps.density} g/cm³ | ${materialProps.surfaceCondition}` : 
+    undefined;
 
   return (
     <div className="space-y-6 p-6">
@@ -105,6 +129,7 @@ export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) 
           label="Material"
           help="Base material type of the part"
           required
+          materialInfo={materialInfo}
         >
           <Select 
             value={data.material} 
@@ -124,6 +149,12 @@ export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) 
               ))}
             </SelectContent>
           </Select>
+          {materialProps && (
+            <div className="mt-2 p-2 bg-muted/50 rounded text-xs space-y-1">
+              <div><strong>Velocity:</strong> {materialProps.velocity} mm/µs (Long.) | {materialProps.velocityShear} mm/µs (Shear)</div>
+              <div><strong>Impedance:</strong> {materialProps.acousticImpedance} MRayls</div>
+            </div>
+          )}
         </FieldWithHelp>
 
         <FieldWithHelp

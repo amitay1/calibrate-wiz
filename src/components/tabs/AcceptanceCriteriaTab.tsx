@@ -2,16 +2,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { AcceptanceCriteriaData, AcceptanceClass } from "@/types/techniqueSheet";
+import { AcceptanceCriteriaData, AcceptanceClass, StandardType } from "@/types/techniqueSheet";
 import { Info, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
+import { acceptanceLimits } from "@/utils/autoFillLogic";
 
 interface AcceptanceCriteriaTabProps {
   data: AcceptanceCriteriaData;
   onChange: (data: AcceptanceCriteriaData) => void;
   material: string;
+  standard?: StandardType;
 }
 
 const FieldWithHelp = ({ 
@@ -87,21 +89,22 @@ const getCriteriaForClass = (acceptanceClass: AcceptanceClass) => {
   return criteria[acceptanceClass];
 };
 
-export const AcceptanceCriteriaTab = ({ data, onChange, material }: AcceptanceCriteriaTabProps) => {
+export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: AcceptanceCriteriaTabProps) => {
   const updateField = (field: keyof AcceptanceCriteriaData, value: any) => {
     onChange({ ...data, [field]: value });
   };
 
-  // Auto-fill criteria when class changes
+  // Auto-fill criteria when class changes - using smart logic
   useEffect(() => {
     if (data.acceptanceClass) {
-      const criteria = getCriteriaForClass(data.acceptanceClass);
+      const limits = acceptanceLimits[data.acceptanceClass];
       onChange({
         ...data,
-        singleDiscontinuity: criteria.single,
-        multipleDiscontinuities: criteria.multiple,
-        linearDiscontinuity: criteria.linear,
-        noiseLevel: "Alarm level per Section 5.2.3"
+        singleDiscontinuity: limits.singleDiscontinuity,
+        multipleDiscontinuities: limits.multipleDiscontinuities,
+        linearDiscontinuity: limits.linearDiscontinuity,
+        backReflectionLoss: limits.backReflectionLoss,
+        noiseLevel: limits.noiseLevel
       });
     }
   }, [data.acceptanceClass]);

@@ -18,12 +18,14 @@ import {
   CalibrationData,
   ScanParametersData,
   AcceptanceCriteriaData,
-  DocumentationData
+  DocumentationData,
+  MaterialType
 } from "@/types/techniqueSheet";
 import { toast } from "sonner";
+import { standardRules, getRecommendedFrequency, getCouplantRecommendation, calculateMetalTravel } from "@/utils/autoFillLogic";
 
 const Index = () => {
-  const [standard, setStandard] = useState<StandardType>("MIL-STD-2154");
+  const [standard, setStandard] = useState<StandardType>("AMS-STD-2154E");
   const [activeTab, setActiveTab] = useState("setup");
   
   const [inspectionSetup, setInspectionSetup] = useState<InspectionSetupData>({
@@ -97,6 +99,63 @@ const Index = () => {
     additionalNotes: "",
     approvalRequired: false,
   });
+  
+  // Auto-fill logic when standard changes
+  useEffect(() => {
+    if (standard && standardRules[standard]) {
+      const rules = standardRules[standard];
+      // Auto-set acceptance class based on standard
+      setAcceptanceCriteria(prev => ({
+        ...prev,
+        acceptanceClass: prev.acceptanceClass || rules.defaultAcceptanceClass
+      }));
+      // Auto-set coverage
+      setScanParameters(prev => ({
+        ...prev,
+        coverage: prev.coverage === 100 ? rules.scanCoverageDefault : prev.coverage
+      }));
+    }
+  }, [standard]);
+  
+  // Auto-fill logic when material changes
+  useEffect(() => {
+    if (inspectionSetup.material && inspectionSetup.partThickness) {
+      const recommendedFreq = getRecommendedFrequency(
+        inspectionSetup.partThickness, 
+        inspectionSetup.material as MaterialType
+      );
+      
+      // Auto-set frequency if not manually changed
+      if (equipment.frequency === "5.0" || !equipment.frequency) {
+        setEquipment(prev => ({
+          ...prev,
+          frequency: recommendedFreq
+        }));
+      }
+      
+      // Auto-set metal travel distance in calibration
+      const metalTravel = calculateMetalTravel(inspectionSetup.partThickness);
+      setCalibration(prev => ({
+        ...prev,
+        metalTravelDistance: prev.metalTravelDistance === 0 ? metalTravel : prev.metalTravelDistance
+      }));
+    }
+  }, [inspectionSetup.material, inspectionSetup.partThickness, equipment.frequency]);
+  
+  // Auto-fill couplant when transducer type changes
+  useEffect(() => {
+    if (equipment.transducerType && inspectionSetup.material) {
+      const recommendedCouplant = getCouplantRecommendation(
+        equipment.transducerType,
+        inspectionSetup.material as MaterialType
+      );
+      
+      setEquipment(prev => ({
+        ...prev,
+        couplant: prev.couplant || recommendedCouplant
+      }));
+    }
+  }, [equipment.transducerType, inspectionSetup.material]);
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -323,6 +382,7 @@ const Index = () => {
                     data={acceptanceCriteria}
                     onChange={setAcceptanceCriteria}
                     material={inspectionSetup.materialSpec || inspectionSetup.material}
+                    standard={standard}
                   />
                 </TabsContent>
 
