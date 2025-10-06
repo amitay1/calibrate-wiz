@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Plus } from "lucide-react";
+import { Sparkles, Plus, Download } from "lucide-react";
+import { generateCalibrationBlockPDF } from "@/utils/calibrationBlockExport";
 import { CalibrationBlockType } from "@/types/techniqueSheet";
 import flatBlockImg from "@/assets/calibration-flat-block.png";
 import curvedBlockImg from "@/assets/calibration-curved-block.png";
@@ -137,6 +138,31 @@ export const CalibrationCatalog = ({
   const straightModels = allModels.filter(m => m.beamType === "straight");
   const angleModels = allModels.filter(m => m.beamType === "angle");
 
+  const handleExportModel = (model: CalibrationModel, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Sample data - in production this would come from actual calibration data
+    generateCalibrationBlockPDF({
+      blockType: model.id as CalibrationBlockType,
+      figure: model.figure,
+      standard: "ASTM E-127",
+      material: "Aluminum 7075",
+      dimensions: {
+        length: 100,
+        width: 50,
+        height: 25,
+        radius: model.id.includes('curved') ? 50 : undefined,
+        wallThickness: model.id.includes('cylinder') ? 7 : undefined,
+      },
+      fbhData: model.id.includes('fbh') ? [
+        { diameter: 3.2, depth: 25, position: "Center", quantity: 3 }
+      ] : undefined,
+      drillingData: [
+        { idNum: "3/1200", blockLength: 100, fbhDiameter: 3.2, depth: 25, tolerance: "±0.1mm", note: "FBH 3/64\"" }
+      ]
+    });
+  };
+
   const ModelCard = ({ model }: { model: CalibrationModel }) => {
     const isRecommended = model.id === recommendedModel;
     const isSelected = model.id === selectedModel;
@@ -201,6 +227,16 @@ export const CalibrationCatalog = ({
               </Badge>
             )}
           </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full mt-3 gap-2"
+            onClick={(e) => handleExportModel(model, e)}
+          >
+            <Download className="h-4 w-4" />
+            Export PDF
+          </Button>
         </div>
       </Card>
     );

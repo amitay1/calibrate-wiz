@@ -6,7 +6,7 @@ export type PartGeometry = "plate" | "bar" | "forging" | "tube" | "ring" | "disk
 
 export type AcceptanceClass = "AAA" | "AA" | "A" | "B" | "C";
 
-export type CalibrationBlockType = "flat_block" | "curved_block" | "cylinder_notched" | "cylinder_fbh" | "angle_beam";
+export type CalibrationBlockType = "flat_block" | "curved_block" | "cylinder_notched" | "cylinder_fbh" | "angle_beam" | "iiv_block";
 
 export interface InspectionSetupData {
   partNumber: string;
