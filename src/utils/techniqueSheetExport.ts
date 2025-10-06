@@ -23,27 +23,33 @@ interface TechniqueSheetExportData {
 export function exportTechniqueSheetToPDF(data: TechniqueSheetExportData): void {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
-  let yPos = 20;
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let yPos = 15;
 
-  // Header
+  // Compact Header
   doc.setFillColor(41, 128, 185);
-  doc.rect(0, 0, pageWidth, 30, "F");
+  doc.rect(0, 0, pageWidth, 20, "F");
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
+  doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Ultrasonic Inspection Technique Sheet", pageWidth / 2, 15, { align: "center" });
-  doc.setFontSize(10);
+  doc.text("UT Technique Sheet", pageWidth / 2, 10, { align: "center" });
+  doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.text(`Standard: ${data.standard}`, pageWidth / 2, 23, { align: "center" });
+  doc.text(`${data.standard} | ${data.inspectionSetup.partNumber || "N/A"} | ${new Date().toLocaleDateString()}`, pageWidth / 2, 16, { align: "center" });
 
-  yPos = 40;
+  yPos = 25;
   doc.setTextColor(0, 0, 0);
 
-  // 1. Inspection Setup
-  doc.setFontSize(12);
+  // Two-column layout
+  const leftCol = 14;
+  const rightCol = pageWidth / 2 + 5;
+  const colWidth = (pageWidth - 28) / 2 - 5;
+
+  // 1. Inspection Setup (Left Column)
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("1. Inspection Setup", 14, yPos);
-  yPos += 5;
+  doc.text("1. Inspection Setup", leftCol, yPos);
+  yPos += 3;
 
   autoTable(doc, {
     startY: yPos,
@@ -53,188 +59,257 @@ export function exportTechniqueSheetToPDF(data: TechniqueSheetExportData): void 
       ["Part Name", data.inspectionSetup.partName || "N/A"],
       ["Material", data.inspectionSetup.material || "N/A"],
       ["Material Spec", data.inspectionSetup.materialSpec || "N/A"],
-      ["Part Type", data.inspectionSetup.partType || "N/A"],
-      ["Thickness (mm)", data.inspectionSetup.partThickness?.toString() || "N/A"],
-      ["Length (mm)", data.inspectionSetup.partLength?.toString() || "N/A"],
-      ["Width (mm)", data.inspectionSetup.partWidth?.toString() || "N/A"],
-      ["Diameter (mm)", data.inspectionSetup.diameter?.toString() || "N/A"],
+      ["Type", data.inspectionSetup.partType || "N/A"],
+      ["Thickness", data.inspectionSetup.partThickness?.toString() || "N/A"],
+      ["Dimensions", `${data.inspectionSetup.partLength || "N/A"} × ${data.inspectionSetup.partWidth || "N/A"} mm`],
     ],
     theme: "striped",
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    margin: { left: 14 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7 },
+    margin: { left: leftCol },
+    tableWidth: colWidth,
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 10;
+  const setupEndY = (doc as any).lastAutoTable.finalY;
 
-  // 2. Equipment
-  doc.setFontSize(12);
+  // 2. Equipment (Right Column - parallel to setup)
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("2. Equipment", 14, yPos);
-  yPos += 5;
+  doc.text("2. Equipment", rightCol, 25);
 
   autoTable(doc, {
-    startY: yPos,
+    startY: 28,
     head: [["Parameter", "Value"]],
     body: [
       ["Manufacturer", data.equipment.manufacturer || "N/A"],
       ["Model", data.equipment.model || "N/A"],
       ["Serial Number", data.equipment.serialNumber || "N/A"],
-      ["Frequency (MHz)", data.equipment.frequency || "N/A"],
-      ["Transducer Type", data.equipment.transducerType || "N/A"],
-      ["Transducer Diameter (in)", data.equipment.transducerDiameter?.toString() || "N/A"],
+      ["Frequency", data.equipment.frequency || "N/A"],
+      ["Transducer", data.equipment.transducerType || "N/A"],
+      ["Ø (in)", data.equipment.transducerDiameter?.toString() || "N/A"],
       ["Couplant", data.equipment.couplant || "N/A"],
-      ["Vertical Linearity (%)", data.equipment.verticalLinearity?.toString() || "N/A"],
-      ["Horizontal Linearity (%)", data.equipment.horizontalLinearity?.toString() || "N/A"],
-      ["Entry Surface Resolution (in)", data.equipment.entrySurfaceResolution?.toString() || "N/A"],
-      ["Back Surface Resolution (in)", data.equipment.backSurfaceResolution?.toString() || "N/A"],
     ],
     theme: "striped",
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    margin: { left: 14 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7 },
+    margin: { left: rightCol },
+    tableWidth: colWidth,
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 10;
+  yPos = Math.max(setupEndY, (doc as any).lastAutoTable.finalY) + 8;
 
-  // Check if we need a new page
-  if (yPos > 250) {
-    doc.addPage();
-    yPos = 20;
-  }
-
-  // 3. Calibration
-  doc.setFontSize(12);
+  // 3. Calibration + Drawing (Left Column)
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("3. Calibration", 14, yPos);
-  yPos += 5;
+  doc.text("3. Calibration", leftCol, yPos);
 
   autoTable(doc, {
-    startY: yPos,
+    startY: yPos + 3,
     head: [["Parameter", "Value"]],
     body: [
-      ["Standard Type", data.calibration.standardType || "N/A"],
-      ["Reference Material", data.calibration.referenceMaterial || "N/A"],
+      ["Standard", data.calibration.standardType || "N/A"],
+      ["Material", data.calibration.referenceMaterial || "N/A"],
       ["FBH Sizes", data.calibration.fbhSizes || "N/A"],
-      ["Metal Travel Distance (mm)", data.calibration.metalTravelDistance?.toString() || "N/A"],
-      ["Block Dimensions", data.calibration.blockDimensions || "N/A"],
-      ["Block Serial Number", data.calibration.blockSerialNumber || "N/A"],
-      ["Last Calibration Date", data.calibration.lastCalibrationDate || "N/A"],
+      ["Metal Travel", data.calibration.metalTravelDistance?.toString() || "N/A"],
+      ["Block SN", data.calibration.blockSerialNumber || "N/A"],
+      ["Cal Date", data.calibration.lastCalibrationDate || "N/A"],
     ],
     theme: "striped",
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    margin: { left: 14 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7 },
+    margin: { left: leftCol },
+    tableWidth: colWidth,
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 10;
+  const calEndY = (doc as any).lastAutoTable.finalY + 5;
 
-  // 4. Scan Parameters
-  if (yPos > 200) {
-    doc.addPage();
-    yPos = 20;
+  // Draw calibration block
+  if (data.calibration.standardType) {
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Calibration Block", leftCol, calEndY);
+    
+    const drawHeight = 35;
+    doc.rect(leftCol, calEndY + 2, colWidth, drawHeight);
+    drawCalibrationBlockSimple(doc, data.calibration.standardType, leftCol, calEndY + 2, colWidth, drawHeight);
   }
 
-  doc.setFontSize(12);
+  // 4. Scan Parameters (Right Column - parallel to calibration)
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("4. Scan Parameters", 14, yPos);
-  yPos += 5;
+  doc.text("4. Scan Parameters", rightCol, yPos);
 
   autoTable(doc, {
-    startY: yPos,
+    startY: yPos + 3,
     head: [["Parameter", "Value"]],
     body: [
-      ["Scan Method", data.scanParameters.scanMethod || "N/A"],
-      ["Scan Type", data.scanParameters.scanType || "N/A"],
-      ["Scan Speed (mm/s)", data.scanParameters.scanSpeed?.toString() || "N/A"],
-      ["Scan Index (%)", data.scanParameters.scanIndex?.toString() || "N/A"],
-      ["Coverage (%)", data.scanParameters.coverage?.toString() || "N/A"],
-      ["Scan Pattern", data.scanParameters.scanPattern || "N/A"],
-      ["Water Path (mm)", data.scanParameters.waterPath?.toString() || "N/A"],
-      ["Pulse Repetition Rate (Hz)", data.scanParameters.pulseRepetitionRate?.toString() || "N/A"],
-      ["Gain Settings", data.scanParameters.gainSettings || "N/A"],
-      ["Alarm Gate Settings", data.scanParameters.alarmGateSettings || "N/A"],
+      ["Method", data.scanParameters.scanMethod || "N/A"],
+      ["Type", data.scanParameters.scanType || "N/A"],
+      ["Speed", data.scanParameters.scanSpeed?.toString() || "N/A"],
+      ["Index", data.scanParameters.scanIndex?.toString() || "N/A"],
+      ["Coverage", data.scanParameters.coverage?.toString() || "N/A"],
+      ["Pattern", data.scanParameters.scanPattern || "N/A"],
+      ["Water Path", data.scanParameters.waterPath?.toString() || "N/A"],
+      ["PRF", data.scanParameters.pulseRepetitionRate?.toString() || "N/A"],
+      ["Gain", data.scanParameters.gainSettings || "N/A"],
     ],
     theme: "striped",
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    margin: { left: 14 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7 },
+    margin: { left: rightCol },
+    tableWidth: colWidth,
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 10;
+  yPos = Math.max(calEndY + 40, (doc as any).lastAutoTable.finalY) + 8;
 
-  // 5. Acceptance Criteria
-  if (yPos > 200) {
-    doc.addPage();
-    yPos = 20;
-  }
-
-  doc.setFontSize(12);
+  // 5. Acceptance Criteria (Left Column)
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("5. Acceptance Criteria", 14, yPos);
-  yPos += 5;
+  doc.text("5. Acceptance Criteria", leftCol, yPos);
 
   autoTable(doc, {
-    startY: yPos,
+    startY: yPos + 3,
     head: [["Parameter", "Value"]],
     body: [
-      ["Acceptance Class", data.acceptanceCriteria.acceptanceClass || "N/A"],
-      ["Single Discontinuity", data.acceptanceCriteria.singleDiscontinuity || "N/A"],
-      ["Multiple Discontinuities", data.acceptanceCriteria.multipleDiscontinuities || "N/A"],
-      ["Linear Discontinuity", data.acceptanceCriteria.linearDiscontinuity || "N/A"],
-      ["Back Reflection Loss (%)", data.acceptanceCriteria.backReflectionLoss?.toString() || "N/A"],
+      ["Class", data.acceptanceCriteria.acceptanceClass || "N/A"],
+      ["Single Disc.", data.acceptanceCriteria.singleDiscontinuity || "N/A"],
+      ["Multiple Disc.", data.acceptanceCriteria.multipleDiscontinuities || "N/A"],
+      ["Linear Disc.", data.acceptanceCriteria.linearDiscontinuity || "N/A"],
+      ["Back Loss %", data.acceptanceCriteria.backReflectionLoss?.toString() || "N/A"],
       ["Noise Level", data.acceptanceCriteria.noiseLevel || "N/A"],
-      ["Special Requirements", data.acceptanceCriteria.specialRequirements || "N/A"],
     ],
     theme: "striped",
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    margin: { left: 14 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7 },
+    margin: { left: leftCol },
+    tableWidth: colWidth,
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 10;
+  const acceptEndY = (doc as any).lastAutoTable.finalY;
 
-  // 6. Documentation
-  if (yPos > 220) {
-    doc.addPage();
-    yPos = 20;
-  }
-
-  doc.setFontSize(12);
+  // 6. Documentation (Right Column - parallel to acceptance)
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("6. Documentation", 14, yPos);
-  yPos += 5;
+  doc.text("6. Documentation", rightCol, yPos);
 
   autoTable(doc, {
-    startY: yPos,
+    startY: yPos + 3,
     head: [["Parameter", "Value"]],
     body: [
-      ["Inspector Name", data.documentation.inspectorName || "N/A"],
+      ["Inspector", data.documentation.inspectorName || "N/A"],
       ["Certification", data.documentation.inspectorCertification || "N/A"],
-      ["Inspector Level", data.documentation.inspectorLevel || "N/A"],
-      ["Certifying Organization", data.documentation.certifyingOrganization || "N/A"],
-      ["Inspection Date", data.documentation.inspectionDate || "N/A"],
-      ["Procedure Number", data.documentation.procedureNumber || "N/A"],
-      ["Drawing Reference", data.documentation.drawingReference || "N/A"],
+      ["Level", data.documentation.inspectorLevel || "N/A"],
+      ["Organization", data.documentation.certifyingOrganization || "N/A"],
+      ["Date", data.documentation.inspectionDate || "N/A"],
+      ["Procedure", data.documentation.procedureNumber || "N/A"],
+      ["Drawing Ref", data.documentation.drawingReference || "N/A"],
       ["Revision", data.documentation.revision || "N/A"],
-      ["Approval Required", data.documentation.approvalRequired ? "Yes" : "No"],
-      ["Additional Notes", data.documentation.additionalNotes || "N/A"],
+      ["Approval Req.", data.documentation.approvalRequired ? "Yes" : "No"],
     ],
     theme: "striped",
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    margin: { left: 14 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7 },
+    margin: { left: rightCol },
+    tableWidth: colWidth,
   });
+
+  // Additional Notes (full width if exists)
+  if (data.documentation.additionalNotes) {
+    yPos = Math.max(acceptEndY, (doc as any).lastAutoTable.finalY) + 5;
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Additional Notes:", leftCol, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    const splitNotes = doc.splitTextToSize(data.documentation.additionalNotes, pageWidth - 28);
+    doc.text(splitNotes, leftCol, yPos + 4);
+  }
 
   // Footer
   const totalPages = doc.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setTextColor(128, 128, 128);
     doc.text(
-      `Page ${i} of ${totalPages} | Generated: ${new Date().toLocaleString()}`,
+      `Page ${i}/${totalPages} | ${new Date().toLocaleDateString()} | ${data.inspectionSetup.partNumber || "N/A"}`,
       pageWidth / 2,
-      doc.internal.pageSize.getHeight() - 10,
+      pageHeight - 5,
       { align: "center" }
     );
   }
 
   // Save the PDF
-  const filename = `Technique_Sheet_${data.inspectionSetup.partNumber || "Unknown"}_${new Date().toISOString().split("T")[0]}.pdf`;
+  const filename = `TS_${data.inspectionSetup.partNumber || "Unknown"}_${new Date().toISOString().split("T")[0]}.pdf`;
   doc.save(filename);
+}
+
+// Simple calibration block drawing function
+function drawCalibrationBlockSimple(
+  doc: jsPDF,
+  standardType: string,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) {
+  const centerX = x + width / 2;
+  const centerY = y + height / 2;
+  
+  doc.setDrawColor(0);
+  doc.setLineWidth(0.3);
+  doc.setFontSize(6);
+
+  // Determine block type from standard
+  if (standardType.toLowerCase().includes("flat") || standardType.toLowerCase().includes("v1")) {
+    // Flat block with FBH
+    const blockWidth = 40;
+    const blockHeight = 20;
+    doc.rect(centerX - blockWidth / 2, centerY - blockHeight / 2, blockWidth, blockHeight);
+    
+    // FBH holes
+    doc.circle(centerX - 12, centerY, 1.5, 'S');
+    doc.circle(centerX, centerY, 1.5, 'S');
+    doc.circle(centerX + 12, centerY, 1.5, 'S');
+    doc.text("FBH", centerX, centerY - blockHeight / 2 - 2, { align: 'center' });
+    
+  } else if (standardType.toLowerCase().includes("curved") || standardType.toLowerCase().includes("v2")) {
+    // Curved block
+    doc.ellipse(centerX, centerY, 20, 12, 'S');
+    doc.setDrawColor(150);
+    doc.line(centerX, centerY - 15, centerX, centerY + 15);
+    doc.setDrawColor(0);
+    doc.text("R=100mm", centerX + 5, centerY - 13);
+    
+  } else if (standardType.toLowerCase().includes("cylinder") || standardType.toLowerCase().includes("hollow")) {
+    // Cylindrical block
+    doc.circle(centerX, centerY, 15, 'S');
+    doc.circle(centerX, centerY, 10, 'S');
+    
+    // FBH positions
+    doc.circle(centerX + 12, centerY, 1, 'F');
+    doc.circle(centerX, centerY + 12, 1, 'F');
+    doc.circle(centerX - 12, centerY, 1, 'F');
+    doc.text("Hollow Cylinder", centerX, centerY + 20, { align: 'center' });
+    
+  } else if (standardType.toLowerCase().includes("angle") || standardType.toLowerCase().includes("iiv")) {
+    // Angle beam / IIV block
+    const blockWidth = 45;
+    const blockHeight = 18;
+    doc.rect(centerX - blockWidth / 2, centerY - blockHeight / 2, blockWidth, blockHeight);
+    
+    // Steps/notches
+    doc.rect(centerX - blockWidth / 2, centerY - blockHeight / 2, 15, blockHeight / 2);
+    doc.circle(centerX - 10, centerY, 1.5, 'S');
+    doc.circle(centerX + 5, centerY, 1.5, 'S');
+    doc.circle(centerX + 15, centerY, 1.5, 'S');
+    doc.text("IIW Block", centerX, centerY - blockHeight / 2 - 2, { align: 'center' });
+    
+  } else {
+    // Generic block
+    const blockWidth = 40;
+    const blockHeight = 20;
+    doc.rect(centerX - blockWidth / 2, centerY - blockHeight / 2, blockWidth, blockHeight);
+    doc.text("Calibration Block", centerX, centerY, { align: 'center' });
+  }
 }
