@@ -135,9 +135,8 @@ export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) 
         >
           <Select 
             value={data.material} 
-            onValueChange={(value) => {
-              updateField("material", value);
-              updateField("materialSpec", "");
+            onValueChange={(value: string) => {
+              onChange({ ...data, material: value as MaterialType, materialSpec: "" });
             }}
           >
             <SelectTrigger className="bg-background">
