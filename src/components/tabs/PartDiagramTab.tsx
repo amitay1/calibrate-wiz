@@ -3,9 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload, X, Wand2, Download } from "lucide-react";
 import { PartDiagramGenerator } from "@/components/PartDiagramGenerator";
-import { AdvancedTechnicalDrawingGenerator } from "@/components/AdvancedTechnicalDrawingGenerator";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
+
+// Lazy load the advanced generator to avoid loading heavy dependencies upfront
+const AdvancedTechnicalDrawingGenerator = lazy(() => 
+  import("@/components/AdvancedTechnicalDrawingGenerator").then(module => ({
+    default: module.AdvancedTechnicalDrawingGenerator
+  }))
+);
 
 interface PartDiagramTabProps {
   partDiagramImage?: string;
@@ -138,13 +144,15 @@ export const PartDiagramTab = ({
 
           {isGenerating && (
             useAdvanced ? (
-              <AdvancedTechnicalDrawingGenerator
-                partType={partType}
-                thickness={thickness}
-                diameter={diameter}
-                length={length}
-                onImageGenerated={onDiagramGenerated}
-              />
+              <Suspense fallback={<div className="text-center p-8">Loading advanced generator...</div>}>
+                <AdvancedTechnicalDrawingGenerator
+                  partType={partType}
+                  thickness={thickness}
+                  diameter={diameter}
+                  length={length}
+                  onImageGenerated={onDiagramGenerated}
+                />
+              </Suspense>
             ) : (
               <PartDiagramGenerator
                 partType={partType}
