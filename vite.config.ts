@@ -12,9 +12,11 @@ export default defineConfig(({ mode }) => ({
   cacheDir: ".vite-cache",
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
-    dedupe: ["react", "react-dom"],
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "react": path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom")
     },
   },
   optimizeDeps: {
@@ -22,11 +24,7 @@ export default defineConfig(({ mode }) => ({
       "react", 
       "react-dom",
       "react/jsx-runtime",
-      "@radix-ui/react-menubar",
-      "react-resizable-panels",
       "chroma-js"
     ],
-    exclude: [],
-    force: true
   },
 }));
