@@ -21,54 +21,54 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Professional desktop application color system */
-    --background: 220 15% 97%;
-    --foreground: 220 20% 12%;
+    /* Dark professional desktop application color system */
+    --background: 220 25% 10%;
+    --foreground: 220 10% 90%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 12%;
+    --card: 220 22% 13%;
+    --card-foreground: 220 10% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 12%;
+    --popover: 220 22% 13%;
+    --popover-foreground: 220 10% 90%;
 
-    /* Professional blue-gray primary */
-    --primary: 217 91% 48%;
+    /* Professional blue primary */
+    --primary: 217 91% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 42%;
+    --primary-hover: 217 91% 60%;
 
     /* Neutral secondary for toolbars/panels */
-    --secondary: 220 14% 94%;
-    --secondary-foreground: 220 20% 20%;
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 220 10% 85%;
 
     /* Muted tones for backgrounds */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 12% 45%;
+    --muted: 220 20% 16%;
+    --muted-foreground: 220 10% 60%;
 
     /* Status colors */
-    --success: 145 70% 41%;
+    --success: 145 70% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 35 100% 50%;
+    --warning: 35 100% 55%;
     --warning-foreground: 0 0% 100%;
 
     /* Technical accent for highlights */
-    --accent: 197 100% 48%;
+    --accent: 197 100% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 90%;
-    --ring: 217 91% 48%;
+    --border: 220 20% 22%;
+    --input: 220 20% 22%;
+    --ring: 217 91% 55%;
 
     --radius: 0.25rem;
 
     /* Professional shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 4px 8px 0 rgba(0, 0, 0, 0.12);
-    --shadow-panel: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
+    --shadow-panel: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   }
 
   .dark {
