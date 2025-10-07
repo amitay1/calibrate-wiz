@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StandardSelector } from "@/components/StandardSelector";
 import { ThreeDViewer } from "@/components/ThreeDViewer";
@@ -312,10 +312,7 @@ const Index = () => {
   };
 
   const handleSave = () => {
-    toast({
-      title: "Success",
-      description: "Technique sheet saved successfully!",
-    });
+    toast.success("Technique sheet saved successfully!");
   };
 
   const handleExportPDF = () => {
@@ -330,24 +327,14 @@ const Index = () => {
           acceptanceCriteria,
           documentation,
         });
-        toast({
-          title: "Success",
-          description: "Technique Sheet PDF exported successfully!",
-        });
+        toast.success("Technique Sheet PDF exported successfully!");
       } else {
         exportInspectionReportToPDF(inspectionReport);
-        toast({
-          title: "Success",
-          description: "Inspection Report PDF exported successfully!",
-        });
+        toast.success("Inspection Report PDF exported successfully!");
       }
     } catch (error) {
       console.error("Failed to export PDF:", error);
-      toast({
-        title: "Error",
-        description: "Failed to export PDF. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to export PDF. Please try again.");
     }
   };
 
@@ -360,16 +347,9 @@ const Index = () => {
     if (!documentation.inspectorName) missing.push("Inspector Name");
 
     if (missing.length > 0) {
-      toast({
-        title: "Validation Failed",
-        description: `Missing required fields: ${missing.join(", ")}`,
-        variant: "destructive",
-      });
+      toast.error(`Missing required fields: ${missing.join(", ")}`);
     } else {
-      toast({
-        title: "Validation Passed",
-        description: "All required fields complete! ✓",
-      });
+      toast.success("All required fields complete! ✓");
     }
   };
 
