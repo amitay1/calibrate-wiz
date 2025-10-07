@@ -244,7 +244,7 @@ export const CalibrationCatalog = ({
               onClick={(e) => handlePreviewModel(model, e)}
             >
               <Eye className="h-4 w-4" />
-              תצוגה מקדימה
+              Preview
             </Button>
             <Button
               variant="outline"
@@ -312,9 +312,9 @@ export const CalibrationCatalog = ({
       <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>תצוגה מקדימה - {previewModel?.name}</DialogTitle>
+            <DialogTitle>Preview - {previewModel?.name}</DialogTitle>
             <DialogDescription>
-              זוהי תצוגה מקדימה של המסמך שייווצר
+              This is a preview of the document that will be generated
             </DialogDescription>
           </DialogHeader>
           
