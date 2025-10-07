@@ -6,6 +6,8 @@
     <title>Scan Master Inspection Pro - Ultrasonic Technique Sheet Creator</title>
     <meta name="description" content="Professional ultrasonic inspection technique sheet creator with automatic calibration recommendation for aerospace and industrial applications" />
     <meta name="author" content="Scan Master" />
+    <meta name="theme-color" content="#115eb0" />
+    <link rel="manifest" href="/manifest.json" />
 
     <meta property="og:title" content="Scan Master Inspection Pro" />
     <meta property="og:description" content="Create ultrasonic inspection technique sheets with automatic calibration model recommendation" />
@@ -15,6 +17,16 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered'))
+            .catch(err => console.log('Service Worker registration failed'));
+        });
+      }
+    </script>
   </head>
 
   <body>

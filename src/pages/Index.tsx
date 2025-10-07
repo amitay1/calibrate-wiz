@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StandardSelector } from "@/components/StandardSelector";
-import { ProgressHeader } from "@/components/ProgressHeader";
+import { ThreeDViewer } from "@/components/ThreeDViewer";
+import { MenuBar } from "@/components/MenuBar";
+import { Toolbar } from "@/components/Toolbar";
+import { StatusBar } from "@/components/StatusBar";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { InspectionSetupTab } from "@/components/tabs/InspectionSetupTab";
 import { EquipmentTab } from "@/components/tabs/EquipmentTab";
 import { CalibrationTab } from "@/components/tabs/CalibrationTab";
@@ -13,9 +19,6 @@ import { PartDiagramTab } from "@/components/tabs/PartDiagramTab";
 import { ProbeDetailsTab } from "@/components/tabs/ProbeDetailsTab";
 import { ScansTab } from "@/components/tabs/ScansTab";
 import { RemarksTab } from "@/components/tabs/RemarksTab";
-import { ThreeDViewer } from "@/components/ThreeDViewer";
-import { Button } from "@/components/ui/button";
-import { Save, FileDown, CheckCircle2, Target, FileText } from "lucide-react";
 import { 
   StandardType, 
   InspectionSetupData, 
@@ -26,17 +29,15 @@ import {
   DocumentationData,
   MaterialType
 } from "@/types/techniqueSheet";
-import { InspectionReportData, ScanData, ProbeDetails } from "@/types/inspectionReport";
-import { toast } from "sonner";
+import { InspectionReportData } from "@/types/inspectionReport";
 import { standardRules, getRecommendedFrequency, getCouplantRecommendation, calculateMetalTravel } from "@/utils/autoFillLogic";
 import { exportTechniqueSheetToPDF } from "@/utils/techniqueSheetExport";
 import { exportInspectionReportToPDF } from "@/utils/inspectionReportExport";
-import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const [standard, setStandard] = useState<StandardType>("AMS-STD-2154E");
   const [activeTab, setActiveTab] = useState("setup");
-  const [reportMode, setReportMode] = useState<"technique" | "inspection">("technique");
+  const [reportMode, setReportMode] = useState<"Technique" | "Report">("Technique");
   
   const [inspectionSetup, setInspectionSetup] = useState<InspectionSetupData>({
     partNumber: "",
@@ -110,7 +111,6 @@ const Index = () => {
     approvalRequired: false,
   });
 
-  // Inspection Report Data (19 pages)
   const [inspectionReport, setInspectionReport] = useState<InspectionReportData>({
     documentNo: "",
     currentRevision: "0",
@@ -149,12 +149,10 @@ const Index = () => {
   useEffect(() => {
     if (standard && standardRules[standard]) {
       const rules = standardRules[standard];
-      // Auto-set acceptance class based on standard
       setAcceptanceCriteria(prev => ({
         ...prev,
         acceptanceClass: prev.acceptanceClass || rules.defaultAcceptanceClass
       }));
-      // Auto-set coverage
       setScanParameters(prev => ({
         ...prev,
         coverage: prev.coverage === 100 ? rules.scanCoverageDefault : prev.coverage
@@ -170,7 +168,6 @@ const Index = () => {
         inspectionSetup.material as MaterialType
       );
       
-      // Auto-set frequency if not manually changed
       if (equipment.frequency === "5.0" || !equipment.frequency) {
         setEquipment(prev => ({
           ...prev,
@@ -178,7 +175,6 @@ const Index = () => {
         }));
       }
       
-      // Auto-set metal travel distance in calibration
       const metalTravel = calculateMetalTravel(inspectionSetup.partThickness);
       setCalibration(prev => ({
         ...prev,
@@ -222,26 +218,49 @@ const Index = () => {
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        setStandard(data.standard || "MIL-STD-2154");
+        setStandard(data.standard || "AMS-STD-2154E");
         setInspectionSetup(data.inspectionSetup || inspectionSetup);
         setEquipment(data.equipment || equipment);
         setCalibration(data.calibration || calibration);
         setScanParameters(data.scanParameters || scanParameters);
         setAcceptanceCriteria(data.acceptanceCriteria || acceptanceCriteria);
         setDocumentation(data.documentation || documentation);
-        toast.success("Loaded saved technique sheet");
       } catch (error) {
         console.error("Failed to load saved data", error);
       }
     }
   }, []);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 's':
+            e.preventDefault();
+            handleSave();
+            break;
+          case 'e':
+            e.preventDefault();
+            handleExportPDF();
+            break;
+          case 'n':
+            e.preventDefault();
+            handleNewProject();
+            break;
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyboard);
+    return () => window.removeEventListener('keydown', handleKeyboard);
+  }, [inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation, inspectionReport, reportMode]);
+
   // Calculate completion
   const calculateCompletion = () => {
     let completed = 0;
-    let total = 35; // Approximate total required fields across all tabs
+    let total = 35;
 
-    // Inspection Setup (6 fields)
     if (inspectionSetup.partNumber) completed++;
     if (inspectionSetup.partName) completed++;
     if (inspectionSetup.material) completed++;
@@ -249,7 +268,6 @@ const Index = () => {
     if (inspectionSetup.partType) completed++;
     if (inspectionSetup.partThickness >= 6.35) completed++;
     
-    // Equipment (8 fields)
     if (equipment.manufacturer) completed++;
     if (equipment.model) completed++;
     if (equipment.frequency) completed++;
@@ -259,13 +277,11 @@ const Index = () => {
     if (equipment.horizontalLinearity) completed++;
     if (equipment.transducerDiameter) completed++;
 
-    // Calibration (4 fields)
     if (calibration.standardType) completed++;
     if (calibration.referenceMaterial) completed++;
     if (calibration.fbhSizes) completed++;
     if (calibration.metalTravelDistance) completed++;
 
-    // Scan Parameters (6 fields)
     if (scanParameters.scanMethod) completed++;
     if (scanParameters.scanType) completed++;
     if (scanParameters.scanSpeed) completed++;
@@ -273,7 +289,6 @@ const Index = () => {
     if (scanParameters.coverage) completed++;
     if (scanParameters.scanPattern) completed++;
 
-    // Acceptance Criteria (6 fields)
     if (acceptanceCriteria.acceptanceClass) completed++;
     if (acceptanceCriteria.singleDiscontinuity) completed++;
     if (acceptanceCriteria.multipleDiscontinuities) completed++;
@@ -281,25 +296,31 @@ const Index = () => {
     if (acceptanceCriteria.backReflectionLoss) completed++;
     if (acceptanceCriteria.noiseLevel) completed++;
 
-    // Documentation (5 fields)
     if (documentation.inspectorName) completed++;
     if (documentation.inspectorCertification) completed++;
     if (documentation.inspectorLevel) completed++;
     if (documentation.inspectionDate) completed++;
     if (documentation.revision) completed++;
 
-    return { completed, total, percent: (completed / total) * 100 };
+    return (completed / total) * 100;
   };
 
-  const completion = calculateCompletion();
+  const handleNewProject = () => {
+    if (confirm('Start a new project? Unsaved changes will be lost.')) {
+      window.location.reload();
+    }
+  };
 
   const handleSave = () => {
-    toast.success("Technique sheet saved successfully!");
+    toast({
+      title: "Success",
+      description: "Technique sheet saved successfully!",
+    });
   };
 
   const handleExportPDF = () => {
     try {
-      if (reportMode === "technique") {
+      if (reportMode === "Technique") {
         exportTechniqueSheetToPDF({
           standard,
           inspectionSetup,
@@ -309,14 +330,24 @@ const Index = () => {
           acceptanceCriteria,
           documentation,
         });
-        toast.success("Technique Sheet PDF exported successfully!");
+        toast({
+          title: "Success",
+          description: "Technique Sheet PDF exported successfully!",
+        });
       } else {
         exportInspectionReportToPDF(inspectionReport);
-        toast.success("Inspection Report PDF exported successfully (19 pages)!");
+        toast({
+          title: "Success",
+          description: "Inspection Report PDF exported successfully!",
+        });
       }
     } catch (error) {
       console.error("Failed to export PDF:", error);
-      toast.error("Failed to export PDF. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to export PDF. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -329,271 +360,226 @@ const Index = () => {
     if (!documentation.inspectorName) missing.push("Inspector Name");
 
     if (missing.length > 0) {
-      toast.error(`Missing required fields: ${missing.join(", ")}`);
+      toast({
+        title: "Validation Failed",
+        description: `Missing required fields: ${missing.join(", ")}`,
+        variant: "destructive",
+      });
     } else {
-      toast.success("All required fields complete! ✓");
+      toast({
+        title: "Validation Passed",
+        description: "All required fields complete! ✓",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <header className="border-b border-border bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg gradient-primary flex items-center justify-center">
-                <Target className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Scan Master Inspection Pro</h1>
-                <p className="text-sm text-muted-foreground">Ultrasonic Inspection Technique Sheet Creator</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 mr-4 px-3 py-1 bg-muted rounded-lg">
-                <span className="text-xs font-medium">Mode:</span>
-                <Button
-                  variant={reportMode === "technique" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setReportMode("technique")}
-                  className="h-7 text-xs"
-                >
-                  <FileText className="h-3 w-3 mr-1" />
-                  Technique
-                </Button>
-                <Button
-                  variant={reportMode === "inspection" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setReportMode("inspection")}
-                  className="h-7 text-xs"
-                >
-                  <FileDown className="h-3 w-3 mr-1" />
-                  Report (19p)
-                </Button>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleSave}>
-                <Save className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleExportPDF}>
-                <FileDown className="h-4 w-4 mr-2" />
-                {reportMode === "technique" ? "Export PDF (1p)" : "Export PDF (19p)"}
-              </Button>
-              <Button size="sm" className="gradient-primary" onClick={handleValidate}>
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                Validate
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
+      {/* Menu Bar */}
+      <MenuBar 
+        onSave={handleSave}
+        onExport={handleExportPDF}
+        onNew={handleNewProject}
+      />
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <div className="lg:col-span-1">
-            <StandardSelector value={standard} onChange={setStandard} />
+      {/* Toolbar */}
+      <Toolbar
+        onSave={handleSave}
+        onExport={handleExportPDF}
+        onValidate={handleValidate}
+        reportMode={reportMode}
+        onReportModeChange={setReportMode}
+      />
+
+      {/* Main Content Area with Resizable Panels */}
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {/* Left Panel: Tools & Standard Selector */}
+        <ResizablePanel defaultSize={15} minSize={10} maxSize={20}>
+          <div className="h-full app-panel flex flex-col">
+            <div className="p-3 border-b border-border">
+              <h3 className="font-semibold text-sm mb-3">Standard</h3>
+              <StandardSelector 
+                value={standard} 
+                onChange={setStandard} 
+              />
+            </div>
+            <ScrollArea className="flex-1 p-3">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2">COMPLETION</h4>
+                  <div className="text-2xl font-bold text-primary">
+                    {Math.round(calculateCompletion())}%
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {(() => {
+                      const completion = calculateCompletion();
+                      const totalFields = reportMode === "Technique" ? 50 : 40;
+                      return Math.round((completion / 100) * totalFields);
+                    })()}/{reportMode === "Technique" ? 50 : 40} fields
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
           </div>
-          <div className="lg:col-span-2">
-            <ProgressHeader
-              completionPercent={completion.percent}
-              requiredFieldsComplete={completion.completed}
-              totalRequiredFields={completion.total}
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        {/* Center Panel: Main Form */}
+        <ResizablePanel defaultSize={55} minSize={40}>
+          <ScrollArea className="h-full">
+            <div className="p-4">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                {reportMode === "Technique" ? (
+                  <>
+                    <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-1 bg-muted p-1 rounded-md">
+                      <TabsTrigger value="setup" className="text-xs">Setup</TabsTrigger>
+                      <TabsTrigger value="equipment" className="text-xs">Equipment</TabsTrigger>
+                      <TabsTrigger value="calibration" className="text-xs">Calibration</TabsTrigger>
+                      <TabsTrigger value="scan" className="text-xs">Scan Params</TabsTrigger>
+                      <TabsTrigger value="acceptance" className="text-xs">Acceptance</TabsTrigger>
+                      <TabsTrigger value="docs" className="text-xs">Documentation</TabsTrigger>
+                    </TabsList>
+
+                    <div className="mt-4 app-panel rounded-md">
+                      <TabsContent value="setup" className="m-0">
+                        <InspectionSetupTab 
+                          data={inspectionSetup} 
+                          onChange={setInspectionSetup}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="equipment" className="m-0">
+                        <EquipmentTab 
+                          data={equipment} 
+                          onChange={setEquipment}
+                          partThickness={inspectionSetup.partThickness}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="calibration" className="m-0">
+                        <CalibrationTab
+                          data={calibration}
+                          onChange={setCalibration}
+                          inspectionSetup={inspectionSetup}
+                          acceptanceClass={acceptanceCriteria.acceptanceClass}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="scan" className="m-0">
+                        <ScanParametersTab
+                          data={scanParameters}
+                          onChange={setScanParameters}
+                          standard={standard}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="acceptance" className="m-0">
+                        <AcceptanceCriteriaTab
+                          data={acceptanceCriteria}
+                          onChange={setAcceptanceCriteria}
+                          material={inspectionSetup.materialSpec || inspectionSetup.material}
+                          standard={standard}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="docs" className="m-0">
+                        <DocumentationTab
+                          data={documentation}
+                          onChange={setDocumentation}
+                        />
+                      </TabsContent>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 gap-1 bg-muted p-1 rounded-md">
+                      <TabsTrigger value="cover" className="text-xs">Cover Page</TabsTrigger>
+                      <TabsTrigger value="diagram" className="text-xs">Part Diagram</TabsTrigger>
+                      <TabsTrigger value="probe" className="text-xs">Probe Details</TabsTrigger>
+                      <TabsTrigger value="scans" className="text-xs">Scans</TabsTrigger>
+                      <TabsTrigger value="remarks" className="text-xs">Remarks</TabsTrigger>
+                    </TabsList>
+
+                    <div className="mt-4 app-panel rounded-md">
+                      <TabsContent value="cover" className="m-0">
+                        <CoverPageTab 
+                          data={inspectionReport} 
+                          onChange={(data) => setInspectionReport({ ...inspectionReport, ...data })}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="diagram" className="m-0">
+                        <PartDiagramTab 
+                          partDiagramImage={inspectionReport.partDiagramImage}
+                          onChange={(image) => setInspectionReport({ ...inspectionReport, partDiagramImage: image })}
+                          partType={inspectionSetup.partType}
+                          thickness={inspectionSetup.partThickness.toString()}
+                          diameter={inspectionSetup.diameter?.toString()}
+                          length={inspectionSetup.partLength.toString()}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="probe" className="m-0">
+                        <ProbeDetailsTab 
+                          probeDetails={inspectionReport.probeDetails}
+                          onChange={(probes) => setInspectionReport({ ...inspectionReport, probeDetails: probes })}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="scans" className="m-0">
+                        <ScansTab 
+                          scans={inspectionReport.scans}
+                          onChange={(scans) => setInspectionReport({ ...inspectionReport, scans })}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="remarks" className="m-0">
+                        <RemarksTab 
+                          remarks={inspectionReport.remarks}
+                          onChange={(remarks) => setInspectionReport({ ...inspectionReport, remarks })}
+                        />
+                      </TabsContent>
+                    </div>
+                  </>
+                )}
+              </Tabs>
+            </div>
+          </ScrollArea>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        {/* Right Panel: 3D Viewer */}
+        <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
+          <div className="h-full app-panel">
+            <div className="p-3 border-b border-border">
+              <h3 className="font-semibold text-sm">3D Part Viewer</h3>
+            </div>
+            <ThreeDViewer
+              partType={inspectionSetup.partType || ""}
+              material={inspectionSetup.material as MaterialType || ""}
+              dimensions={{
+                length: inspectionSetup.partLength || 100,
+                width: inspectionSetup.partWidth || 50,
+                thickness: inspectionSetup.partThickness || 10,
+                diameter: inspectionSetup.diameter || 50
+              }}
             />
           </div>
-        </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Form */}
-          <div className="lg:col-span-2">
-            {reportMode === "technique" ? (
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-6 mb-4">
-                  <TabsTrigger value="setup" className="text-xs">
-                    🔧 Setup
-                  </TabsTrigger>
-                  <TabsTrigger value="equipment" className="text-xs">
-                    ⚙️ Equipment
-                  </TabsTrigger>
-                  <TabsTrigger value="calibration" className="text-xs">
-                    📏 Calibration
-                  </TabsTrigger>
-                  <TabsTrigger value="scan" className="text-xs">
-                    📡 Scan
-                  </TabsTrigger>
-                  <TabsTrigger value="acceptance" className="text-xs">
-                    ✅ Criteria
-                  </TabsTrigger>
-                  <TabsTrigger value="docs" className="text-xs">
-                    📝 Docs
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="bg-card rounded-lg border border-border shadow-technical">
-                  <TabsContent value="setup" className="m-0">
-                    <InspectionSetupTab 
-                      data={inspectionSetup} 
-                      onChange={setInspectionSetup}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="equipment" className="m-0">
-                    <EquipmentTab 
-                      data={equipment} 
-                      onChange={setEquipment}
-                      partThickness={inspectionSetup.partThickness}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="calibration" className="m-0">
-                    <CalibrationTab
-                      data={calibration}
-                      onChange={setCalibration}
-                      inspectionSetup={inspectionSetup}
-                      acceptanceClass={acceptanceCriteria.acceptanceClass}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="scan" className="m-0">
-                    <ScanParametersTab
-                      data={scanParameters}
-                      onChange={setScanParameters}
-                      standard={standard}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="acceptance" className="m-0">
-                    <AcceptanceCriteriaTab
-                      data={acceptanceCriteria}
-                      onChange={setAcceptanceCriteria}
-                      material={inspectionSetup.materialSpec || inspectionSetup.material}
-                      standard={standard}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="docs" className="m-0">
-                    <DocumentationTab
-                      data={documentation}
-                      onChange={setDocumentation}
-                    />
-                  </TabsContent>
-                </div>
-              </Tabs>
-            ) : (
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4">
-                  <TabsTrigger value="cover" className="text-xs">
-                    📄 Cover
-                  </TabsTrigger>
-                  <TabsTrigger value="diagram" className="text-xs">
-                    📐 Diagram
-                  </TabsTrigger>
-                  <TabsTrigger value="probes" className="text-xs">
-                    🔍 Probes
-                  </TabsTrigger>
-                  <TabsTrigger value="scans" className="text-xs">
-                    📊 Scans
-                  </TabsTrigger>
-                  <TabsTrigger value="remarks" className="text-xs">
-                    📝 Remarks
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="bg-card rounded-lg border border-border shadow-technical p-6">
-                  <TabsContent value="cover" className="m-0">
-                    <CoverPageTab
-                      data={{
-                        documentNo: inspectionReport.documentNo,
-                        currentRevision: inspectionReport.currentRevision,
-                        revisionDate: inspectionReport.revisionDate,
-                        testDate: inspectionReport.testDate,
-                        customerName: inspectionReport.customerName,
-                        poNumber: inspectionReport.poNumber,
-                        itemDescription: inspectionReport.itemDescription,
-                        partNumber: inspectionReport.partNumber,
-                        materialGrade: inspectionReport.materialGrade,
-                        drawingNumber: inspectionReport.drawingNumber,
-                        workOrderNumber: inspectionReport.workOrderNumber,
-                        poSerialNumber: inspectionReport.poSerialNumber,
-                        quantity: inspectionReport.quantity,
-                        samplePoSlNo: inspectionReport.samplePoSlNo,
-                        sampleSerialNo: inspectionReport.sampleSerialNo,
-                        sampleQuantity: inspectionReport.sampleQuantity,
-                        thickness: inspectionReport.thickness,
-                        typeOfScan: inspectionReport.typeOfScan,
-                        testingEquipment: inspectionReport.testingEquipment,
-                        tcgApplied: inspectionReport.tcgApplied,
-                        techniqueSheetNumber: inspectionReport.techniqueSheetNumber,
-                        testStandard: inspectionReport.testStandard,
-                        acceptanceCriteria: inspectionReport.acceptanceCriteria,
-                        observations: inspectionReport.observations,
-                        results: inspectionReport.results,
-                        testedBy: inspectionReport.testedBy,
-                        approvedBy: inspectionReport.approvedBy,
-                      }}
-                      onChange={(data) => setInspectionReport({ ...inspectionReport, ...data })}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="diagram" className="m-0">
-                    <PartDiagramTab
-                      partDiagramImage={inspectionReport.partDiagramImage}
-                      onChange={(image) => setInspectionReport({ ...inspectionReport, partDiagramImage: image })}
-                      partType={inspectionSetup.partType}
-                      thickness={inspectionReport.thickness || inspectionSetup.partThickness.toString()}
-                      diameter={inspectionSetup.diameter?.toString()}
-                      length={inspectionSetup.partLength?.toString()}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="probes" className="m-0">
-                    <ProbeDetailsTab
-                      probeDetails={inspectionReport.probeDetails}
-                      onChange={(probes) => setInspectionReport({ ...inspectionReport, probeDetails: probes })}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="scans" className="m-0">
-                    <ScansTab
-                      scans={inspectionReport.scans}
-                      onChange={(scans) => setInspectionReport({ ...inspectionReport, scans })}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="remarks" className="m-0">
-                    <RemarksTab
-                      remarks={inspectionReport.remarks}
-                      onChange={(remarks) => setInspectionReport({ ...inspectionReport, remarks })}
-                    />
-                  </TabsContent>
-                </div>
-              </Tabs>
-            )}
-          </div>
-
-          {/* Right Panel - 3D Viewer */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-6">
-              <div className="bg-card rounded-lg border border-border shadow-technical p-4">
-                <h3 className="text-sm font-semibold mb-4 text-foreground">3D Part Visualization</h3>
-                <div className="aspect-square">
-                  <ThreeDViewer
-                    partType={inspectionSetup.partType}
-                    material={inspectionSetup.material}
-                    dimensions={{
-                      length: inspectionSetup.partLength,
-                      width: inspectionSetup.partWidth,
-                      thickness: inspectionSetup.partThickness,
-                      diameter: inspectionSetup.diameter,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Status Bar */}
+      <StatusBar
+        completionPercent={calculateCompletion()}
+        requiredFieldsComplete={(() => {
+          const completion = calculateCompletion();
+          const totalFields = reportMode === "Technique" ? 50 : 40;
+          return Math.round((completion / 100) * totalFields);
+        })()}
+        totalRequiredFields={reportMode === "Technique" ? 50 : 40}
+      />
     </div>
   );
 };
