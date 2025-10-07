@@ -14,14 +14,9 @@ export default defineConfig(({ mode }) => ({
     dedupe: ["react", "react-dom"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      react: path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
   },
   optimizeDeps: {
-    exclude: ["sonner", "@tanstack/react-query", "next-themes", "@radix-ui/react-tooltip"],
-  },
-  ssr: {
-    noExternal: [],
+    exclude: ["sonner", "@tanstack/react-query", "next-themes"],
   },
 }));
