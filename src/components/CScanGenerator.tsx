@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { ScanData } from '@/types/inspectionReport';
+import { CScanProcessor } from '@/utils/cScanProcessor';
+import { TechnicalTableGenerator } from '@/utils/techniqueTableGenerator';
 
 interface CScanGeneratorProps {
   scanData: ScanData;
@@ -8,6 +10,7 @@ interface CScanGeneratorProps {
 
 export const CScanGenerator = ({ scanData, onImageGenerated }: CScanGeneratorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const processor = useRef(new CScanProcessor());
 
   useEffect(() => {
     generateCScan();
@@ -47,73 +50,43 @@ export const CScanGenerator = ({ scanData, onImageGenerated }: CScanGeneratorPro
     const scanLength = parseInt(scanData.scanLength) || 360;
     const indexLength = parseInt(scanData.indexLength) || 360;
     const gain = parseFloat(scanData.gain || '50');
-    const frequency = 2.25; // Default frequency
     
-    // Create realistic C-Scan heat map with smooth gradients
-    const pixelSize = 4;
-    const cols = Math.floor(scanAreaWidth / pixelSize);
-    const rows = Math.floor(scanAreaHeight / pixelSize);
-
-    // Generate realistic ultrasonic data
-    const seed = gain * frequency;
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const x = col / cols;
-        const y = row / rows;
-        
-        // Multi-layered noise for realistic appearance
-        const noise1 = Math.sin(x * seed * 3 + y * seed * 2) * Math.cos(y * seed * 4);
-        const noise2 = Math.sin(x * seed * 7 + y * seed * 5) * 0.5;
-        const noise3 = Math.sin(x * seed * 11 + y * seed * 13) * 0.25;
-        
-        // Add some defects (random high amplitude areas)
-        let defectBoost = 0;
-        const defectX = 0.3 + Math.sin(seed) * 0.1;
-        const defectY = 0.4 + Math.cos(seed) * 0.1;
-        const distanceToDefect = Math.sqrt(Math.pow(x - defectX, 2) + Math.pow(y - defectY, 2));
-        if (distanceToDefect < 0.08) {
-          defectBoost = 0.6 * (1 - distanceToDefect / 0.08);
-        }
-        
-        const amplitude = Math.max(0, Math.min(1, (noise1 + noise2 + noise3 + defectBoost + 1) / 2));
-
-        // Professional color mapping
-        let r, g, b;
-        if (amplitude < 0.2) {
-          // Dark blue (low signal)
-          r = Math.floor(amplitude * 5 * 50);
-          g = Math.floor(amplitude * 5 * 80);
-          b = 100 + Math.floor(amplitude * 5 * 155);
-        } else if (amplitude < 0.4) {
-          // Blue to cyan
-          const t = (amplitude - 0.2) * 5;
-          r = 0;
-          g = Math.floor(t * 200);
-          b = 255;
-        } else if (amplitude < 0.6) {
-          // Cyan to green
-          const t = (amplitude - 0.4) * 5;
-          r = 0;
-          g = 200 + Math.floor(t * 55);
-          b = Math.floor((1 - t) * 255);
-        } else if (amplitude < 0.8) {
-          // Green to yellow
-          const t = (amplitude - 0.6) * 5;
-          r = Math.floor(t * 255);
-          g = 255;
-          b = 0;
-        } else {
-          // Yellow to red (high signal/defect)
-          const t = (amplitude - 0.8) * 5;
-          r = 255;
-          g = Math.floor((1 - t) * 255);
-          b = 0;
-        }
-
-        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-        ctx.fillRect(scanAreaX + col * pixelSize, scanAreaY + row * pixelSize, pixelSize, pixelSize);
-      }
-    }
+    // Generate simulated C-Scan data using advanced processor
+    const dataRows = 100;
+    const dataCols = 100;
+    const rawData = processor.current.generateSimulatedData(dataRows, dataCols, 2);
+    
+    // Process with colormap and smoothing
+    const processedCanvas = processor.current.processRawData(rawData, {
+      width: scanAreaWidth,
+      height: scanAreaHeight,
+      smoothing: true,
+      normalize: true,
+      colormap: 'jet'
+    });
+    
+    // Draw processed image to main canvas
+    ctx.drawImage(processedCanvas, scanAreaX, scanAreaY, scanAreaWidth, scanAreaHeight);
+    
+    // Detect defects
+    const defects = processor.current.detectDefects(rawData, 0.5);
+    
+    // Draw defect markers
+    defects.forEach(defect => {
+      const x = scanAreaX + (defect.center[0] / dataCols) * scanAreaWidth;
+      const y = scanAreaY + (defect.center[1] / dataRows) * scanAreaHeight;
+      
+      ctx.strokeStyle = '#FF00FF';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, 10, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      // Defect label
+      ctx.fillStyle = '#FF00FF';
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText(defect.id, x + 12, y - 5);
+    });
 
     // Border around scan area
     ctx.strokeStyle = '#000000';
