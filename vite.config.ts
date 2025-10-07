@@ -21,8 +21,12 @@ export default defineConfig(({ mode }) => ({
     include: [
       "react", 
       "react-dom",
+      "react/jsx-runtime",
       "@radix-ui/react-menubar",
-      "react-resizable-panels"
+      "react-resizable-panels",
+      "chroma-js"
     ],
+    exclude: [],
+    force: true
   },
 }));
