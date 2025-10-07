@@ -103,7 +103,9 @@ export const PartDiagramGenerator = ({
     
     // Front face (circular)
     const radius = (diameter / 2) * scale;
-    const innerRadius = isTube ? ((diameter - thickness * 2) / 2) * scale : 0;
+    // Ensure inner radius is never negative
+    const calculatedInnerRadius = (diameter - thickness * 2) / 2;
+    const innerRadius = isTube && calculatedInnerRadius > 0 ? calculatedInnerRadius * scale : 0;
     
     // Draw 3D cylinder with depth
     const depth = Math.min(length * scale * 0.6, 350);

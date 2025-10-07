@@ -12,7 +12,7 @@ interface DrawingGeneratorProps {
   thickness: string;
   diameter?: string;
   length?: string;
-  onImageGenerated: (imageDataUrl: string) => void;
+  onImageGenerated: (imageDataUrl: string, generator?: any) => void;
 }
 
 interface InspectionZone {
@@ -85,7 +85,7 @@ export class AerospaceTechnicalDrawingGenerator {
   
   private hatchingStandards: any;
 
-  // ✅ GD&T Frame - מסגרת מלאה עם כל הסימבולים
+  // ✅ GD&T Frame - Complete frame with all symbols
   createGDTFrame(options: {
     x: number;
     y: number;
@@ -210,7 +210,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'parallel': {
-        // ∥ - שני קווים מקבילים
+        // ∥ - Two parallel lines
         const par1 = new this.paper.Path.Line({
           from: new this.paper.Point(-5, -2),
           to: new this.paper.Point(5, -2),
@@ -228,7 +228,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'circularity': {
-        // ○ - מעגל פשוט
+        // ○ - Simple circle
         const circCircle = new this.paper.Path.Circle({
           center: new this.paper.Point(0, 0),
           radius: 5,
@@ -240,7 +240,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'flatness': {
-        // ⊤ - שני קווים אופקיים
+        // ⊤ - Two horizontal lines
         const flat1 = new this.paper.Path.Line({
           from: new this.paper.Point(-5, -2),
           to: new this.paper.Point(5, -2),
@@ -258,7 +258,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'straightness': {
-        // — - קו ישר אחד
+        // — - Single straight line
         const straight = new this.paper.Path.Line({
           from: new this.paper.Point(-6, 0),
           to: new this.paper.Point(6, 0),
@@ -270,7 +270,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'cylindricity': {
-        // ⌭ - שני מעגלים מחוברים
+        // ⌭ - Two connected circles
         const cyl1 = new this.paper.Path.Circle({
           center: new this.paper.Point(-2.5, 0),
           radius: 3,
@@ -294,7 +294,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'profile': {
-        // ⌒ - קו מעוקל
+        // ⌒ - Curved line
         const profilePath = new this.paper.Path();
         profilePath.add(new this.paper.Point(-5, 3));
         profilePath.quadraticCurveTo(
@@ -308,7 +308,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'angularity': {
-        // ∠ - זווית
+        // ∠ - Angle
         const ang1 = new this.paper.Path.Line({
           from: new this.paper.Point(-5, 0),
           to: new this.paper.Point(0, 0),
@@ -333,7 +333,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'symmetry': {
-        // ≈ - שני קווי גל
+        // ≈ - Two wave lines
         const sym1 = new this.paper.Path();
         sym1.add(new this.paper.Point(-5, -1));
         sym1.quadraticCurveTo(
@@ -365,7 +365,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'concentricity': {
-        // ◎ - שני מעגלים קונצנטריים
+        // ◎ - Two concentric circles
         const conc1 = new this.paper.Path.Circle({
           center: new this.paper.Point(0, 0),
           radius: 5,
@@ -383,7 +383,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       case 'runout': {
-        // ↻ - חץ מעגלי
+        // ↻ - Circular arrow
         const runCircle = new this.paper.Path.Circle({
           center: new this.paper.Point(0, 0),
           radius: 5,
@@ -402,7 +402,7 @@ export class AerospaceTechnicalDrawingGenerator {
       }
       
       default: {
-        // ברירת מחדל - מעגל פשוט
+        // Default - simple circle
         const defaultCircle = new this.paper.Path.Circle({
           center: new this.paper.Point(0, 0),
           radius: 5,
@@ -416,7 +416,7 @@ export class AerospaceTechnicalDrawingGenerator {
     return group;
   }
 
-  // ציור סימבול תנאי חומר
+  // Draw material condition symbol
   drawMaterialCondition(condition: string) {
     const group = new this.paper.Group();
     
@@ -1001,7 +1001,7 @@ export class AerospaceTechnicalDrawingGenerator {
   }
 
   // ============================================
-  // 🆕 4. TECHNICAL TABLES SYSTEM - טבלאות מורכבות
+  // 4. TECHNICAL TABLES SYSTEM - Complex tables
   // ============================================
   
   createTechnicalTable(options: {
@@ -1124,7 +1124,7 @@ export class AerospaceTechnicalDrawingGenerator {
   }
 
   // ============================================
-  // 🆕 5. LAYER MANAGEMENT SYSTEM - מערכת שכבות
+  // 5. LAYER MANAGEMENT SYSTEM - Layer system
   // ============================================
   
   createLayerSystem() {
@@ -1175,7 +1175,7 @@ export class AerospaceTechnicalDrawingGenerator {
   }
 
   // ============================================
-  // 🆕 6. SCALE BAR SYSTEM - סרגלי סקלה
+  // 6. SCALE BAR SYSTEM - Scale bars
   // ============================================
   
   createScaleBar(options: {
@@ -1255,7 +1255,7 @@ export class AerospaceTechnicalDrawingGenerator {
   }
 
   // ============================================
-  // 🆕 7. CALLOUTS & ANNOTATIONS SYSTEM - הערות
+  // 7. CALLOUTS & ANNOTATIONS SYSTEM - Annotations
   // ============================================
   
   createCallout(options: {
@@ -1837,7 +1837,7 @@ export const AdvancedTechnicalDrawingGenerator = ({
     
     setTimeout(() => {
       const imageDataUrl = generator.getImage();
-      onImageGenerated(imageDataUrl);
+      onImageGenerated(imageDataUrl, generator);
     }, 100);
   };
 

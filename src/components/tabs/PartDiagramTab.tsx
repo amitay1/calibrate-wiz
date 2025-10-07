@@ -32,6 +32,7 @@ export const PartDiagramTab = ({
 }: PartDiagramTabProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [useAdvanced, setUseAdvanced] = useState(true);
+  const [lastGeneratorRef, setLastGeneratorRef] = useState<any>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,14 +49,44 @@ export const PartDiagramTab = ({
     setIsGenerating(true);
   };
 
-  const onDiagramGenerated = (imageDataUrl: string) => {
+  const onDiagramGenerated = (imageDataUrl: string, generatorRef?: any) => {
     onChange(imageDataUrl);
     setIsGenerating(false);
-    toast.success("סרטוט טכני נוצר בהצלחה!");
+    if (generatorRef) {
+      setLastGeneratorRef(generatorRef);
+    }
+    toast.success("Technical drawing generated successfully!");
   };
 
   const handleExportDXF = () => {
-    toast.info("ייצוא DXF יהיה זמין בקרוב");
+    if (!lastGeneratorRef) {
+      toast.error("Please generate a drawing first before exporting to DXF");
+      return;
+    }
+    
+    try {
+      const dxfContent = lastGeneratorRef.exportToDXF();
+      if (!dxfContent) {
+        toast.error("Failed to generate DXF content");
+        return;
+      }
+      
+      // Create blob and download
+      const blob = new Blob([dxfContent], { type: 'application/dxf' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `part-diagram-${partType}-${Date.now()}.dxf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success("DXF exported successfully!");
+    } catch (error) {
+      console.error('DXF export error:', error);
+      toast.error("Failed to export DXF. Please try again.");
+    }
   };
 
   return (
@@ -77,7 +108,7 @@ export const PartDiagramTab = ({
               disabled={isGenerating}
             >
               <Wand2 className="h-4 w-4 mr-2" />
-              {isGenerating ? "מייצר..." : useAdvanced ? "סרטוט מתקדם" : "סרטוט רגיל"}
+              {isGenerating ? "Generating..." : useAdvanced ? "Advanced Drawing" : "Basic Drawing"}
             </Button>
             <Button
               type="button"
@@ -85,7 +116,7 @@ export const PartDiagramTab = ({
               onClick={() => setUseAdvanced(!useAdvanced)}
               size="sm"
             >
-              {useAdvanced ? "מצב מקצועי ✓" : "מצב רגיל"}
+              {useAdvanced ? "Professional Mode ✓" : "Basic Mode"}
             </Button>
             <Button
               type="button"
@@ -93,7 +124,7 @@ export const PartDiagramTab = ({
               onClick={() => document.getElementById('part-diagram-upload')?.click()}
             >
               <Upload className="h-4 w-4 mr-2" />
-              העלה סרטוט
+              Upload Drawing
             </Button>
             <input
               id="part-diagram-upload"
@@ -111,7 +142,7 @@ export const PartDiagramTab = ({
                   onClick={handleExportDXF}
                 >
                   <Download className="h-4 w-4 mr-2" />
-                  ייצוא DXF
+                  Export DXF
                 </Button>
                 <Button
                   type="button"
@@ -120,7 +151,7 @@ export const PartDiagramTab = ({
                   onClick={() => onChange(undefined)}
                 >
                   <X className="h-4 w-4 mr-2" />
-                  הסר
+                  Remove
                 </Button>
               </>
             )}
