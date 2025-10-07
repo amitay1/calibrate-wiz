@@ -1,7 +1,7 @@
-import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { UIToaster } from "@/components/ui/toaster-wrapper";
+import { SonnerToaster } from "@/components/ui/sonner-toaster";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -9,7 +9,6 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <Toaster />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
@@ -17,6 +16,8 @@ const App = () => (
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    <UIToaster />
+    <SonnerToaster />
   </QueryClientProvider>
 );
 
