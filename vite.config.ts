@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    exclude: ["sonner", "@tanstack/react-query", "next-themes"],
+    exclude: ["sonner", "@tanstack/react-query", "next-themes", "@radix-ui/react-tooltip"],
   },
   ssr: {
     noExternal: [],
