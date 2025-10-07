@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  cacheDir: ".vite",
+  cacheDir: ".vite-cache",
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     dedupe: ["react", "react-dom"],
@@ -18,12 +18,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    exclude: [
-      "sonner",
-      "next-themes",
-      "@radix-ui/react-tooltip",
-      "@radix-ui/react-slot",
-    ],
-    include: ["react", "react-dom", "@tanstack/react-query"],
+    include: ["react", "react-dom"],
   },
 }));
