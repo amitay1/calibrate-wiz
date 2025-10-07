@@ -69,7 +69,21 @@ export class AerospaceTechnicalDrawingGenerator {
       annotation: { family: 'Arial', size: 3.0 },
       title: { family: 'Arial Bold', size: 5.0 }
     };
+    
+    // 🆕 ISO 128-50 Hatching Standards
+    this.hatchingStandards = {
+      steel: { angle: 45, spacing: 2.0, lineWidth: 0.35, pattern: 'single' },
+      aluminum: { angle: 45, spacing: 3.0, lineWidth: 0.35, pattern: 'single' },
+      brass: { angle: 45, spacing: 2.0, lineWidth: 0.35, pattern: 'cross', secondAngle: 135 },
+      titanium: { angle: 45, spacing: 2.5, lineWidth: 0.35, pattern: 'single' },
+      plastic: { angle: 45, spacing: 4.0, lineWidth: 0.35, pattern: 'single' },
+      rubber: { angle: 45, spacing: 3.0, lineWidth: 0.35, pattern: 'wavy' },
+      concrete: { angle: 45, spacing: 5.0, lineWidth: 0.35, pattern: 'dots', dotSpacing: 10.0 },
+      inspectionZone: { angle: 45, spacing: 2.5, lineWidth: 0.25, color: '#FF0000', opacity: 0.3 }
+    };
   }
+  
+  private hatchingStandards: any;
 
   // ✅ GD&T Frame - מסגרת מלאה עם כל הסימבולים
   createGDTFrame(options: {
@@ -569,6 +583,119 @@ export class AerospaceTechnicalDrawingGenerator {
     return group;
   }
 
+  // 🆕 Advanced hatching with ISO 128-50 patterns
+  createAdvancedHatching(options: {
+    area: any;
+    material: 'steel' | 'aluminum' | 'brass' | 'titanium' | 'plastic' | 'rubber' | 'concrete' | 'inspectionZone';
+  }) {
+    const { area, material } = options;
+    const pattern = this.hatchingStandards[material];
+    const group = new this.paper.Group();
+    
+    const bounds = area.bounds;
+    const diagonal = Math.sqrt(bounds.width ** 2 + bounds.height ** 2);
+    const numLines = Math.ceil(diagonal / pattern.spacing);
+    
+    // Primary hatching lines
+    for (let i = 0; i < numLines; i++) {
+      const offset = i * pattern.spacing;
+      const line = new this.paper.Path.Line({
+        from: [bounds.left - diagonal, bounds.top + offset],
+        to: [bounds.right + diagonal, bounds.top + offset - diagonal],
+        strokeColor: pattern.color || '#666666',
+        strokeWidth: pattern.lineWidth
+      });
+      
+      line.rotate(pattern.angle, bounds.center);
+      const clipped = line.intersect(area);
+      
+      if (clipped && clipped.length > 0) {
+        if (pattern.opacity) {
+          clipped.opacity = pattern.opacity;
+        }
+        group.addChild(clipped);
+      }
+      line.remove();
+    }
+    
+    // Cross-hatching for brass
+    if (pattern.pattern === 'cross' && pattern.secondAngle) {
+      for (let i = 0; i < numLines; i++) {
+        const offset = i * pattern.spacing;
+        const line = new this.paper.Path.Line({
+          from: [bounds.left - diagonal, bounds.top + offset],
+          to: [bounds.right + diagonal, bounds.top + offset - diagonal],
+          strokeColor: pattern.color || '#666666',
+          strokeWidth: pattern.lineWidth
+        });
+        
+        line.rotate(pattern.secondAngle, bounds.center);
+        const clipped = line.intersect(area);
+        
+        if (clipped && clipped.length > 0) {
+          group.addChild(clipped);
+        }
+        line.remove();
+      }
+    }
+    
+    // Wavy pattern for rubber
+    if (pattern.pattern === 'wavy') {
+      for (let i = 0; i < numLines; i++) {
+        const offset = i * pattern.spacing;
+        const wavyLine = new this.paper.Path();
+        const steps = 20;
+        
+        for (let j = 0; j <= steps; j++) {
+          const t = j / steps;
+          const x = bounds.left + t * bounds.width;
+          const y = bounds.top + offset + Math.sin(t * Math.PI * 4) * 2;
+          
+          if (j === 0) {
+            wavyLine.moveTo(new this.paper.Point(x, y));
+          } else {
+            wavyLine.lineTo(new this.paper.Point(x, y));
+          }
+        }
+        
+        wavyLine.strokeColor = pattern.color || '#666666';
+        wavyLine.strokeWidth = pattern.lineWidth;
+        wavyLine.rotate(pattern.angle, bounds.center);
+        
+        const clipped = wavyLine.intersect(area);
+        if (clipped && clipped.length > 0) {
+          group.addChild(clipped);
+        }
+        wavyLine.remove();
+      }
+    }
+    
+    // Dots pattern for concrete
+    if (pattern.pattern === 'dots' && pattern.dotSpacing) {
+      const dotRows = Math.ceil(bounds.height / pattern.dotSpacing);
+      const dotCols = Math.ceil(bounds.width / pattern.dotSpacing);
+      
+      for (let row = 0; row < dotRows; row++) {
+        for (let col = 0; col < dotCols; col++) {
+          const x = bounds.left + col * pattern.dotSpacing;
+          const y = bounds.top + row * pattern.dotSpacing;
+          const point = new this.paper.Point(x, y);
+          
+          if (area.contains(point)) {
+            const dot = new this.paper.Path.Circle({
+              center: point,
+              radius: 0.5,
+              fillColor: pattern.color || '#666666'
+            });
+            group.addChild(dot);
+          }
+        }
+      }
+    }
+    
+    return group;
+  }
+
   // Create cross-section with hatching
   createCrossSection(
     x: number,
@@ -576,8 +703,7 @@ export class AerospaceTechnicalDrawingGenerator {
     width: number,
     height: number,
     thickness: number,
-    angle: number = 45,
-    spacing: number = 5
+    material: 'steel' | 'aluminum' | 'brass' | 'titanium' | 'plastic' | 'rubber' | 'concrete' = 'steel'
   ) {
     const group = new this.paper.Group();
     
@@ -599,94 +725,42 @@ export class AerospaceTechnicalDrawingGenerator {
     });
     group.addChild(inner);
     
-    // Create hatching for walls
-    const hatchingGroup = new this.paper.Group();
+    // 🆕 Use ISO 128-50 standard hatching
+    // Left wall
+    const leftWall = new this.paper.Path.Rectangle({
+      point: [x, y],
+      size: [thickness, height]
+    });
+    const leftHatch = this.createAdvancedHatching({ area: leftWall, material });
+    group.addChild(leftHatch);
+    leftWall.remove();
     
-    // Left wall hatching
-    for (let i = 0; i < height + width; i += spacing) {
-      const line = new this.paper.Path.Line({
-        from: [x - height, y + i],
-        to: [x + width, y + i - width],
-        strokeColor: '#666666',
-        strokeWidth: 0.35
-      });
-      
-      const clipped = line.intersect(
-        new this.paper.Path.Rectangle({
-          point: [x, y],
-          size: [thickness, height]
-        })
-      );
-      
-      if (clipped && clipped.length > 0) {
-        hatchingGroup.addChild(clipped);
-      }
-    }
+    // Right wall
+    const rightWall = new this.paper.Path.Rectangle({
+      point: [x + width - thickness, y],
+      size: [thickness, height]
+    });
+    const rightHatch = this.createAdvancedHatching({ area: rightWall, material });
+    group.addChild(rightHatch);
+    rightWall.remove();
     
-    // Right wall hatching
-    for (let i = 0; i < height + width; i += spacing) {
-      const line = new this.paper.Path.Line({
-        from: [x + width - thickness - height, y + i],
-        to: [x + width + width, y + i - width],
-        strokeColor: '#666666',
-        strokeWidth: 0.35
-      });
-      
-      const clipped = line.intersect(
-        new this.paper.Path.Rectangle({
-          point: [x + width - thickness, y],
-          size: [thickness, height]
-        })
-      );
-      
-      if (clipped && clipped.length > 0) {
-        hatchingGroup.addChild(clipped);
-      }
-    }
+    // Top wall
+    const topWall = new this.paper.Path.Rectangle({
+      point: [x, y],
+      size: [width, thickness]
+    });
+    const topHatch = this.createAdvancedHatching({ area: topWall, material });
+    group.addChild(topHatch);
+    topWall.remove();
     
-    // Top wall hatching
-    for (let i = 0; i < height + width; i += spacing) {
-      const line = new this.paper.Path.Line({
-        from: [x + i - width, y - width],
-        to: [x + i, y + height],
-        strokeColor: '#666666',
-        strokeWidth: 0.35
-      });
-      
-      const clipped = line.intersect(
-        new this.paper.Path.Rectangle({
-          point: [x, y],
-          size: [width, thickness]
-        })
-      );
-      
-      if (clipped && clipped.length > 0) {
-        hatchingGroup.addChild(clipped);
-      }
-    }
-    
-    // Bottom wall hatching
-    for (let i = 0; i < height + width; i += spacing) {
-      const line = new this.paper.Path.Line({
-        from: [x + i - width, y + height - thickness - width],
-        to: [x + i, y + 2 * height],
-        strokeColor: '#666666',
-        strokeWidth: 0.35
-      });
-      
-      const clipped = line.intersect(
-        new this.paper.Path.Rectangle({
-          point: [x, y + height - thickness],
-          size: [width, thickness]
-        })
-      );
-      
-      if (clipped && clipped.length > 0) {
-        hatchingGroup.addChild(clipped);
-      }
-    }
-    
-    group.addChild(hatchingGroup);
+    // Bottom wall
+    const bottomWall = new this.paper.Path.Rectangle({
+      point: [x, y + height - thickness],
+      size: [width, thickness]
+    });
+    const bottomHatch = this.createAdvancedHatching({ area: bottomWall, material });
+    group.addChild(bottomHatch);
+    bottomWall.remove();
     
     return group;
   }
@@ -1365,6 +1439,143 @@ export class AerospaceTechnicalDrawingGenerator {
     
     return group;
   }
+
+  // ============================================
+  // 🆕 DATA PARSING - קריאת נתוני בדיקה
+  // ============================================
+  
+  parseInspectionData(jsonData: any) {
+    return {
+      metadata: jsonData.inspection?.metadata || {},
+      zones: jsonData.inspection?.scanPlan?.zones || [],
+      results: jsonData.inspection?.scanResults?.cScanData || [],
+      calibration: jsonData.inspection?.calibration || {},
+      acceptance: jsonData.inspection?.acceptance || {}
+    };
+  }
+  
+  generateFromInspectionData(jsonData: any) {
+    const data = this.parseInspectionData(jsonData);
+    const layers = this.createLayerSystem();
+    
+    // Clear canvas
+    this.paper.project.clear();
+    
+    // === GEOMETRY LAYER ===
+    layers.zones.activate();
+    
+    // Create zones from data
+    const zones = data.zones.map((zone: any) => ({
+      startAngle: zone.startAngle || 0,
+      endAngle: zone.endAngle || 360,
+      color: this.getZoneColor(zone.id),
+      label: `ZONE ${zone.id}`
+    }));
+    
+    if (data.metadata.dimensions) {
+      const dims = data.metadata.dimensions;
+      this.createRingWithInspectionZones(
+        400, 400,
+        dims.innerDiameter || 800,
+        dims.outerDiameter || 1200,
+        zones
+      );
+    }
+    
+    // === C-SCAN LAYER ===
+    layers.cscan.activate();
+    
+    data.results.forEach((scan: any, index: number) => {
+      if (scan.data && scan.data.values) {
+        this.createCScanVisualization(
+          950, 200 + index * 400,
+          {
+            values: scan.data.values,
+            min: scan.data.colorScale?.min || 0,
+            max: scan.data.colorScale?.max || 100
+          },
+          350, 350
+        );
+        
+        // Zone label
+        const label = new this.paper.PointText({
+          point: [1125, 170 + index * 400],
+          content: `C-SCAN - ZONE ${scan.zoneId}`,
+          fillColor: 'black',
+          fontSize: 14,
+          fontWeight: 'bold',
+          justification: 'center'
+        });
+      }
+    });
+    
+    // === TABLES LAYER ===
+    layers.tables.activate();
+    
+    // Metadata table
+    this.createTechnicalTable({
+      x: 50,
+      y: 100,
+      title: 'INSPECTION METADATA',
+      headers: ['Property', 'Value'],
+      rows: [
+        ['Document No.', data.metadata.documentNumber || 'N/A'],
+        ['Test Date', data.metadata.testDate || 'N/A'],
+        ['Standard', data.metadata.standard || 'N/A'],
+        ['Operator', data.metadata.operator || 'N/A'],
+        ['Part Number', data.metadata.partNumber || 'N/A'],
+        ['Material', data.metadata.material || 'N/A']
+      ],
+      columnWidths: [120, 200]
+    });
+    
+    // Calibration table
+    if (data.calibration.referenceStandard) {
+      this.createTechnicalTable({
+        x: 50,
+        y: 350,
+        title: 'CALIBRATION DATA',
+        headers: ['Parameter', 'Value'],
+        rows: [
+          ['Reference Type', data.calibration.referenceStandard.type || 'N/A'],
+          ['FBH Diameter', `${data.calibration.referenceStandard.diameter || 'N/A'} mm`],
+          ['Transfer Value', `${data.calibration.transferValue || 'N/A'} dB`],
+          ['Noise Level', `${data.calibration.noiseLevel || 'N/A'} %FSH`]
+        ],
+        columnWidths: [150, 150]
+      });
+    }
+    
+    // Acceptance table
+    this.createTechnicalTable({
+      x: 50,
+      y: 550,
+      title: 'ACCEPTANCE',
+      headers: ['Criteria', 'Status'],
+      rows: [
+        ['Standard', data.acceptance.criteria || 'N/A'],
+        ['Result', { 
+          value: data.acceptance.status || 'PENDING',
+          bgColor: data.acceptance.status === 'ACCEPTED' ? '#90EE90' : '#FFB6C1'
+        }]
+      ],
+      columnWidths: [200, 120]
+    });
+    
+    this.paper.view.draw();
+  }
+  
+  private getZoneColor(zoneId: string): string {
+    const colors: Record<string, string> = {
+      'A': '#FFD700',
+      'B': '#87CEEB',
+      'C': '#FF6347',
+      'D': '#90EE90',
+      'E': '#DDA0DD',
+      'F': '#F0E68C'
+    };
+    return colors[zoneId] || '#CCCCCC';
+  }
 }
 
 export const AdvancedTechnicalDrawingGenerator = ({ 
@@ -1475,9 +1686,9 @@ export const AdvancedTechnicalDrawingGenerator = ({
       // === HATCHING LAYER ===
       layers.hatching.activate();
       
-      // Cross-section view
+      // Cross-section view with material-specific hatching
       const crossSection = generator.createCrossSection(
-        900, 300, 300, 300, t
+        900, 300, 300, 300, t, 'titanium'
       );
       
       layers.annotations.activate();
