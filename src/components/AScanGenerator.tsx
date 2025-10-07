@@ -43,8 +43,8 @@ export const AScanGenerator = ({ scanData, onImageGenerated }: AScanGeneratorPro
     const waveformWidth = 900;
     const waveformHeight = 500;
 
-    // Parse scan parameters
-    const frequency = parseFloat(scanData.frequency || '2.25');
+    // Parse scan parameters - use defaults if not available
+    const frequency = 2.25; // Default frequency
     const gain = parseFloat(scanData.gain || '50');
     const range = parseFloat(scanData.range || '100');
     const velocity = parseFloat(scanData.velocity || '5900');

@@ -15,7 +15,6 @@ export interface ScanData {
   aScanImage?: string; // Base64 or URL
   
   // Parameters
-  frequency?: string;
   gain?: string;
   range?: string;
   velocity?: string;
@@ -38,13 +37,10 @@ export interface InspectionReportData {
   documentNo: string;
   currentRevision: string;
   revisionDate: string;
-  testDate: string;
   customerName: string;
   poNumber: string;
   itemDescription: string;
-  partNumber: string;
   materialGrade: string;
-  drawingNumber: string;
   workOrderNumber: string;
   poSerialNumber: string;
   quantity: string;
@@ -59,16 +55,13 @@ export interface InspectionReportData {
   typeOfScan: string;
   testingEquipment: string;
   tcgApplied: string; // "Yes" or "No"
-  techniqueSheetNumber: string;
   testStandard: string;
-  acceptanceCriteria: string;
   
   // Observations
   observations: string;
   results: string; // "Accepted" or "Rejected"
   
   // Signatures
-  testedBy: string;
   approvedBy: string;
   
   // Part Diagram (Page 2)

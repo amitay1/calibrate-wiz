@@ -175,15 +175,7 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Frequency</Label>
-                    <Input
-                      value={scan.frequency || ""}
-                      onChange={(e) => updateScan(scan.id, 'frequency', e.target.value)}
-                      placeholder="2.25 MHz"
-                    />
-                  </div>
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Gain</Label>
                     <Input
@@ -209,6 +201,9 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
                     />
                   </div>
                 </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Note: Frequency is managed per-probe in the Probe Details tab
+                </p>
 
                 {/* Image Uploads */}
                 <div className="grid grid-cols-2 gap-4">

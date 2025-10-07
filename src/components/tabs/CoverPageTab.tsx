@@ -7,13 +7,10 @@ interface CoverPageData {
   documentNo: string;
   currentRevision: string;
   revisionDate: string;
-  testDate: string;
   customerName: string;
   poNumber: string;
   itemDescription: string;
-  partNumber: string;
   materialGrade: string;
-  drawingNumber: string;
   workOrderNumber: string;
   poSerialNumber: string;
   quantity: string;
@@ -24,12 +21,9 @@ interface CoverPageData {
   typeOfScan: string;
   testingEquipment: string;
   tcgApplied: string;
-  techniqueSheetNumber: string;
   testStandard: string;
-  acceptanceCriteria: string;
   observations: string;
   results: string;
-  testedBy: string;
   approvedBy: string;
 }
 
@@ -72,14 +66,6 @@ export const CoverPageTab = ({ data, onChange }: CoverPageTabProps) => {
               onChange={(e) => updateField('revisionDate', e.target.value)}
             />
           </div>
-          <div>
-            <Label>Test Date</Label>
-            <Input
-              type="date"
-              value={data.testDate}
-              onChange={(e) => updateField('testDate', e.target.value)}
-            />
-          </div>
         </div>
       </div>
 
@@ -102,20 +88,12 @@ export const CoverPageTab = ({ data, onChange }: CoverPageTabProps) => {
               placeholder="H000131338"
             />
           </div>
-          <div>
+          <div className="col-span-2">
             <Label>Item Description</Label>
             <Input
               value={data.itemDescription}
               onChange={(e) => updateField('itemDescription', e.target.value)}
               placeholder="REAR SECTION FORGING"
-            />
-          </div>
-          <div>
-            <Label>Part Number</Label>
-            <Input
-              value={data.partNumber}
-              onChange={(e) => updateField('partNumber', e.target.value)}
-              placeholder="UCP-210-15076-000"
             />
           </div>
           <div className="col-span-2">
@@ -124,14 +102,6 @@ export const CoverPageTab = ({ data, onChange }: CoverPageTabProps) => {
               value={data.materialGrade}
               onChange={(e) => updateField('materialGrade', e.target.value)}
               placeholder="CLASS 316L AS PER AMS-QQ-S-763, CONDITION A"
-            />
-          </div>
-          <div>
-            <Label>Drawing Number</Label>
-            <Input
-              value={data.drawingNumber}
-              onChange={(e) => updateField('drawingNumber', e.target.value)}
-              placeholder="UCP-210-15076 Rev. A"
             />
           </div>
           <div>
@@ -218,7 +188,7 @@ export const CoverPageTab = ({ data, onChange }: CoverPageTabProps) => {
               placeholder="Eddyfi- Panther2"
             />
           </div>
-          <div>
+          <div className="col-span-2">
             <Label>TCG Applied</Label>
             <Select value={data.tcgApplied} onValueChange={(v) => updateField('tcgApplied', v)}>
               <SelectTrigger>
@@ -230,28 +200,12 @@ export const CoverPageTab = ({ data, onChange }: CoverPageTabProps) => {
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label>Technique Sheet Number</Label>
-            <Input
-              value={data.techniqueSheetNumber}
-              onChange={(e) => updateField('techniqueSheetNumber', e.target.value)}
-              placeholder="QAQC/UT/TS/E-324/1 Rev.0"
-            />
-          </div>
-          <div>
+          <div className="col-span-2">
             <Label>Test Standard</Label>
             <Input
               value={data.testStandard}
               onChange={(e) => updateField('testStandard', e.target.value)}
               placeholder="AS PER ASTM A745"
-            />
-          </div>
-          <div>
-            <Label>Acceptance Criteria</Label>
-            <Input
-              value={data.acceptanceCriteria}
-              onChange={(e) => updateField('acceptanceCriteria', e.target.value)}
-              placeholder="Applicable class as per ASTM A745"
             />
           </div>
         </div>
@@ -285,23 +239,18 @@ export const CoverPageTab = ({ data, onChange }: CoverPageTabProps) => {
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-4">Signatures</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label>Tested By</Label>
-            <Input
-              value={data.testedBy}
-              onChange={(e) => updateField('testedBy', e.target.value)}
-              placeholder="Inspector Name"
-            />
-          </div>
+        <h3 className="text-lg font-semibold mb-4">Approval</h3>
+        <div className="space-y-4">
           <div>
             <Label>Approved By</Label>
             <Input
               value={data.approvedBy}
               onChange={(e) => updateField('approvedBy', e.target.value)}
-              placeholder="Approver Name"
+              placeholder="Approver Name & Title"
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Note: Inspector details are managed in the Documentation tab
+            </p>
           </div>
         </div>
       </div>

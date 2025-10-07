@@ -47,7 +47,7 @@ export const CScanGenerator = ({ scanData, onImageGenerated }: CScanGeneratorPro
     const scanLength = parseInt(scanData.scanLength) || 360;
     const indexLength = parseInt(scanData.indexLength) || 360;
     const gain = parseFloat(scanData.gain || '50');
-    const frequency = parseFloat(scanData.frequency || '2.25');
+    const frequency = 2.25; // Default frequency
     
     // Create realistic C-Scan heat map with smooth gradients
     const pixelSize = 4;

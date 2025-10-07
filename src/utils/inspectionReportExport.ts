@@ -2,7 +2,15 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { InspectionReportData } from '@/types/inspectionReport';
 
-export const exportInspectionReportToPDF = (data: InspectionReportData): void => {
+export const exportInspectionReportToPDF = (
+  data: InspectionReportData,
+  partNumber: string,
+  drawingReference: string,
+  inspectionDate: string,
+  inspectorName: string,
+  procedureNumber: string,
+  acceptanceCriteriaText: string
+): void => {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -27,7 +35,7 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
     
     doc.text(`Current Rev. : ${data.currentRevision}`, 140, 15);
     doc.text(`Date of Rev. : ${data.revisionDate}`, 140, 20);
-    doc.text(`(Part No. ${data.partNumber})`, 14, 20);
+    doc.text(`(Part No. ${partNumber})`, 14, 20);
     doc.text(`No. of Pages : Page ${pageNum} of ${totalPages}`, 140, 25);
     
     doc.line(14, 27, 196, 27);
@@ -50,7 +58,7 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
   // Left column
   doc.text(`Document No.: ${data.documentNo}`, leftCol, yPos);
   yPos += 6;
-  doc.text(`Test Date: ${data.testDate}`, leftCol, yPos);
+  doc.text(`Test Date: ${inspectionDate}`, leftCol, yPos);
   yPos += 6;
   doc.text(`Customer Name: ${data.customerName}`, leftCol, yPos);
   yPos += 6;
@@ -58,11 +66,11 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
   yPos += 6;
   doc.text(`Item Description: ${data.itemDescription}`, leftCol, yPos);
   yPos += 6;
-  doc.text(`Part No.: ${data.partNumber}`, leftCol, yPos);
+  doc.text(`Part No.: ${partNumber}`, leftCol, yPos);
   yPos += 6;
   doc.text(`Material Grade: ${data.materialGrade}`, leftCol, yPos);
   yPos += 6;
-  doc.text(`Drawing No.: ${data.drawingNumber}`, leftCol, yPos);
+  doc.text(`Drawing No.: ${drawingReference}`, leftCol, yPos);
   yPos += 6;
   doc.text(`Work Order No.: ${data.workOrderNumber}`, leftCol, yPos);
   yPos += 6;
@@ -95,11 +103,11 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
   yPos += 6;
   doc.text(`TCG applied: ${data.tcgApplied}`, leftCol, yPos);
   yPos += 6;
-  doc.text(`Technique Sheet No.: ${data.techniqueSheetNumber}`, leftCol, yPos);
+  doc.text(`Technique Sheet No.: ${procedureNumber}`, leftCol, yPos);
   yPos += 6;
   doc.text(`Test Standard: ${data.testStandard}`, leftCol, yPos);
   yPos += 6;
-  doc.text(`Acceptance Criteria: ${data.acceptanceCriteria}`, leftCol, yPos);
+  doc.text(`Acceptance Criteria: ${acceptanceCriteriaText}`, leftCol, yPos);
   
   // Observations
   yPos += 10;
@@ -127,7 +135,7 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
   autoTable(doc, {
     startY: yPos + 2,
     head: [['Tested By', 'Approved By']],
-    body: [[data.testedBy, data.approvedBy]],
+    body: [[inspectorName, data.approvedBy]],
     theme: 'grid',
     styles: { fontSize: 9 },
     margin: { left: leftCol },
@@ -261,7 +269,7 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
     }
     
     // Parameters (if provided)
-    if (scan.frequency || scan.gain || scan.range) {
+    if (scan.gain || scan.range) {
       let paramsYPos = imageYPos + 65;
       if (paramsYPos > 260) {
         doc.addPage();
@@ -273,7 +281,6 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
       let paramText = '';
-      if (scan.frequency) paramText += `Freq: ${scan.frequency}  `;
       if (scan.gain) paramText += `Gain: ${scan.gain}  `;
       if (scan.range) paramText += `Range: ${scan.range}  `;
       if (scan.velocity) paramText += `Velocity: ${scan.velocity}`;
@@ -310,6 +317,6 @@ export const exportInspectionReportToPDF = (data: InspectionReportData): void =>
   });
 
   // Save the PDF
-  const fileName = `UT_REPORT_${data.partNumber}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const fileName = `UT_REPORT_${partNumber.replace(/\//g, '-')}_${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(fileName);
 };
