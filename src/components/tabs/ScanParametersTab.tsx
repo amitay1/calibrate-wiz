@@ -4,7 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { ScanParametersData } from "@/types/techniqueSheet";
 import { Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 
 interface ScanParametersTabProps {
   data: ScanParametersData;
@@ -29,18 +30,16 @@ const FieldWithHelp = ({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="inline-flex">
-              <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
-            <p className="text-xs">{help}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Info className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
+          Auto-fill will populate scan parameters based on the selected standard and part geometry.
+        </TooltipContent>
+      </Tooltip>
     </div>
     {children}
   </div>

@@ -4,8 +4,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { AcceptanceCriteriaData, AcceptanceClass, StandardType } from "@/types/techniqueSheet";
 import { Info, AlertTriangle } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { acceptanceLimits } from "@/utils/autoFillLogic";
 
@@ -40,18 +41,16 @@ const FieldWithHelp = ({
           Auto-filled
         </Badge>
       )}
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="inline-flex">
-              <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
-            <p className="text-xs">{help}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Info className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
+          Auto-fill will populate acceptance criteria based on the selected standard and inspection type.
+        </TooltipContent>
+      </Tooltip>
     </div>
     {children}
   </div>
