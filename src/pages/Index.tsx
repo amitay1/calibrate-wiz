@@ -323,7 +323,15 @@ const Index = () => {
         });
         toast.success("Technique Sheet PDF exported successfully!");
       } else {
-        exportInspectionReportToPDF(inspectionReport);
+        exportInspectionReportToPDF(
+          inspectionReport,
+          inspectionSetup.partNumber,
+          documentation.drawingReference,
+          documentation.inspectionDate,
+          documentation.inspectorName,
+          documentation.procedureNumber,
+          `Class: ${acceptanceCriteria.acceptanceClass}, Single: ${acceptanceCriteria.singleDiscontinuity}, Multiple: ${acceptanceCriteria.multipleDiscontinuities}`
+        );
         toast.success("Inspection Report PDF exported successfully!");
       }
     } catch (error) {

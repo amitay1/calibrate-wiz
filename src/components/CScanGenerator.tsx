@@ -207,8 +207,8 @@ export const CScanGenerator = ({ scanData, onImageGenerated }: CScanGeneratorPro
     ctx.fillText(`Direction: ${scanData.direction}`, infoX + 15, infoY + 70);
     ctx.fillText(`Probe Type: ${scanData.probeType}`, infoX + 15, infoY + 90);
     
-    ctx.fillText(`Frequency: ${scanData.frequency || 'N/A'} MHz`, infoX + 300, infoY + 50);
-    ctx.fillText(`Gain: ${scanData.gain || 'N/A'} dB`, infoX + 300, infoY + 70);
+    ctx.fillText(`Gain: ${scanData.gain || 'N/A'} dB`, infoX + 300, infoY + 50);
+    ctx.fillText(`Range: ${scanData.range || 'N/A'} mm`, infoX + 300, infoY + 70);
     ctx.fillText(`Elements: ${scanData.numberOfElements || 'N/A'}`, infoX + 300, infoY + 90);
     
     ctx.fillText(`Scan Length: ${scanLength} mm`, infoX + 550, infoY + 50);
