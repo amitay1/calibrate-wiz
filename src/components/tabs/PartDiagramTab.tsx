@@ -1,14 +1,29 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Wand2 } from "lucide-react";
+import { PartDiagramGenerator } from "@/components/PartDiagramGenerator";
+import { useState } from "react";
 
 interface PartDiagramTabProps {
   partDiagramImage?: string;
   onChange: (image: string | undefined) => void;
+  partType?: string;
+  thickness?: string;
+  diameter?: string;
+  length?: string;
 }
 
-export const PartDiagramTab = ({ partDiagramImage, onChange }: PartDiagramTabProps) => {
+export const PartDiagramTab = ({ 
+  partDiagramImage, 
+  onChange, 
+  partType = "tube",
+  thickness = "50",
+  diameter = "200",
+  length = "400"
+}: PartDiagramTabProps) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -18,6 +33,15 @@ export const PartDiagramTab = ({ partDiagramImage, onChange }: PartDiagramTabPro
       onChange(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleGenerate = () => {
+    setIsGenerating(true);
+  };
+
+  const onDiagramGenerated = (imageDataUrl: string) => {
+    onChange(imageDataUrl);
+    setIsGenerating(false);
   };
 
   return (
@@ -32,6 +56,15 @@ export const PartDiagramTab = ({ partDiagramImage, onChange }: PartDiagramTabPro
       <Card className="p-6">
         <div className="space-y-4">
           <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant="default"
+              onClick={handleGenerate}
+              disabled={isGenerating}
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              {isGenerating ? "Generating..." : "Generate Diagram"}
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -71,9 +104,19 @@ export const PartDiagramTab = ({ partDiagramImage, onChange }: PartDiagramTabPro
           ) : (
             <div className="border-2 border-dashed rounded-lg p-12 text-center text-muted-foreground">
               <Upload className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No diagram uploaded yet</p>
-              <p className="text-sm">Upload a technical drawing showing scan locations</p>
+              <p>No diagram yet</p>
+              <p className="text-sm">Generate or upload a technical drawing with scan locations</p>
             </div>
+          )}
+
+          {isGenerating && (
+            <PartDiagramGenerator
+              partType={partType}
+              thickness={thickness}
+              diameter={diameter}
+              length={length}
+              onImageGenerated={onDiagramGenerated}
+            />
           )}
         </div>
       </Card>

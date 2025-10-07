@@ -540,6 +540,10 @@ const Index = () => {
                     <PartDiagramTab
                       partDiagramImage={inspectionReport.partDiagramImage}
                       onChange={(image) => setInspectionReport({ ...inspectionReport, partDiagramImage: image })}
+                      partType={inspectionSetup.partType}
+                      thickness={inspectionReport.thickness || inspectionSetup.partThickness.toString()}
+                      diameter={inspectionSetup.diameter?.toString()}
+                      length={inspectionSetup.partLength?.toString()}
                     />
                   </TabsContent>
 

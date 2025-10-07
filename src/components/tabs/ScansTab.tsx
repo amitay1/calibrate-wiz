@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Upload, Image as ImageIcon, Wand2 } from "lucide-react";
 import { ScanData } from "@/types/inspectionReport";
 import { useState } from "react";
+import { CScanGenerator } from "@/components/CScanGenerator";
+import { AScanGenerator } from "@/components/AScanGenerator";
 
 interface ScansTabProps {
   scans: ScanData[];
@@ -14,6 +16,8 @@ interface ScansTabProps {
 
 export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
   const [expandedScan, setExpandedScan] = useState<string | null>(null);
+  const [generatingCScan, setGeneratingCScan] = useState<string | null>(null);
+  const [generatingAScan, setGeneratingAScan] = useState<string | null>(null);
 
   const addScan = () => {
     const newScan: ScanData = {
@@ -50,6 +54,24 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
       updateScan(scanId, field, reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleGenerateCScan = (scanId: string) => {
+    setGeneratingCScan(scanId);
+  };
+
+  const handleGenerateAScan = (scanId: string) => {
+    setGeneratingAScan(scanId);
+  };
+
+  const onCScanGenerated = (scanId: string, imageDataUrl: string) => {
+    updateScan(scanId, 'cScanImage', imageDataUrl);
+    setGeneratingCScan(null);
+  };
+
+  const onAScanGenerated = (scanId: string, imageDataUrl: string) => {
+    updateScan(scanId, 'aScanImage', imageDataUrl);
+    setGeneratingAScan(null);
   };
 
   return (
@@ -195,12 +217,22 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
                     <div className="flex items-center gap-2">
                       <Button
                         type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleGenerateCScan(scan.id)}
+                        disabled={generatingCScan === scan.id}
+                      >
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        {generatingCScan === scan.id ? "Generating..." : "Generate"}
+                      </Button>
+                      <Button
+                        type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => document.getElementById(`cscan-${scan.id}`)?.click()}
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        Upload C-Scan
+                        Upload
                       </Button>
                       <input
                         id={`cscan-${scan.id}`}
@@ -210,14 +242,20 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
                         onChange={(e) => handleImageUpload(scan.id, 'cScanImage', e)}
                       />
                       {scan.cScanImage && (
-                        <span className="text-sm text-green-600">✓ Uploaded</span>
+                        <span className="text-sm text-green-600">✓</span>
                       )}
                     </div>
                     {scan.cScanImage && (
                       <img 
                         src={scan.cScanImage} 
                         alt="C-Scan" 
-                        className="w-full h-32 object-cover rounded border"
+                        className="w-full h-auto rounded border"
+                      />
+                    )}
+                    {generatingCScan === scan.id && (
+                      <CScanGenerator 
+                        scanData={scan} 
+                        onImageGenerated={(url) => onCScanGenerated(scan.id, url)} 
                       />
                     )}
                   </div>
@@ -227,12 +265,22 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
                     <div className="flex items-center gap-2">
                       <Button
                         type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleGenerateAScan(scan.id)}
+                        disabled={generatingAScan === scan.id}
+                      >
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        {generatingAScan === scan.id ? "Generating..." : "Generate"}
+                      </Button>
+                      <Button
+                        type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => document.getElementById(`ascan-${scan.id}`)?.click()}
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        Upload A-Scan
+                        Upload
                       </Button>
                       <input
                         id={`ascan-${scan.id}`}
@@ -242,14 +290,20 @@ export const ScansTab = ({ scans, onChange }: ScansTabProps) => {
                         onChange={(e) => handleImageUpload(scan.id, 'aScanImage', e)}
                       />
                       {scan.aScanImage && (
-                        <span className="text-sm text-green-600">✓ Uploaded</span>
+                        <span className="text-sm text-green-600">✓</span>
                       )}
                     </div>
                     {scan.aScanImage && (
                       <img 
                         src={scan.aScanImage} 
                         alt="A-Scan" 
-                        className="w-full h-32 object-cover rounded border"
+                        className="w-full h-auto rounded border"
+                      />
+                    )}
+                    {generatingAScan === scan.id && (
+                      <AScanGenerator 
+                        scanData={scan} 
+                        onImageGenerated={(url) => onAScanGenerated(scan.id, url)} 
                       />
                     )}
                   </div>
