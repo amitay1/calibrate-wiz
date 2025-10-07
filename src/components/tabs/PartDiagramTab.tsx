@@ -1,9 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, X, Wand2 } from "lucide-react";
+import { Upload, X, Wand2, Download } from "lucide-react";
 import { PartDiagramGenerator } from "@/components/PartDiagramGenerator";
+import { AdvancedTechnicalDrawingGenerator } from "@/components/AdvancedTechnicalDrawingGenerator";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface PartDiagramTabProps {
   partDiagramImage?: string;
@@ -23,6 +25,7 @@ export const PartDiagramTab = ({
   length = "400"
 }: PartDiagramTabProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [useAdvanced, setUseAdvanced] = useState(true);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -42,6 +45,11 @@ export const PartDiagramTab = ({
   const onDiagramGenerated = (imageDataUrl: string) => {
     onChange(imageDataUrl);
     setIsGenerating(false);
+    toast.success("סרטוט טכני נוצר בהצלחה!");
+  };
+
+  const handleExportDXF = () => {
+    toast.info("ייצוא DXF יהיה זמין בקרוב");
   };
 
   return (
@@ -55,7 +63,7 @@ export const PartDiagramTab = ({
 
       <Card className="p-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <Button
               type="button"
               variant="default"
@@ -63,7 +71,15 @@ export const PartDiagramTab = ({
               disabled={isGenerating}
             >
               <Wand2 className="h-4 w-4 mr-2" />
-              {isGenerating ? "Generating..." : "Generate Diagram"}
+              {isGenerating ? "מייצר..." : useAdvanced ? "סרטוט מתקדם" : "סרטוט רגיל"}
+            </Button>
+            <Button
+              type="button"
+              variant={useAdvanced ? "default" : "outline"}
+              onClick={() => setUseAdvanced(!useAdvanced)}
+              size="sm"
+            >
+              {useAdvanced ? "מצב מקצועי ✓" : "מצב רגיל"}
             </Button>
             <Button
               type="button"
@@ -71,7 +87,7 @@ export const PartDiagramTab = ({
               onClick={() => document.getElementById('part-diagram-upload')?.click()}
             >
               <Upload className="h-4 w-4 mr-2" />
-              Upload Part Diagram
+              העלה סרטוט
             </Button>
             <input
               id="part-diagram-upload"
@@ -81,15 +97,26 @@ export const PartDiagramTab = ({
               onChange={handleImageUpload}
             />
             {partDiagramImage && (
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() => onChange(undefined)}
-              >
-                <X className="h-4 w-4 mr-2" />
-                Remove Image
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportDXF}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  ייצוא DXF
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onChange(undefined)}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  הסר
+                </Button>
+              </>
             )}
           </div>
 
@@ -110,13 +137,23 @@ export const PartDiagramTab = ({
           )}
 
           {isGenerating && (
-            <PartDiagramGenerator
-              partType={partType}
-              thickness={thickness}
-              diameter={diameter}
-              length={length}
-              onImageGenerated={onDiagramGenerated}
-            />
+            useAdvanced ? (
+              <AdvancedTechnicalDrawingGenerator
+                partType={partType}
+                thickness={thickness}
+                diameter={diameter}
+                length={length}
+                onImageGenerated={onDiagramGenerated}
+              />
+            ) : (
+              <PartDiagramGenerator
+                partType={partType}
+                thickness={thickness}
+                diameter={diameter}
+                length={length}
+                onImageGenerated={onDiagramGenerated}
+              />
+            )
           )}
         </div>
       </Card>
