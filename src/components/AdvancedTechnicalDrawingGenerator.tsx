@@ -925,6 +925,446 @@ export class AerospaceTechnicalDrawingGenerator {
   getImage(): string {
     return this.paper.view.element.toDataURL('image/png');
   }
+
+  // ============================================
+  // 🆕 4. TECHNICAL TABLES SYSTEM - טבלאות מורכבות
+  // ============================================
+  
+  createTechnicalTable(options: {
+    x: number;
+    y: number;
+    title: string;
+    headers: string[];
+    rows: (string | { value: string; colspan?: number; rowspan?: number; bgColor?: string })[][];
+    columnWidths?: number[];
+  }) {
+    const { x, y, title, headers, rows, columnWidths } = options;
+    const group = new this.paper.Group();
+    
+    const defaultColWidth = 80;
+    const colWidths = columnWidths || headers.map(() => defaultColWidth);
+    const rowHeight = 25;
+    const headerHeight = 30;
+    
+    // Title
+    const titleText = new this.paper.PointText({
+      point: [x, y - 10],
+      content: title,
+      fillColor: 'black',
+      fontSize: 14,
+      fontWeight: 'bold'
+    });
+    group.addChild(titleText);
+    
+    // Calculate total width
+    const totalWidth = colWidths.reduce((sum, w) => sum + w, 0);
+    
+    // Header background
+    const headerBg = new this.paper.Path.Rectangle({
+      point: [x, y],
+      size: [totalWidth, headerHeight],
+      fillColor: '#2c3e50',
+      strokeColor: 'black',
+      strokeWidth: 1
+    });
+    group.addChild(headerBg);
+    
+    // Header cells
+    let currentX = x;
+    headers.forEach((header, i) => {
+      const headerText = new this.paper.PointText({
+        point: [currentX + colWidths[i] / 2, y + headerHeight / 2 + 5],
+        content: header,
+        fillColor: 'white',
+        fontSize: 11,
+        fontWeight: 'bold',
+        justification: 'center'
+      });
+      group.addChild(headerText);
+      
+      // Vertical separator
+      if (i < headers.length - 1) {
+        const separator = new this.paper.Path.Line({
+          from: [currentX + colWidths[i], y],
+          to: [currentX + colWidths[i], y + headerHeight],
+          strokeColor: 'white',
+          strokeWidth: 1
+        });
+        group.addChild(separator);
+      }
+      
+      currentX += colWidths[i];
+    });
+    
+    // Data rows
+    let currentY = y + headerHeight;
+    rows.forEach((row, rowIdx) => {
+      let colX = x;
+      const rowBg = rowIdx % 2 === 0 ? '#ecf0f1' : 'white';
+      
+      row.forEach((cell, colIdx) => {
+        const cellData = typeof cell === 'string' ? { value: cell } : cell;
+        const colspan = cellData.colspan || 1;
+        const rowspan = cellData.rowspan || 1;
+        const bgColor = cellData.bgColor || rowBg;
+        
+        const cellWidth = colWidths.slice(colIdx, colIdx + colspan).reduce((sum, w) => sum + w, 0);
+        const cellHeight = rowHeight * rowspan;
+        
+        // Cell background
+        const cellBgRect = new this.paper.Path.Rectangle({
+          point: [colX, currentY],
+          size: [cellWidth, cellHeight],
+          fillColor: bgColor,
+          strokeColor: '#95a5a6',
+          strokeWidth: 0.5
+        });
+        group.addChild(cellBgRect);
+        
+        // Cell text
+        const cellText = new this.paper.PointText({
+          point: [colX + cellWidth / 2, currentY + cellHeight / 2 + 4],
+          content: cellData.value,
+          fillColor: 'black',
+          fontSize: 10,
+          justification: 'center'
+        });
+        group.addChild(cellText);
+        
+        colX += cellWidth;
+      });
+      
+      currentY += rowHeight;
+    });
+    
+    // Outer border
+    const outerBorder = new this.paper.Path.Rectangle({
+      point: [x, y],
+      size: [totalWidth, headerHeight + rows.length * rowHeight],
+      strokeColor: 'black',
+      strokeWidth: 2
+    });
+    group.addChild(outerBorder);
+    
+    return group;
+  }
+
+  // ============================================
+  // 🆕 5. LAYER MANAGEMENT SYSTEM - מערכת שכבות
+  // ============================================
+  
+  createLayerSystem() {
+    const layers = {
+      geometry: new this.paper.Layer({ name: 'geometry' }),
+      dimensions: new this.paper.Layer({ name: 'dimensions' }),
+      annotations: new this.paper.Layer({ name: 'annotations' }),
+      hatching: new this.paper.Layer({ name: 'hatching' }),
+      zones: new this.paper.Layer({ name: 'zones' }),
+      gdt: new this.paper.Layer({ name: 'gdt' }),
+      tables: new this.paper.Layer({ name: 'tables' }),
+      cscan: new this.paper.Layer({ name: 'cscan' })
+    };
+    
+    return layers;
+  }
+  
+  setActiveLayer(layerName: string) {
+    const layer = this.paper.project.layers[layerName];
+    if (layer) {
+      layer.activate();
+    }
+  }
+  
+  toggleLayerVisibility(layerName: string, visible: boolean) {
+    const layer = this.paper.project.layers[layerName];
+    if (layer) {
+      layer.visible = visible;
+    }
+  }
+  
+  exportLayerToDXF(layerName: string): string {
+    try {
+      const dxf = new DxfWriter();
+      const layer = this.paper.project.layers[layerName];
+      
+      if (layer) {
+        layer.children.forEach((item: any) => {
+          this.itemToDXF(item, dxf);
+        });
+      }
+      
+      return dxf.toDxfString();
+    } catch (error) {
+      console.error('Layer DXF export error:', error);
+      return '';
+    }
+  }
+
+  // ============================================
+  // 🆕 6. SCALE BAR SYSTEM - סרגלי סקלה
+  // ============================================
+  
+  createScaleBar(options: {
+    x: number;
+    y: number;
+    length: number;
+    realLength: number;
+    unit: string;
+    divisions?: number;
+  }) {
+    const { x, y, length, realLength, unit, divisions = 10 } = options;
+    const group = new this.paper.Group();
+    
+    const divisionLength = length / divisions;
+    const divisionValue = realLength / divisions;
+    
+    // Main scale line
+    const mainLine = new this.paper.Path.Line({
+      from: [x, y],
+      to: [x + length, y],
+      strokeColor: 'black',
+      strokeWidth: 2
+    });
+    group.addChild(mainLine);
+    
+    // Division marks
+    for (let i = 0; i <= divisions; i++) {
+      const markX = x + i * divisionLength;
+      const markHeight = i % 5 === 0 ? 15 : 10;
+      
+      // Tick mark
+      const tick = new this.paper.Path.Line({
+        from: [markX, y],
+        to: [markX, y + markHeight],
+        strokeColor: 'black',
+        strokeWidth: i % 5 === 0 ? 2 : 1
+      });
+      group.addChild(tick);
+      
+      // Fill alternate sections
+      if (i < divisions) {
+        const section = new this.paper.Path.Rectangle({
+          point: [markX, y],
+          size: [divisionLength, 8],
+          fillColor: i % 2 === 0 ? 'black' : 'white',
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChild(section);
+      }
+      
+      // Labels for major divisions
+      if (i % 5 === 0) {
+        const label = new this.paper.PointText({
+          point: [markX, y + 30],
+          content: `${(i * divisionValue).toFixed(0)}`,
+          fillColor: 'black',
+          fontSize: 10,
+          justification: 'center'
+        });
+        group.addChild(label);
+      }
+    }
+    
+    // Scale ratio label
+    const scaleText = new this.paper.PointText({
+      point: [x + length / 2, y - 15],
+      content: `SCALE 1:${(realLength / length).toFixed(1)} (${unit})`,
+      fillColor: 'black',
+      fontSize: 12,
+      fontWeight: 'bold',
+      justification: 'center'
+    });
+    group.addChild(scaleText);
+    
+    return group;
+  }
+
+  // ============================================
+  // 🆕 7. CALLOUTS & ANNOTATIONS SYSTEM - הערות
+  // ============================================
+  
+  createCallout(options: {
+    targetX: number;
+    targetY: number;
+    textX: number;
+    textY: number;
+    text: string;
+    style?: 'arrow' | 'circle' | 'box';
+  }) {
+    const { targetX, targetY, textX, textY, text, style = 'arrow' } = options;
+    const group = new this.paper.Group();
+    
+    // Leader line
+    const leaderLine = new this.paper.Path.Line({
+      from: [targetX, targetY],
+      to: [textX, textY],
+      strokeColor: '#e74c3c',
+      strokeWidth: 1.5
+    });
+    group.addChild(leaderLine);
+    
+    // Target marker based on style
+    switch (style) {
+      case 'arrow': {
+        const angle = Math.atan2(textY - targetY, textX - targetX);
+        const arrow = this.createArrow(targetX, targetY, angle + Math.PI);
+        arrow.fillColor = new this.paper.Color('#e74c3c');
+        group.addChild(arrow);
+        break;
+      }
+      
+      case 'circle': {
+        const circle = new this.paper.Path.Circle({
+          center: [targetX, targetY],
+          radius: 5,
+          strokeColor: '#e74c3c',
+          strokeWidth: 2,
+          fillColor: 'white'
+        });
+        group.addChild(circle);
+        break;
+      }
+      
+      case 'box': {
+        const box = new this.paper.Path.Rectangle({
+          point: [targetX - 5, targetY - 5],
+          size: [10, 10],
+          strokeColor: '#e74c3c',
+          strokeWidth: 2,
+          fillColor: 'white'
+        });
+        group.addChild(box);
+        break;
+      }
+    }
+    
+    // Text with background
+    const calloutText = new this.paper.PointText({
+      point: [textX + 10, textY],
+      content: text,
+      fillColor: 'black',
+      fontSize: 11,
+      fontFamily: 'Arial'
+    });
+    
+    const textBounds = calloutText.bounds.expand(5);
+    const textBg = new this.paper.Path.Rectangle({
+      rectangle: textBounds,
+      fillColor: '#fff3cd',
+      strokeColor: '#e74c3c',
+      strokeWidth: 1.5,
+      radius: 3
+    });
+    
+    group.addChildren([textBg, calloutText]);
+    
+    return group;
+  }
+  
+  createBalloon(options: {
+    x: number;
+    y: number;
+    number: string | number;
+    leaderTargetX?: number;
+    leaderTargetY?: number;
+  }) {
+    const { x, y, number, leaderTargetX, leaderTargetY } = options;
+    const group = new this.paper.Group();
+    
+    // Balloon circle
+    const balloon = new this.paper.Path.Circle({
+      center: [x, y],
+      radius: 15,
+      fillColor: 'white',
+      strokeColor: 'black',
+      strokeWidth: 1.5
+    });
+    group.addChild(balloon);
+    
+    // Number
+    const balloonText = new this.paper.PointText({
+      point: [x, y + 5],
+      content: number.toString(),
+      fillColor: 'black',
+      fontSize: 14,
+      fontWeight: 'bold',
+      justification: 'center'
+    });
+    group.addChild(balloonText);
+    
+    // Leader line if target specified
+    if (leaderTargetX !== undefined && leaderTargetY !== undefined) {
+      const leader = new this.paper.Path.Line({
+        from: [x, y],
+        to: [leaderTargetX, leaderTargetY],
+        strokeColor: 'black',
+        strokeWidth: 1
+      });
+      group.addChild(leader);
+      
+      // Arrow at target
+      const angle = Math.atan2(leaderTargetY - y, leaderTargetX - x);
+      const arrow = this.createArrow(leaderTargetX, leaderTargetY, angle);
+      group.addChild(arrow);
+    }
+    
+    return group;
+  }
+  
+  createLeaderNote(options: {
+    points: [number, number][];
+    text: string;
+    arrowAtStart?: boolean;
+  }) {
+    const { points, text, arrowAtStart = true } = options;
+    const group = new this.paper.Group();
+    
+    // Multi-segment leader line
+    const leader = new this.paper.Path();
+    points.forEach((point, i) => {
+      if (i === 0) {
+        leader.moveTo(new this.paper.Point(point[0], point[1]));
+      } else {
+        leader.lineTo(new this.paper.Point(point[0], point[1]));
+      }
+    });
+    leader.strokeColor = 'black';
+    leader.strokeWidth = 1;
+    group.addChild(leader);
+    
+    // Arrow at start
+    if (arrowAtStart && points.length > 1) {
+      const angle = Math.atan2(
+        points[1][1] - points[0][1],
+        points[1][0] - points[0][0]
+      );
+      const arrow = this.createArrow(points[0][0], points[0][1], angle + Math.PI);
+      group.addChild(arrow);
+    }
+    
+    // Text at end
+    const lastPoint = points[points.length - 1];
+    const noteText = new this.paper.PointText({
+      point: [lastPoint[0] + 5, lastPoint[1]],
+      content: text,
+      fillColor: 'black',
+      fontSize: 11,
+      fontFamily: 'Arial'
+    });
+    
+    const textBounds = noteText.bounds.expand(3);
+    const textBg = new this.paper.Path.Rectangle({
+      rectangle: textBounds,
+      fillColor: 'white',
+      strokeColor: 'black',
+      strokeWidth: 0.5
+    });
+    
+    group.addChildren([textBg, noteText]);
+    
+    return group;
+  }
 }
 
 export const AdvancedTechnicalDrawingGenerator = ({ 
@@ -962,10 +1402,14 @@ export const AdvancedTechnicalDrawingGenerator = ({
     // Clear previous drawing
     generator.paper.project.clear();
     
+    // 🆕 Initialize layer system
+    const layers = generator.createLayerSystem();
+    layers.geometry.activate();
+    
     // Title
     const title = new generator.paper.PointText({
       point: [800, 50],
-      content: 'AEROSPACE TECHNICAL DRAWING',
+      content: 'AEROSPACE TECHNICAL DRAWING - PROFESSIONAL',
       fillColor: 'black',
       fontSize: 24,
       fontWeight: 'bold',
@@ -973,6 +1417,9 @@ export const AdvancedTechnicalDrawingGenerator = ({
     });
     
     if (partType === 'tube' || partType === 'disk') {
+      // === GEOMETRY LAYER ===
+      layers.zones.activate();
+      
       // Create ring with inspection zones
       const zones: InspectionZone[] = [
         { startAngle: 0, endAngle: 60, color: '#FFD700', label: 'ZONE A' },
@@ -987,7 +1434,9 @@ export const AdvancedTechnicalDrawingGenerator = ({
         400, 400, d * 0.6, d, zones
       );
       
-      // Add dimensions
+      // === DIMENSIONS LAYER ===
+      layers.dimensions.activate();
+      
       generator.createDimension(
         [400 - d/2, 400],
         [400 + d/2, 400],
@@ -1002,11 +1451,36 @@ export const AdvancedTechnicalDrawingGenerator = ({
         `Ø${(d * 0.6).toFixed(1)} mm`
       );
       
+      // === GD&T LAYER ===
+      layers.gdt.activate();
+      
+      // Add GD&T frames
+      generator.createGDTFrame({
+        x: 250,
+        y: 250,
+        characteristic: 'position',
+        tolerance: '0.05',
+        materialCondition: 'MMC',
+        datums: ['A', 'B']
+      });
+      
+      generator.createGDTFrame({
+        x: 250,
+        y: 280,
+        characteristic: 'perpendicular',
+        tolerance: '0.02',
+        datums: ['A']
+      });
+      
+      // === HATCHING LAYER ===
+      layers.hatching.activate();
+      
       // Cross-section view
       const crossSection = generator.createCrossSection(
         900, 300, 300, 300, t
       );
       
+      layers.annotations.activate();
       const sectionLabel = new generator.paper.PointText({
         point: [1050, 270],
         content: 'SECTION A-A',
@@ -1016,7 +1490,9 @@ export const AdvancedTechnicalDrawingGenerator = ({
         justification: 'center'
       });
       
-      // C-Scan simulation
+      // === C-SCAN LAYER ===
+      layers.cscan.activate();
+      
       const cScanData: CScanData = {
         values: Array(40).fill(0).map(() => 
           Array(40).fill(0).map(() => Math.random() * 100)
@@ -1035,9 +1511,100 @@ export const AdvancedTechnicalDrawingGenerator = ({
         fontWeight: 'bold',
         justification: 'center'
       });
+      
+      // === ANNOTATIONS LAYER ===
+      layers.annotations.activate();
+      
+      // Add callouts
+      generator.createCallout({
+        targetX: 350,
+        targetY: 350,
+        textX: 250,
+        textY: 350,
+        text: 'Critical Zone',
+        style: 'circle'
+      });
+      
+      generator.createCallout({
+        targetX: 1050,
+        targetY: 450,
+        textX: 1200,
+        textY: 500,
+        text: `Wall: ${t}mm`,
+        style: 'arrow'
+      });
+      
+      // Add balloons
+      generator.createBalloon({
+        x: 500,
+        y: 300,
+        number: '1',
+        leaderTargetX: 480,
+        leaderTargetY: 350
+      });
+      
+      generator.createBalloon({
+        x: 1300,
+        y: 400,
+        number: '2',
+        leaderTargetX: 1200,
+        leaderTargetY: 450
+      });
+      
+      // Leader notes
+      generator.createLeaderNote({
+        points: [[400, 600], [350, 650], [300, 650]],
+        text: 'Inspection path',
+        arrowAtStart: true
+      });
     }
     
+    // === TABLES LAYER ===
+    layers.tables.activate();
+    
+    // 🆕 Technical specifications table
+    generator.createTechnicalTable({
+      x: 50,
+      y: 700,
+      title: 'INSPECTION PARAMETERS',
+      headers: ['Parameter', 'Value', 'Tolerance', 'Status'],
+      rows: [
+        ['Outer Diameter', `${d} mm`, '±0.1 mm', { value: 'PASS', bgColor: '#90EE90' }],
+        ['Wall Thickness', `${t} mm`, '±0.5 mm', { value: 'PASS', bgColor: '#90EE90' }],
+        ['Material', 'Ti-6Al-4V', '-', 'OK'],
+        [{ value: 'Surface Quality', colspan: 2 }, 'Ra 1.6', { value: 'PASS', bgColor: '#90EE90' }]
+      ],
+      columnWidths: [120, 80, 80, 60]
+    });
+    
+    // 🆕 Inspection zones table
+    generator.createTechnicalTable({
+      x: 50,
+      y: 900,
+      title: 'ZONE INSPECTION RESULTS',
+      headers: ['Zone', 'Method', 'Result', 'Inspector'],
+      rows: [
+        [{ value: 'A', bgColor: '#FFD700' }, 'UT', 'PASS', 'JD-001'],
+        [{ value: 'B', bgColor: '#87CEEB' }, 'UT', 'PASS', 'JD-001'],
+        [{ value: 'C', bgColor: '#FF6347' }, 'UT', { value: 'REVIEW', bgColor: '#FFFF99' }, 'JD-002'],
+        [{ value: 'D', bgColor: '#90EE90' }, 'UT', 'PASS', 'JD-002']
+      ],
+      columnWidths: [60, 80, 80, 80]
+    });
+    
+    // 🆕 Add scale bar
+    layers.annotations.activate();
+    generator.createScaleBar({
+      x: 500,
+      y: 900,
+      length: 200,
+      realLength: 400,
+      unit: 'mm',
+      divisions: 10
+    });
+    
     // Add specifications panel
+    layers.geometry.activate();
     const specPanel = new generator.paper.Path.Rectangle({
       point: [50, 1050],
       size: [1500, 120],
@@ -1048,7 +1615,7 @@ export const AdvancedTechnicalDrawingGenerator = ({
     
     const specs = new generator.paper.PointText({
       point: [70, 1080],
-      content: `SPECIFICATIONS:\nPart Type: ${partType.toUpperCase()} | Thickness: ${t}mm | Diameter: ${d}mm | Length: ${l}mm | Date: ${new Date().toLocaleDateString()}`,
+      content: `SPECIFICATIONS:\nPart Type: ${partType.toUpperCase()} | Thickness: ${t}mm | Diameter: ${d}mm | Length: ${l}mm\nStandard: ISO 128 | Date: ${new Date().toLocaleDateString()} | Rev: A | Sheet: 1/1`,
       fillColor: 'black',
       fontSize: 14,
       fontFamily: 'Arial'
