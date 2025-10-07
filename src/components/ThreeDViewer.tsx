@@ -7,8 +7,8 @@ import { useRef } from "react";
 
 interface ThreeDViewerProps {
   partType: PartGeometry | "";
-  material: MaterialType | "";
-  dimensions: {
+  material?: MaterialType | "";
+  dimensions?: {
     length: number;
     width: number;
     thickness: number;
@@ -26,7 +26,7 @@ const getMaterialColor = (material: MaterialType | ""): string => {
   }
 };
 
-const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
+const Part = ({ partType, material, dimensions = { length: 100, width: 50, thickness: 10, diameter: 50 } }: ThreeDViewerProps) => {
   const color = getMaterialColor(material);
   const { length, width, thickness, diameter } = dimensions;
 
