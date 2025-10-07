@@ -71,6 +71,400 @@ export class AerospaceTechnicalDrawingGenerator {
     };
   }
 
+  // ✅ GD&T Frame - מסגרת מלאה עם כל הסימבולים
+  createGDTFrame(options: {
+    x: number;
+    y: number;
+    characteristic: 'position' | 'perpendicular' | 'parallel' | 'circularity' | 'flatness' | 'straightness' | 'cylindricity' | 'profile' | 'angularity' | 'symmetry' | 'concentricity' | 'runout';
+    tolerance: string;
+    materialCondition?: 'MMC' | 'LMC' | 'RFS';
+    datums?: string[];
+  }) {
+    const { x, y, characteristic, tolerance, materialCondition, datums } = options;
+    const group = new this.paper.Group();
+    
+    // חישוב רוחב דינמי
+    const width = 15 + (tolerance.length * 5) + 
+                 (datums ? datums.length * 15 : 0) +
+                 (materialCondition ? 10 : 0);
+    
+    // מסגרת ראשית
+    const mainFrame = new this.paper.Path.Rectangle({
+      point: new this.paper.Point(x, y),
+      size: new this.paper.Size(width, 15),
+      strokeColor: 'black',
+      strokeWidth: 0.5
+    });
+    group.addChild(mainFrame);
+    
+    // סימבול מאפיין
+    const symbol = this.drawCharacteristicSymbol(characteristic);
+    symbol.position = new this.paper.Point(x + 7.5, y + 7.5);
+    group.addChild(symbol);
+    
+    // ערך טולרנס
+    const tolText = new this.paper.PointText({
+      point: new this.paper.Point(x + 20, y + 10),
+      content: tolerance,
+      fontSize: 8,
+      fontFamily: 'Arial',
+      fillColor: 'black'
+    });
+    group.addChild(tolText);
+    
+    // תנאי חומר
+    if (materialCondition) {
+      const mcSymbol = this.drawMaterialCondition(materialCondition);
+      mcSymbol.position = new this.paper.Point(x + 35, y + 7.5);
+      group.addChild(mcSymbol);
+    }
+    
+    // מפרידים ודאטומים
+    if (datums) {
+      let datumX = x + 45;
+      datums.forEach((datum) => {
+        // קו מפריד
+        const separator = new this.paper.Path.Line({
+          from: new this.paper.Point(datumX - 5, y),
+          to: new this.paper.Point(datumX - 5, y + 15),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChild(separator);
+        
+        // דאטום
+        const datumText = new this.paper.PointText({
+          point: new this.paper.Point(datumX, y + 10),
+          content: datum,
+          fontSize: 8,
+          fillColor: 'black'
+        });
+        group.addChild(datumText);
+        
+        datumX += 15;
+      });
+    }
+    
+    return group;
+  }
+
+  // ציור סימבול מאפיין GD&T
+  drawCharacteristicSymbol(type: string) {
+    const group = new this.paper.Group();
+    
+    switch(type) {
+      case 'position': {
+        // ⊕ - מעגל עם צלב
+        const posCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 5,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const posCross1 = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, 0),
+          to: new this.paper.Point(5, 0),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const posCross2 = new this.paper.Path.Line({
+          from: new this.paper.Point(0, -5),
+          to: new this.paper.Point(0, 5),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChildren([posCircle, posCross1, posCross2]);
+        break;
+      }
+      
+      case 'perpendicular': {
+        // ⊥ - קווים מאונכים
+        const perpBase = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, 3),
+          to: new this.paper.Point(5, 3),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const perpLine = new this.paper.Path.Line({
+          from: new this.paper.Point(0, -5),
+          to: new this.paper.Point(0, 3),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChildren([perpBase, perpLine]);
+        break;
+      }
+      
+      case 'parallel': {
+        // ∥ - שני קווים מקבילים
+        const par1 = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, -2),
+          to: new this.paper.Point(5, -2),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const par2 = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, 2),
+          to: new this.paper.Point(5, 2),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChildren([par1, par2]);
+        break;
+      }
+      
+      case 'circularity': {
+        // ○ - מעגל פשוט
+        const circCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 5,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChild(circCircle);
+        break;
+      }
+      
+      case 'flatness': {
+        // ⊤ - שני קווים אופקיים
+        const flat1 = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, -2),
+          to: new this.paper.Point(5, -2),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const flat2 = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, 2),
+          to: new this.paper.Point(5, 2),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChildren([flat1, flat2]);
+        break;
+      }
+      
+      case 'straightness': {
+        // — - קו ישר אחד
+        const straight = new this.paper.Path.Line({
+          from: new this.paper.Point(-6, 0),
+          to: new this.paper.Point(6, 0),
+          strokeColor: 'black',
+          strokeWidth: 0.7
+        });
+        group.addChild(straight);
+        break;
+      }
+      
+      case 'cylindricity': {
+        // ⌭ - שני מעגלים מחוברים
+        const cyl1 = new this.paper.Path.Circle({
+          center: new this.paper.Point(-2.5, 0),
+          radius: 3,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const cyl2 = new this.paper.Path.Circle({
+          center: new this.paper.Point(2.5, 0),
+          radius: 3,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const cylLine = new this.paper.Path.Line({
+          from: new this.paper.Point(-2.5, -3),
+          to: new this.paper.Point(2.5, -3),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChildren([cyl1, cyl2, cylLine]);
+        break;
+      }
+      
+      case 'profile': {
+        // ⌒ - קו מעוקל
+        const profilePath = new this.paper.Path();
+        profilePath.add(new this.paper.Point(-5, 3));
+        profilePath.quadraticCurveTo(
+          new this.paper.Point(0, -3),
+          new this.paper.Point(5, 3)
+        );
+        profilePath.strokeColor = 'black';
+        profilePath.strokeWidth = 0.5;
+        group.addChild(profilePath);
+        break;
+      }
+      
+      case 'angularity': {
+        // ∠ - זווית
+        const ang1 = new this.paper.Path.Line({
+          from: new this.paper.Point(-5, 0),
+          to: new this.paper.Point(0, 0),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const ang2 = new this.paper.Path.Line({
+          from: new this.paper.Point(0, 0),
+          to: new this.paper.Point(3, -4),
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const angArc = new this.paper.Path.Arc({
+          from: new this.paper.Point(-2, 0),
+          through: new this.paper.Point(-1, -1),
+          to: new this.paper.Point(1, -2),
+          strokeColor: 'black',
+          strokeWidth: 0.3
+        });
+        group.addChildren([ang1, ang2, angArc]);
+        break;
+      }
+      
+      case 'symmetry': {
+        // ≈ - שני קווי גל
+        const sym1 = new this.paper.Path();
+        sym1.add(new this.paper.Point(-5, -1));
+        sym1.quadraticCurveTo(
+          new this.paper.Point(-2.5, -3),
+          new this.paper.Point(0, -1)
+        );
+        sym1.quadraticCurveTo(
+          new this.paper.Point(2.5, 1),
+          new this.paper.Point(5, -1)
+        );
+        sym1.strokeColor = 'black';
+        sym1.strokeWidth = 0.5;
+        
+        const sym2 = new this.paper.Path();
+        sym2.add(new this.paper.Point(-5, 2));
+        sym2.quadraticCurveTo(
+          new this.paper.Point(-2.5, 0),
+          new this.paper.Point(0, 2)
+        );
+        sym2.quadraticCurveTo(
+          new this.paper.Point(2.5, 4),
+          new this.paper.Point(5, 2)
+        );
+        sym2.strokeColor = 'black';
+        sym2.strokeWidth = 0.5;
+        
+        group.addChildren([sym1, sym2]);
+        break;
+      }
+      
+      case 'concentricity': {
+        // ◎ - שני מעגלים קונצנטריים
+        const conc1 = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 5,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const conc2 = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 3,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChildren([conc1, conc2]);
+        break;
+      }
+      
+      case 'runout': {
+        // ↻ - חץ מעגלי
+        const runCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 5,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const runArrow = new this.paper.Path([
+          [5, 0],
+          [3, -1.5],
+          [3, 1.5]
+        ]);
+        runArrow.closePath();
+        runArrow.fillColor = 'black';
+        group.addChildren([runCircle, runArrow]);
+        break;
+      }
+      
+      default: {
+        // ברירת מחדל - מעגל פשוט
+        const defaultCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 5,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        group.addChild(defaultCircle);
+      }
+    }
+    
+    return group;
+  }
+
+  // ציור סימבול תנאי חומר
+  drawMaterialCondition(condition: string) {
+    const group = new this.paper.Group();
+    
+    switch(condition) {
+      case 'MMC': { // Maximum Material Condition - Ⓜ
+        const mmcCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 4,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const mmcText = new this.paper.PointText({
+          point: new this.paper.Point(-2.5, 2.5),
+          content: 'M',
+          fontSize: 7,
+          fontWeight: 'bold',
+          fillColor: 'black'
+        });
+        group.addChildren([mmcCircle, mmcText]);
+        break;
+      }
+      
+      case 'LMC': { // Least Material Condition - Ⓛ
+        const lmcCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 4,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const lmcText = new this.paper.PointText({
+          point: new this.paper.Point(-2, 2.5),
+          content: 'L',
+          fontSize: 7,
+          fontWeight: 'bold',
+          fillColor: 'black'
+        });
+        group.addChildren([lmcCircle, lmcText]);
+        break;
+      }
+      
+      case 'RFS': { // Regardless of Feature Size - Ⓢ
+        const rfsCircle = new this.paper.Path.Circle({
+          center: new this.paper.Point(0, 0),
+          radius: 4,
+          strokeColor: 'black',
+          strokeWidth: 0.5
+        });
+        const rfsText = new this.paper.PointText({
+          point: new this.paper.Point(-2.5, 2.5),
+          content: 'S',
+          fontSize: 7,
+          fontWeight: 'bold',
+          fillColor: 'black'
+        });
+        group.addChildren([rfsCircle, rfsText]);
+        break;
+      }
+    }
+    
+    return group;
+  }
+
   // Create ring with inspection zones
   createRingWithInspectionZones(
     centerX: number,
