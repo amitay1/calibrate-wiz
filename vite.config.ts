@@ -20,11 +20,10 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     exclude: [
       "sonner",
-      "@tanstack/react-query",
       "next-themes",
       "@radix-ui/react-tooltip",
       "@radix-ui/react-slot",
     ],
-    include: ["react", "react-dom"],
+    include: ["react", "react-dom", "@tanstack/react-query"],
   },
 }));
