@@ -3,7 +3,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { InspectionSetupData, MaterialType, PartGeometry } from "@/types/techniqueSheet";
 import { Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { materialDatabase } from "@/utils/autoFillLogic";
@@ -62,21 +61,14 @@ const FieldWithHelp = ({
           Auto-filled
         </Badge>
       )}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Info className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
-          <p className="font-semibold mb-1">Auto-fill Features:</p>
-          <ul className="text-xs space-y-1">
-            <li>• Recommended settings based on material and thickness</li>
-            <li>• Standard-compliant parameters</li>
-            <li>• Historical data from similar inspections</li>
-          </ul>
-        </TooltipContent>
-      </Tooltip>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="h-8 w-8"
+        title="Auto-fill Features: Recommended settings based on material and thickness, standard-compliant parameters, historical data from similar inspections."
+      >
+        <Info className="h-4 w-4" />
+      </Button>
     </div>
     {children}
   </div>

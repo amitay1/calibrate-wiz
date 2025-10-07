@@ -5,7 +5,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DocumentationData } from "@/types/techniqueSheet";
 import { Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 
 interface DocumentationTabProps {
@@ -30,16 +29,14 @@ const FieldWithHelp = ({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Info className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right" className="max-w-xs bg-popover border shadow-lg">
-          Use the export buttons to generate PDF reports, Excel data sheets, or DXF technical drawings.
-        </TooltipContent>
-      </Tooltip>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="h-8 w-8"
+        title="Use the export buttons to generate PDF reports, Excel data sheets, or DXF technical drawings."
+      >
+        <Info className="h-4 w-4" />
+      </Button>
     </div>
     {children}
   </div>

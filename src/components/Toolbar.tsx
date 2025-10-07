@@ -10,7 +10,6 @@ import {
   Printer,
   RefreshCw
 } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ToolbarProps {
   onSave: () => void;
@@ -30,32 +29,17 @@ export const Toolbar = ({
   return (
     <div className="h-12 border-b border-border bg-card flex items-center px-3 gap-2">
       {/* Quick Actions */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onSave}>
-            <Save className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Save (Ctrl+S)</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" onClick={onSave} title="Save (Ctrl+S)">
+        <Save className="h-4 w-4" />
+      </Button>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onExport}>
-            <Download className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Export PDF (Ctrl+E)</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" onClick={onExport} title="Export PDF (Ctrl+E)">
+        <Download className="h-4 w-4" />
+      </Button>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Printer className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Print</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" title="Print">
+        <Printer className="h-4 w-4" />
+      </Button>
 
       <Separator orientation="vertical" className="h-8 mx-1" />
 
@@ -84,35 +68,20 @@ export const Toolbar = ({
       <Separator orientation="vertical" className="h-8 mx-1" />
 
       {/* Validation */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onValidate}>
-            <CheckCircle className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Validate Document</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" onClick={onValidate} title="Validate Document">
+        <CheckCircle className="h-4 w-4" />
+      </Button>
 
       <div className="flex-1" />
 
       {/* Right Side Tools */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Refresh</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" title="Refresh">
+        <RefreshCw className="h-4 w-4" />
+      </Button>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Settings</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" title="Settings">
+        <Settings className="h-4 w-4" />
+      </Button>
     </div>
   );
 };
