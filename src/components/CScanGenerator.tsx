@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { ScanData } from '@/types/inspectionReport';
+import type { ScanData } from '@/types/inspectionReport';
 
 interface CScanGeneratorProps {
   scanData: ScanData;

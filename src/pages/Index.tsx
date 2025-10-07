@@ -325,11 +325,11 @@ const Index = () => {
       } else {
         exportInspectionReportToPDF(
           inspectionReport,
-          inspectionSetup.partNumber,
-          documentation.drawingReference,
-          documentation.inspectionDate,
-          documentation.inspectorName,
-          documentation.procedureNumber,
+          inspectionSetup.partNumber || '',
+          documentation.drawingReference || '',
+          documentation.inspectionDate || new Date().toISOString().split('T')[0],
+          documentation.inspectorName || '',
+          documentation.procedureNumber || '',
           `Class: ${acceptanceCriteria.acceptanceClass}, Single: ${acceptanceCriteria.singleDiscontinuity}, Multiple: ${acceptanceCriteria.multipleDiscontinuities}`
         );
         toast.success("Inspection Report PDF exported successfully!");
