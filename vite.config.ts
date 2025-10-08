@@ -11,9 +11,19 @@ export default defineConfig(({ mode }) => ({
   },
   cacheDir: ".vite-cache",
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "@radix-ui/react-menubar",
+      "react-resizable-panels",
+    ],
+    force: true,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
   },
 }));
