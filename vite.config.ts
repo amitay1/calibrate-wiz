@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  cacheDir: ".vite-cache",
+  cacheDir: ".vite-cache-v2",
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   optimizeDeps: {
     include: [
