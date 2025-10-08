@@ -15,12 +15,12 @@ interface CalibrationBlockDrawingProps {
   height?: number;
 }
 
-export const CalibrationBlockDrawing = ({ 
+export const CalibrationBlockDrawing: React.FC<CalibrationBlockDrawingProps> = ({ 
   blockType, 
   width = 300, 
   height = 200 
-}: CalibrationBlockDrawingProps) => {
-  // Map block types to their corresponding professional technical drawings
+}) => {
+  // Map block types to their corresponding professional technical drawings from MIL-STD-2154
   const blockImages: Record<CalibrationBlockType, string> = {
     'flat_block': flatBlockImg,
     'curved_block': curvedBlockImg,
