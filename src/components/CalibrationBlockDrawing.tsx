@@ -1,13 +1,12 @@
 import React from 'react';
 import { CalibrationBlockType } from '@/types/techniqueSheet';
 
-// Import professional drawings from MIL-STD-2154
-import flatBlockImg from '@/assets/calibration-flat-block.png';
-import curvedBlockImg from '@/assets/calibration-curved-block.png';
-import cylinderFbhImg from '@/assets/calibration-cylinder-fbh.png';
-import angleBeamImg from '@/assets/calibration-angle-beam.png';
-import cylinderNotchedImg from '@/assets/calibration-cylinder-notched.png';
-import iivBlockImg from '@/assets/calibration-iiv-block.png';
+// Import original technical drawings from MIL-STD-2154 / AMS-STD-2154
+import figure4AngleBeam from '@/assets/standard-figure4-angle-beam.jpg';
+import figure3CurvedBlock from '@/assets/standard-figure3-curved-block.jpg';
+import figure5Cylindrical from '@/assets/standard-figure5-cylindrical.jpg';
+import figure7IIWBlock from '@/assets/standard-figure7-iiw-block.jpg';
+import figure6CylinderFBH from '@/assets/standard-figure6-cylinder-fbh.jpg';
 
 interface CalibrationBlockDrawingProps {
   blockType: CalibrationBlockType;
@@ -20,21 +19,21 @@ export const CalibrationBlockDrawing: React.FC<CalibrationBlockDrawingProps> = (
   width = 300, 
   height = 200 
 }) => {
-  // Map block types to their corresponding professional technical drawings from MIL-STD-2154
+  // Map block types to their corresponding original technical drawings from the standard
   const blockImages: Record<CalibrationBlockType, string> = {
-    'flat_block': flatBlockImg,
-    'curved_block': curvedBlockImg,
-    'cylinder_fbh': cylinderFbhImg,
-    'angle_beam': angleBeamImg,
-    'cylinder_notched': cylinderNotchedImg,
-    'iiv_block': iivBlockImg,
+    'flat_block': figure4AngleBeam, // Figure 4 includes flat block with FBH
+    'curved_block': figure3CurvedBlock, // Figure 3 - Convex Surface Reference Block
+    'cylinder_fbh': figure6CylinderFBH, // Figure 6 - Geometry of flat-bottom holes in hollow cylindrical
+    'angle_beam': figure4AngleBeam, // Figure 4 - Standard ultrasonic test block for angle beam
+    'cylinder_notched': figure5Cylindrical, // Figure 5 - Hollow cylindrical standards (notched)
+    'iiv_block': figure7IIWBlock, // Figure 7 - IIW (International Institute of Welding) block
   };
 
   const imageSrc = blockImages[blockType];
 
   return (
     <div 
-      className="flex items-center justify-center border rounded bg-background p-4" 
+      className="flex items-center justify-center border rounded bg-white p-4" 
       style={{ width, height }}
     >
       <img 
