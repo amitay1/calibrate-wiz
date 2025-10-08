@@ -58,376 +58,578 @@ export const CalibrationBlockDrawing = ({
   return <canvas ref={canvasRef} width={width} height={height} className="w-full h-full" />;
 };
 
-// Flat Block with FBH (Figure 4)
+// Flat Block with FBH - Based on MIL-STD-2154 Figure 4
 function drawFlatBlock(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const scale = 2.5;
   const centerX = width / 2;
-  const centerY = height / 2;
-  const blockWidth = 180;
-  const blockHeight = 80;
-
-  // Main block rectangle
-  ctx.strokeRect(centerX - blockWidth/2, centerY - blockHeight/2, blockWidth, blockHeight);
-
-  // Draw FBH holes (flat bottom holes)
+  const baseY = height - 40;
+  
+  // Main block dimensions (scaled)
+  const blockLength = 80 * scale;
+  const blockHeight = 30 * scale;
+  const blockX = centerX - blockLength / 2;
+  
+  // Draw main block
+  ctx.lineWidth = 2;
+  ctx.strokeRect(blockX, baseY - blockHeight, blockLength, blockHeight);
+  
+  // FBH holes: 3/64", 5/64", 8/64" diameter (0.047", 0.078", 0.125")
   const holes = [
-    { x: centerX - 60, depth: 20, dia: 3.2 },
-    { x: centerX, depth: 30, dia: 4.8 },
-    { x: centerX + 60, depth: 40, dia: 6.4 }
+    { dia: 3/64, depth: 0.375, label: '3/64"', pos: 0.25 },
+    { dia: 5/64, depth: 0.5, label: '5/64"', pos: 0.5 },
+    { dia: 8/64, depth: 0.625, label: '8/64"', pos: 0.75 }
   ];
-
+  
   holes.forEach(hole => {
-    const holeY = centerY - blockHeight/2;
+    const holeX = blockX + blockLength * hole.pos;
+    const holeDepth = hole.depth * 25.4 * scale; // inch to mm
+    const holeDia = hole.dia * 25.4 * scale;
+    const holeY = baseY - holeDepth;
     
-    // Hole representation
-    ctx.beginPath();
-    ctx.arc(hole.x, holeY + hole.depth, hole.dia, 0, Math.PI * 2);
-    ctx.fill();
+    // Draw FBH (flat bottom)
+    ctx.fillStyle = '#666';
+    ctx.fillRect(holeX - holeDia/2, holeY, holeDia, 2);
     
-    // Dashed line to show hole
-    ctx.setLineDash([3, 3]);
+    // Dashed centerline
+    ctx.setLineDash([3, 2]);
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(hole.x, holeY);
-    ctx.lineTo(hole.x, holeY + hole.depth);
+    ctx.moveTo(holeX, baseY - blockHeight);
+    ctx.lineTo(holeX, holeY);
     ctx.stroke();
     ctx.setLineDash([]);
     
-    // Dimension text
-    ctx.fillText(`Ø${hole.dia}`, hole.x - 12, holeY + hole.depth + 25);
-    ctx.fillText(`${hole.depth}mm`, hole.x - 18, holeY + hole.depth + 15);
+    // Hole indicator circle
+    ctx.beginPath();
+    ctx.arc(holeX, holeY - 3, holeDia/2 + 1, 0, Math.PI * 2);
+    ctx.strokeStyle = '#000';
+    ctx.stroke();
+    
+    // Labels
+    ctx.fillStyle = '#000';
+    ctx.font = '9px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(hole.label, holeX, baseY + 15);
+    ctx.fillText(`d=${(hole.depth).toFixed(3)}"`, holeX, holeY - 15);
   });
-
+  
+  // Dimensions
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 1;
+  
   // Title
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('Flat Block - FBH', 10, 15);
-  ctx.font = '9px Arial';
-  ctx.fillText('Figure 4 - ASTM E127', 10, 28);
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('Flat Block with FBH', 10, 20);
+  ctx.font = '10px Arial';
+  ctx.fillText('MIL-STD-2154 - Figure 4', 10, 35);
 }
 
-// Curved Block (Figure 3)
+// Convex Surface Reference Block - MIL-STD-2154 Figure 3
 function drawCurvedBlock(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const scale = 25;
   const centerX = width / 2;
-  const centerY = height / 2;
-  const radius = 60;
-
-  // Draw curved surface
-  ctx.beginPath();
-  ctx.arc(centerX, centerY + 80, radius + 40, Math.PI * 1.2, Math.PI * 1.8);
-  ctx.stroke();
-
-  // Draw bottom line
-  ctx.beginPath();
-  ctx.moveTo(centerX - 80, centerY + 40);
-  ctx.lineTo(centerX + 80, centerY + 40);
-  ctx.stroke();
-
-  // Side lines
-  ctx.beginPath();
-  ctx.moveTo(centerX - 80, centerY - 20);
-  ctx.lineTo(centerX - 80, centerY + 40);
-  ctx.stroke();
+  const baseY = height - 50;
+  
+  // Using R=2.0 configuration from table (common size)
+  const R = 2.0; // radius in inches
+  const A = 0.425, B = 1.5, C = 1.5, D = 1.5;
+  
+  const radius = R * scale;
+  const heightA = A * scale;
+  const widthB = B * scale;
+  const lengthC = C * scale;
+  
+  ctx.lineWidth = 2;
+  
+  // Draw curved surface (convex)
+  const curveStartX = centerX - widthB;
+  const curveEndX = centerX + widthB;
+  const curveY = baseY - heightA;
   
   ctx.beginPath();
-  ctx.moveTo(centerX + 80, centerY - 20);
-  ctx.lineTo(centerX + 80, centerY + 40);
+  ctx.arc(centerX, curveY + radius, radius, Math.PI * 0.7, Math.PI * 0.3, true);
   ctx.stroke();
-
-  // FBH holes on curved surface
+  
+  // Draw side walls
+  ctx.beginPath();
+  ctx.moveTo(curveStartX, curveY);
+  ctx.lineTo(curveStartX, baseY);
+  ctx.lineTo(curveEndX, baseY);
+  ctx.lineTo(curveEndX, curveY);
+  ctx.stroke();
+  
+  // FBH holes positions
   const holes = [
-    { angle: -0.3, depth: 15, dia: 3.2 },
-    { angle: 0, depth: 20, dia: 4.8 },
-    { angle: 0.3, depth: 25, dia: 6.4 }
+    { offset: -0.5, depth: 0.375, dia: '3/64"' },
+    { offset: 0, depth: 0.5, dia: '5/64"' },
+    { offset: 0.5, depth: 0.625, dia: '8/64"' }
   ];
-
+  
   holes.forEach(hole => {
-    const holeX = centerX + Math.sin(hole.angle) * (radius + 30);
-    const holeY = centerY + 80 - Math.cos(hole.angle) * (radius + 30);
+    const holeAngle = hole.offset * 0.4;
+    const surfaceX = centerX + Math.sin(holeAngle) * radius;
+    const surfaceY = curveY + radius - Math.cos(holeAngle) * radius;
     
+    // Hole marker
+    ctx.fillStyle = '#333';
     ctx.beginPath();
-    ctx.arc(holeX, holeY, hole.dia/2, 0, Math.PI * 2);
+    ctx.arc(surfaceX, surfaceY, 3, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Dashed line to hole
+    ctx.setLineDash([2, 2]);
+    ctx.strokeStyle = '#666';
+    const depthPx = hole.depth * scale;
+    const normalX = Math.sin(holeAngle);
+    const normalY = -Math.cos(holeAngle);
+    ctx.beginPath();
+    ctx.moveTo(surfaceX, surfaceY);
+    ctx.lineTo(surfaceX - normalX * depthPx, surfaceY - normalY * depthPx);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = '#000';
   });
-
+  
   // Radius dimension
   ctx.setLineDash([3, 3]);
   ctx.beginPath();
-  ctx.moveTo(centerX, centerY + 80);
-  ctx.lineTo(centerX, centerY - 20);
+  ctx.moveTo(centerX, curveY + radius);
+  ctx.lineTo(centerX, curveY);
   ctx.stroke();
   ctx.setLineDash([]);
   
-  ctx.fillText(`R=${radius}mm`, centerX + 5, centerY + 20);
-
-  // Title
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('Curved Block - FBH', 10, 15);
+  ctx.fillStyle = '#000';
   ctx.font = '9px Arial';
-  ctx.fillText('Figure 3 - ASTM E127', 10, 28);
+  ctx.textAlign = 'center';
+  ctx.fillText(`R = ${R}"`, centerX + 15, curveY + radius / 2);
+  
+  // Grain flow indicator
+  ctx.font = '8px Arial';
+  ctx.fillText('← Grain Flow', centerX, baseY + 20);
+  
+  // Title
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('Convex Surface Reference Block', 10, 20);
+  ctx.font = '10px Arial';
+  ctx.fillText('MIL-STD-2154 - Figure 3', 10, 35);
 }
 
-// Hollow Cylindrical FBH (Figure 6)
+// Hollow Cylindrical FBH - MIL-STD-2154 Figures 5 & 6
 function drawHollowCylindricalFBH(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const scale = 20;
   const centerX = width / 2;
   const centerY = height / 2;
-  const outerRadius = 50;
-  const innerRadius = 35;
-  const length = 120;
-
-  // Draw isometric cylinder
-  // Front ellipse (outer)
-  ctx.beginPath();
-  ctx.ellipse(centerX - 40, centerY, outerRadius, 15, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Front ellipse (inner)
-  ctx.beginPath();
-  ctx.ellipse(centerX - 40, centerY, innerRadius, 10, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Back ellipse (outer)
-  ctx.beginPath();
-  ctx.ellipse(centerX + 40, centerY, outerRadius, 15, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Back ellipse (inner)
-  ctx.beginPath();
-  ctx.ellipse(centerX + 40, centerY, innerRadius, 10, 0, 0, Math.PI);
-  ctx.stroke();
-
-  // Outer connecting lines
-  ctx.beginPath();
-  ctx.moveTo(centerX - 40, centerY - outerRadius * 0.3);
-  ctx.lineTo(centerX + 40, centerY - outerRadius * 0.3);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(centerX - 40, centerY + outerRadius * 0.3);
-  ctx.lineTo(centerX + 40, centerY + outerRadius * 0.3);
-  ctx.stroke();
-
-  // FBH markers
-  const fbhPositions = [
-    { x: centerX - 20, y: centerY },
-    { x: centerX, y: centerY },
-    { x: centerX + 20, y: centerY }
-  ];
-
-  fbhPositions.forEach(pos => {
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Cross mark
-    ctx.beginPath();
-    ctx.moveTo(pos.x - 5, pos.y);
-    ctx.lineTo(pos.x + 5, pos.y);
-    ctx.moveTo(pos.x, pos.y - 5);
-    ctx.lineTo(pos.x, pos.y + 5);
-    ctx.stroke();
-  });
-
-  // Dimensions
-  ctx.fillText(`OD=${outerRadius * 2}mm`, centerX - 40, centerY + 70);
-  ctx.fillText(`ID=${innerRadius * 2}mm`, centerX - 40, centerY + 82);
-  ctx.fillText(`L=${length}mm`, centerX + 50, centerY);
-
-  // Title
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('Hollow Cylinder - FBH', 10, 15);
-  ctx.font = '9px Arial';
-  ctx.fillText('Figure 6 - ASTM E127', 10, 28);
-}
-
-// Angle Beam Block (Figure 7 - Type IIv)
-function drawAngleBeamBlock(ctx: CanvasRenderingContext2D, width: number, height: number) {
-  const centerX = width / 2;
-  const centerY = height / 2;
-
-  // Main block
-  const blockPoints = [
-    { x: centerX - 80, y: centerY + 40 },
-    { x: centerX + 80, y: centerY + 40 },
-    { x: centerX + 80, y: centerY - 20 },
-    { x: centerX - 20, y: centerY - 20 },
-    { x: centerX - 20, y: centerY - 40 },
-    { x: centerX - 80, y: centerY - 40 }
-  ];
-
-  ctx.beginPath();
-  ctx.moveTo(blockPoints[0].x, blockPoints[0].y);
-  blockPoints.forEach(point => ctx.lineTo(point.x, point.y));
-  ctx.closePath();
-  ctx.stroke();
-
-  // Side drilled holes (SDH)
-  const holes = [
-    { x: centerX - 50, y: centerY, dia: 1.5 },
-    { x: centerX - 20, y: centerY, dia: 2.0 },
-    { x: centerX + 20, y: centerY, dia: 3.0 },
-    { x: centerX + 50, y: centerY, dia: 4.0 }
-  ];
-
-  holes.forEach(hole => {
-    ctx.beginPath();
-    ctx.arc(hole.x, hole.y, hole.dia * 2, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    // Center mark
-    ctx.beginPath();
-    ctx.moveTo(hole.x - 3, hole.y);
-    ctx.lineTo(hole.x + 3, hole.y);
-    ctx.moveTo(hole.x, hole.y - 3);
-    ctx.lineTo(hole.x, hole.y + 3);
-    ctx.stroke();
-    
-    ctx.fillText(`Ø${hole.dia}`, hole.x - 8, hole.y + 20);
-  });
-
-  // Angle indication
-  ctx.beginPath();
-  ctx.setLineDash([2, 2]);
-  ctx.moveTo(centerX - 80, centerY - 40);
-  ctx.lineTo(centerX + 20, centerY + 60);
-  ctx.stroke();
-  ctx.setLineDash([]);
   
-  ctx.fillText('45°', centerX - 30, centerY + 30);
-  ctx.fillText('60°', centerX + 10, centerY + 30);
-
-  // Title
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('Type IIv - Angle Beam', 10, 15);
-  ctx.font = '9px Arial';
-  ctx.fillText('Figure 7 - ASTM E164', 10, 28);
-}
-
-// Hollow Cylindrical Notched (Figure 5)
-function drawHollowCylindricalNotched(ctx: CanvasRenderingContext2D, width: number, height: number) {
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const outerRadius = 50;
-  const innerRadius = 38;
-
-  // Draw cylinder similar to FBH version
+  // Cylinder dimensions
+  const Ro = 2.0; // outer radius (inches)
+  const Ri = 1.5; // inner radius
+  const length = 6.0;
+  
+  const outerRad = Ro * scale;
+  const innerRad = Ri * scale;
+  const cylinderLength = length * scale;
+  
+  ctx.lineWidth = 2;
+  
+  // Front face (left)
+  const leftX = centerX - cylinderLength / 2;
+  
+  // Outer circle
   ctx.beginPath();
-  ctx.ellipse(centerX - 40, centerY, outerRadius, 15, 0, 0, Math.PI * 2);
+  ctx.arc(leftX, centerY, outerRad, 0, Math.PI * 2);
   ctx.stroke();
-
+  
+  // Inner circle
   ctx.beginPath();
-  ctx.ellipse(centerX - 40, centerY, innerRadius, 11, 0, 0, Math.PI * 2);
+  ctx.arc(leftX, centerY, innerRad, 0, Math.PI * 2);
   ctx.stroke();
-
+  
+  // Back face (right) - only visible parts
+  const rightX = centerX + cylinderLength / 2;
+  
   ctx.beginPath();
-  ctx.ellipse(centerX + 40, centerY, outerRadius, 15, 0, 0, Math.PI * 2);
+  ctx.arc(rightX, centerY, outerRad, -Math.PI/2, Math.PI/2);
   ctx.stroke();
-
+  
   ctx.beginPath();
-  ctx.ellipse(centerX + 40, centerY, innerRadius, 11, 0, 0, Math.PI);
+  ctx.arc(rightX, centerY, innerRad, -Math.PI/2, Math.PI/2);
   ctx.stroke();
-
-  // Connecting lines
+  
+  // Connecting lines (top and bottom)
   ctx.beginPath();
-  ctx.moveTo(centerX - 40, centerY - outerRadius * 0.3);
-  ctx.lineTo(centerX + 40, centerY - outerRadius * 0.3);
+  ctx.moveTo(leftX, centerY - outerRad);
+  ctx.lineTo(rightX, centerY - outerRad);
   ctx.stroke();
-
+  
   ctx.beginPath();
-  ctx.moveTo(centerX - 40, centerY + outerRadius * 0.3);
-  ctx.lineTo(centerX + 40, centerY + outerRadius * 0.3);
+  ctx.moveTo(leftX, centerY + outerRad);
+  ctx.lineTo(rightX, centerY + outerRad);
   ctx.stroke();
-
-  // Notches on surface
-  const notches = [
-    { x: centerX - 30, angle: 0 },
-    { x: centerX - 10, angle: 45 },
-    { x: centerX + 10, angle: 90 },
-    { x: centerX + 30, angle: 135 }
+  
+  // FBH holes: 3/64", 5/64", 8/64" at depth d=0.375±0.125"
+  const fbhDepth = 0.375;
+  const holes = [
+    { dia: 3/64, pos: 0.3, label: '3/64"' },
+    { dia: 5/64, pos: 0.5, label: '5/64"' },
+    { dia: 8/64, pos: 0.7, label: '8/64"' }
   ];
-
-  notches.forEach(notch => {
-    // Draw notch as small rectangle
-    ctx.save();
-    ctx.translate(notch.x, centerY - outerRadius * 0.3 - 3);
-    ctx.fillRect(-1, 0, 2, 6);
-    ctx.restore();
+  
+  ctx.fillStyle = '#555';
+  holes.forEach(hole => {
+    const holeX = leftX + cylinderLength * hole.pos;
+    const holeDia = hole.dia * 25.4 * scale / 8;
     
-    ctx.fillText(`${notch.angle}°`, notch.x - 8, centerY + 70);
-  });
-
-  // Dimensions
-  ctx.fillText(`Notch: 0.5mm x 5mm`, centerX - 45, centerY + 85);
-
-  // Title
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('Hollow Cylinder - Notched', 10, 15);
-  ctx.font = '9px Arial';
-  ctx.fillText('Figure 5 - ASTM E127', 10, 28);
-}
-
-// IIW (V1/V2) Block
-function drawIIVBlock(ctx: CanvasRenderingContext2D, width: number, height: number) {
-  const centerX = width / 2;
-  const centerY = height / 2;
-
-  // Main block outline (V1 block shape)
-  const mainBlock = [
-    { x: centerX - 90, y: centerY + 50 },
-    { x: centerX + 90, y: centerY + 50 },
-    { x: centerX + 90, y: centerY - 30 },
-    { x: centerX + 40, y: centerY - 30 },
-    { x: centerX + 40, y: centerY - 50 },
-    { x: centerX - 40, y: centerY - 50 },
-    { x: centerX - 40, y: centerY - 30 },
-    { x: centerX - 90, y: centerY - 30 }
-  ];
-
-  ctx.beginPath();
-  ctx.moveTo(mainBlock[0].x, mainBlock[0].y);
-  mainBlock.forEach(point => ctx.lineTo(point.x, point.y));
-  ctx.closePath();
-  ctx.stroke();
-
-  // Radius at corners
-  ctx.beginPath();
-  ctx.arc(centerX + 40, centerY - 30, 15, 0, Math.PI / 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(centerX - 40, centerY - 30, 15, Math.PI / 2, Math.PI);
-  ctx.stroke();
-
-  // Side drilled holes
-  const sdHoles = [
-    { x: centerX - 60, depth: 25, dia: 2 },
-    { x: centerX - 30, depth: 50, dia: 2 },
-    { x: centerX, depth: 75, dia: 4 },
-    { x: centerX + 30, depth: 50, dia: 2 },
-    { x: centerX + 60, depth: 25, dia: 2 }
-  ];
-
-  sdHoles.forEach(hole => {
+    // FBH circle on outer surface
     ctx.beginPath();
-    ctx.arc(hole.x, centerY + 10, hole.dia * 1.5, 0, Math.PI * 2);
+    ctx.arc(holeX, centerY - outerRad + 2, holeDia/2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#000';
     ctx.stroke();
     
-    // Depth line
+    // Dashed centerline
     ctx.setLineDash([2, 2]);
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(hole.x, centerY + 50);
-    ctx.lineTo(hole.x, centerY + 10);
+    ctx.moveTo(holeX, centerY - outerRad);
+    ctx.lineTo(holeX, centerY - outerRad + fbhDepth * scale);
     ctx.stroke();
     ctx.setLineDash([]);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    
+    // Label
+    ctx.fillStyle = '#000';
+    ctx.font = '8px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(hole.label, holeX, centerY + outerRad + 15);
   });
-
-  // Dimensions
-  ctx.fillText('100mm beam path', centerX - 85, centerY - 55);
-  ctx.fillText('R25', centerX - 25, centerY - 35);
   
-  // Reference points
-  ctx.fillText('Probe Index Point', centerX - 40, centerY + 65);
-
-  // Title
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('IIW (V1/V2) Block', 10, 15);
+  // Dimensions
   ctx.font = '9px Arial';
-  ctx.fillText('IIW Type 1 Standard', 10, 28);
+  ctx.fillStyle = '#000';
+  ctx.textAlign = 'left';
+  ctx.fillText(`OD = ${(Ro * 2).toFixed(1)}"`, leftX - outerRad - 35, centerY - outerRad - 10);
+  ctx.fillText(`ID = ${(Ri * 2).toFixed(1)}"`, leftX - innerRad - 35, centerY + innerRad + 10);
+  ctx.fillText(`L = ${length}"`, rightX + 10, centerY);
+  ctx.fillText(`FBH depth = ${fbhDepth}±0.125"`, leftX, centerY - outerRad - 20);
+  
+  // Title
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('Hollow Cylindrical - FBH', 10, 20);
+  ctx.font = '10px Arial';
+  ctx.fillText('MIL-STD-2154 - Figures 5 & 6', 10, 35);
+}
+
+// Angle Beam Block - MIL-STD-2154 Figure 4
+function drawAngleBeamBlock(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const scale = 15;
+  const centerX = width / 2;
+  const baseY = height - 40;
+  
+  // Block dimensions for T=1" thickness, Φ=60°
+  const thickness = 1.0;
+  const angle = 60;
+  const blockHeight = thickness * scale;
+  const blockLength = 120;
+  
+  ctx.lineWidth = 2;
+  
+  // Main rectangular block
+  const blockX = centerX - blockLength / 2;
+  ctx.strokeRect(blockX, baseY - blockHeight, blockLength, blockHeight);
+  
+  // Surface labels
+  ctx.font = '10px Arial';
+  ctx.fillStyle = '#666';
+  ctx.textAlign = 'center';
+  ctx.fillText('Surface C', centerX, baseY - blockHeight - 5);
+  ctx.save();
+  ctx.translate(blockX - 15, baseY - blockHeight / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Surface A', 0, 0);
+  ctx.restore();
+  ctx.fillText('Surface B', centerX, baseY + 15);
+  
+  // Side drilled holes: 3/64", 5/64", 8/64" diameter
+  const holes = [
+    { dia: 3/64, pos: 0.25, depth: 0.75 },
+    { dia: 5/64, pos: 0.5, depth: 0.5 },
+    { dia: 8/64, pos: 0.75, depth: 0.25 }
+  ];
+  
+  ctx.fillStyle = '#000';
+  holes.forEach(hole => {
+    const holeX = blockX + blockLength * hole.pos;
+    const holeDepth = hole.depth * blockHeight;
+    const holeY = baseY - holeDepth;
+    const holeDia = hole.dia * 25.4 * scale / 10;
+    
+    // Draw SDH (Side Drilled Hole)
+    ctx.beginPath();
+    ctx.ellipse(holeX, holeY, holeDia * 0.4, holeDia, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#555';
+    ctx.fill();
+    ctx.strokeStyle = '#000';
+    ctx.stroke();
+    
+    // Center line
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(holeX, baseY - blockHeight);
+    ctx.lineTo(holeX, holeY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Label
+    ctx.fillStyle = '#000';
+    ctx.font = '8px Arial';
+    ctx.textAlign = 'center';
+    const diaFraction = hole.dia === 3/64 ? '3/64"' : hole.dia === 5/64 ? '5/64"' : '8/64"';
+    ctx.fillText(diaFraction, holeX, baseY + 28);
+  });
+  
+  // Angle beam paths
+  ctx.strokeStyle = '#0066cc';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 2]);
+  
+  // 60° beam path
+  const probeX = blockX + 30;
+  const beamAngle = (90 - angle) * Math.PI / 180;
+  ctx.beginPath();
+  ctx.moveTo(probeX, baseY - blockHeight);
+  ctx.lineTo(probeX + Math.tan(beamAngle) * blockHeight, baseY);
+  ctx.stroke();
+  
+  ctx.setLineDash([]);
+  ctx.strokeStyle = '#000';
+  
+  // Angle label
+  ctx.fillStyle = '#0066cc';
+  ctx.font = '10px Arial';
+  ctx.fillText(`Φ = ${angle}°`, probeX + 20, baseY - blockHeight / 2);
+  
+  // Title
+  ctx.fillStyle = '#000';
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('Angle Beam Test Block', 10, 20);
+  ctx.font = '10px Arial';
+  ctx.fillText('MIL-STD-2154 - Figure 4', 10, 35);
+  ctx.font = '8px Arial';
+  ctx.fillText(`T = ${thickness}", Φ = ${angle}°`, 10, 48);
+}
+
+// Hollow Cylindrical Notched - MIL-STD-2154 Figure 5
+function drawHollowCylindricalNotched(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const scale = 18;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  
+  // Cylinder dimensions
+  const Ro = 2.0;
+  const Ri = 1.6;
+  const length = 6.0;
+  
+  const outerRad = Ro * scale;
+  const innerRad = Ri * scale;
+  const cylinderLength = length * scale;
+  
+  ctx.lineWidth = 2;
+  
+  // Front face
+  const leftX = centerX - cylinderLength / 2;
+  
+  ctx.beginPath();
+  ctx.arc(leftX, centerY, outerRad, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.arc(leftX, centerY, innerRad, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // Back face
+  const rightX = centerX + cylinderLength / 2;
+  
+  ctx.beginPath();
+  ctx.arc(rightX, centerY, outerRad, -Math.PI/2, Math.PI/2);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.arc(rightX, centerY, innerRad, -Math.PI/2, Math.PI/2);
+  ctx.stroke();
+  
+  // Connecting lines
+  ctx.beginPath();
+  ctx.moveTo(leftX, centerY - outerRad);
+  ctx.lineTo(rightX, centerY - outerRad);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(leftX, centerY + outerRad);
+  ctx.lineTo(rightX, centerY + outerRad);
+  ctx.stroke();
+  
+  // Notches cut with end mill - Figure 5 specification
+  // Notches at 0°, 90°, 180°, 270° positions
+  const notches = [
+    { angle: 0, label: '0°' },
+    { angle: 90, label: '90°' },
+    { angle: 180, label: '180°' },
+    { angle: 270, label: '270°' }
+  ];
+  
+  ctx.fillStyle = '#222';
+  notches.forEach(notch => {
+    const angleRad = notch.angle * Math.PI / 180;
+    const notchX = leftX + cylinderLength * 0.3 + (notches.indexOf(notch) * cylinderLength * 0.15);
+    const notchY = centerY - Math.cos(angleRad) * outerRad;
+    const notchWidth = 3;
+    const notchDepth = 8;
+    
+    // Draw notch as rectangle
+    ctx.save();
+    ctx.translate(notchX, notchY);
+    ctx.rotate(angleRad);
+    ctx.fillRect(-notchWidth/2, 0, notchWidth, notchDepth);
+    ctx.strokeRect(-notchWidth/2, 0, notchWidth, notchDepth);
+    ctx.restore();
+    
+    // Angle label
+    ctx.fillStyle = '#0066cc';
+    ctx.font = '8px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(notch.label, notchX, centerY + outerRad + 20);
+    ctx.fillStyle = '#000';
+  });
+  
+  // View indicator
+  ctx.font = '9px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('View C →', leftX - 45, centerY);
+  
+  // Notch dimensions
+  ctx.font = '8px Arial';
+  ctx.fillText('Notches: End mill cut', centerX, centerY - outerRad - 15);
+  ctx.fillText('Per Figure 5 - MIL-STD-2154', centerX, centerY - outerRad - 5);
+  
+  // Dimensions
+  ctx.font = '9px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText(`OD = ${(Ro * 2).toFixed(1)}"`, leftX - outerRad - 35, centerY - 20);
+  ctx.fillText(`ID = ${(Ri * 2).toFixed(1)}"`, leftX - innerRad - 35, centerY + 20);
+  
+  // Title
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('Hollow Cylindrical - Notched', 10, 20);
+  ctx.font = '10px Arial';
+  ctx.fillText('MIL-STD-2154 - Figure 5', 10, 35);
+}
+
+// IIW Reference Block - MIL-STD-2154 Figure 7
+function drawIIVBlock(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const scale = 18;
+  const centerX = width / 2;
+  const baseY = height - 30;
+  
+  // IIW Block dimensions (in inches)
+  const totalLength = 8.0;
+  const totalHeight = 4.0;
+  const stepHeight = 0.6;
+  const stepWidth = 1.4;
+  const radius = 1.0;
+  
+  ctx.lineWidth = 2;
+  const blockX = centerX - (totalLength * scale) / 2;
+  const topY = baseY - totalHeight * scale;
+  
+  // Main block outline
+  ctx.beginPath();
+  ctx.moveTo(blockX, baseY);
+  ctx.lineTo(blockX, topY + stepHeight * scale);
+  ctx.lineTo(blockX + (totalLength/2 - stepWidth/2) * scale, topY + stepHeight * scale);
+  ctx.lineTo(blockX + (totalLength/2 - stepWidth/2) * scale, topY);
+  ctx.lineTo(blockX + (totalLength/2 + stepWidth/2) * scale, topY);
+  ctx.lineTo(blockX + (totalLength/2 + stepWidth/2) * scale, topY + stepHeight * scale);
+  ctx.lineTo(blockX + totalLength * scale, topY + stepHeight * scale);
+  ctx.lineTo(blockX + totalLength * scale, baseY);
+  ctx.closePath();
+  ctx.stroke();
+  
+  // Radius curves at step corners
+  const radiusPx = radius * scale / 8;
+  ctx.beginPath();
+  ctx.arc(blockX + (totalLength/2 - stepWidth/2) * scale, 
+          topY + stepHeight * scale, radiusPx, -Math.PI/2, 0);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(blockX + (totalLength/2 + stepWidth/2) * scale, 
+          topY + stepHeight * scale, radiusPx, Math.PI, Math.PI/2, true);
+  ctx.stroke();
+  
+  // SDH holes at different angles: 0.060" diameter
+  const holes = [
+    { angle: 45, x: 0.2, depth: 1.5 },
+    { angle: 50, x: 0.3, depth: 1.8 },
+    { angle: 60, x: 0.5, depth: 2.0 },
+    { angle: 70, x: 0.7, depth: 1.8 },
+    { angle: 80, x: 0.8, depth: 1.5 }
+  ];
+  
+  ctx.fillStyle = '#444';
+  holes.forEach(hole => {
+    const holeX = blockX + hole.x * totalLength * scale;
+    const holeY = baseY - hole.depth * scale;
+    
+    // Draw hole
+    ctx.beginPath();
+    ctx.arc(holeX, holeY, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    
+    // Angle label
+    ctx.fillStyle = '#0066cc';
+    ctx.font = '7px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${hole.angle}°`, holeX, holeY - 8);
+    ctx.fillStyle = '#000';
+  });
+  
+  // Radius label
+  ctx.font = '9px Arial';
+  ctx.fillStyle = '#000';
+  ctx.textAlign = 'center';
+  ctx.fillText(`R = ${radius}"`, centerX, topY + stepHeight * scale + 15);
+  
+  // 100mm beam path indicator
+  ctx.strokeStyle = '#0066cc';
+  ctx.setLineDash([3, 3]);
+  ctx.lineWidth = 1;
+  const beamPathY = baseY - 2.5 * scale;
+  ctx.beginPath();
+  ctx.moveTo(blockX + scale, beamPathY);
+  ctx.lineTo(blockX + totalLength * scale - scale, beamPathY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = '#000';
+  
+  ctx.fillStyle = '#0066cc';
+  ctx.font = '8px Arial';
+  ctx.fillText('100mm beam path', centerX, beamPathY - 5);
+  
+  // Probe index point marker
+  ctx.fillStyle = '#000';
+  ctx.font = '7px Arial';
+  ctx.fillText('← Probe Index Point', centerX - 20, baseY + 20);
+  
+  // Title
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('IIW (V1/V2) Reference Block', 10, 20);
+  ctx.font = '10px Arial';
+  ctx.fillText('MIL-STD-2154 - Figure 7', 10, 35);
 }
