@@ -1,3 +1,4 @@
+import React from 'react';
 import { CalibrationBlockType } from '@/types/techniqueSheet';
 
 // Import professional drawings from MIL-STD-2154
