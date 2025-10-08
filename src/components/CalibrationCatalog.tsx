@@ -9,12 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, Plus, Download, Eye } from "lucide-react";
 import { generateCalibrationBlockPDF } from "@/utils/calibrationBlockExport";
 import { CalibrationBlockType } from "@/types/techniqueSheet";
-import flatBlockImg from "@/assets/calibration-flat-block.png";
-import curvedBlockImg from "@/assets/calibration-curved-block.png";
-import cylinderFbhImg from "@/assets/calibration-cylinder-fbh.png";
-import angleBeamImg from "@/assets/calibration-angle-beam.png";
-import cylinderNotchedImg from "@/assets/calibration-cylinder-notched.png";
-import iivBlockImg from "@/assets/calibration-iiv-block.png";
+import { CalibrationBlockDrawing } from "./CalibrationBlockDrawing";
 
 interface CalibrationModel {
   id: CalibrationBlockType | string;
@@ -40,7 +35,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 4",
     description: "Standard flat reference block with flat-bottom holes for straight beam inspection",
     beamType: "straight",
-    imageUrl: flatBlockImg,
+    imageUrl: "",
     applications: ["Plate inspection", "Bar inspection", "General straight beam calibration"]
   },
   {
@@ -49,7 +44,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 3",
     description: "Curved surface reference block matching part geometry for straight beam",
     beamType: "straight",
-    imageUrl: curvedBlockImg,
+    imageUrl: "",
     applications: ["Cylindrical parts", "Curved surfaces", "Forgings with radius"]
   },
   {
@@ -58,7 +53,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 6",
     description: "Hollow cylindrical block with flat-bottom holes for tube inspection",
     beamType: "straight",
-    imageUrl: cylinderFbhImg,
+    imageUrl: "",
     applications: ["Tube inspection", "Pipe calibration", "Hollow shaft inspection"]
   },
   {
@@ -67,7 +62,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 7",
     description: "Angle beam reference block for shear wave inspection with side-drilled holes",
     beamType: "angle",
-    imageUrl: angleBeamImg,
+    imageUrl: "",
     applications: ["Weld inspection", "Shear wave calibration", "Angle beam technique"]
   },
   {
@@ -76,7 +71,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "Figure 5",
     description: "Hollow cylindrical block with notches for angle beam inspection",
     beamType: "angle",
-    imageUrl: cylinderNotchedImg,
+    imageUrl: "",
     applications: ["Tube welds", "Pipe inspection", "Circumferential scanning"]
   },
   {
@@ -85,7 +80,7 @@ const calibrationModels: CalibrationModel[] = [
     figure: "IIW Standard",
     description: "International Institute of Welding calibration block for angle beam",
     beamType: "angle",
-    imageUrl: iivBlockImg,
+    imageUrl: "",
     applications: ["Weld inspection", "Beam angle verification", "Index point calibration"]
   }
 ];
@@ -204,11 +199,19 @@ export const CalibrationCatalog = ({
         )}
 
         <div className="aspect-video bg-muted rounded-md mb-3 flex items-center justify-center overflow-hidden">
-          <img 
-            src={model.imageUrl} 
-            alt={model.name}
-            className="w-full h-full object-cover"
-          />
+          {model.isCustom ? (
+            <img 
+              src={model.imageUrl} 
+              alt={model.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <CalibrationBlockDrawing 
+              blockType={model.id as CalibrationBlockType}
+              width={400}
+              height={250}
+            />
+          )}
         </div>
 
         <div className="space-y-2">
@@ -369,12 +372,20 @@ export const CalibrationCatalog = ({
               {/* Image Preview */}
               <div>
                 <h4 className="font-semibold mb-2">Technical Drawing</h4>
-                <div className="border rounded p-4 bg-white">
-                  <img 
-                    src={previewModel.imageUrl} 
-                    alt={previewModel.name}
-                    className="w-full h-64 object-contain"
-                  />
+                <div className="border rounded p-4 bg-white flex items-center justify-center">
+                  {previewModel.isCustom ? (
+                    <img 
+                      src={previewModel.imageUrl} 
+                      alt={previewModel.name}
+                      className="w-full h-64 object-contain"
+                    />
+                  ) : (
+                    <CalibrationBlockDrawing 
+                      blockType={previewModel.id as CalibrationBlockType}
+                      width={600}
+                      height={400}
+                    />
+                  )}
                 </div>
               </div>
 
