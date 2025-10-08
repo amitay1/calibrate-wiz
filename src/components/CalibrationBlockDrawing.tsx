@@ -1,4 +1,3 @@
-import React from 'react';
 import { CalibrationBlockType } from '@/types/techniqueSheet';
 
 // Import original technical drawings from MIL-STD-2154 / AMS-STD-2154
@@ -14,11 +13,11 @@ interface CalibrationBlockDrawingProps {
   height?: number;
 }
 
-export const CalibrationBlockDrawing: React.FC<CalibrationBlockDrawingProps> = ({ 
+export const CalibrationBlockDrawing = ({ 
   blockType, 
   width = 300, 
   height = 200 
-}) => {
+}: CalibrationBlockDrawingProps) => {
   // Map block types to their corresponding original technical drawings from the standard
   const blockImages: Record<CalibrationBlockType, string> = {
     'flat_block': figure4AngleBeam, // Figure 4 includes flat block with FBH
