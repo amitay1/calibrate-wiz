@@ -28,60 +28,49 @@ export const Toolbar = ({
   onReportModeChange 
 }: ToolbarProps) => {
   return (
-    <div className="h-12 border-b border-border bg-card flex items-center px-3 gap-2">
-      {/* Quick Actions */}
-      <Button variant="ghost" size="icon" onClick={onSave} title="Save (Ctrl+S)">
-        <Save className="h-4 w-4" />
+    <div className="h-12 border-b border-border bg-card flex items-center px-2 md:px-3 gap-1 md:gap-2 overflow-x-auto">
+      {/* Quick Actions - Compact on mobile */}
+      <Button variant="ghost" size="icon" onClick={onSave} title="Save" className="h-8 w-8 md:h-9 md:w-9">
+        <Save className="h-3 w-3 md:h-4 md:w-4" />
       </Button>
 
-      <Button variant="ghost" size="icon" onClick={onExport} title="Export PDF (Ctrl+E)">
-        <Download className="h-4 w-4" />
+      <Button variant="ghost" size="icon" onClick={onExport} title="Export" className="h-8 w-8 md:h-9 md:w-9">
+        <Download className="h-3 w-3 md:h-4 md:w-4" />
       </Button>
 
-      <Button variant="ghost" size="icon" title="Print">
-        <Printer className="h-4 w-4" />
+      <Button variant="ghost" size="icon" onClick={onValidate} title="Validate" className="h-8 w-8 md:h-9 md:w-9">
+        <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
       </Button>
 
-      <Separator orientation="vertical" className="h-8 mx-1" />
+      <Separator orientation="vertical" className="h-6 md:h-8 mx-0.5 md:mx-1" />
 
-      {/* Mode Selection */}
-      <div className="flex gap-1 bg-muted p-1 rounded-md">
+      {/* Mode Selection - Compact on mobile */}
+      <div className="flex gap-0.5 md:gap-1 bg-muted p-0.5 md:p-1 rounded-md">
         <Button
           variant={reportMode === "Technique" ? "secondary" : "ghost"}
           size="sm"
           onClick={() => onReportModeChange("Technique")}
-          className="h-8 text-xs font-medium"
+          className="h-7 md:h-8 text-[10px] md:text-xs font-medium px-2"
         >
-          <FileText className="h-3 w-3 mr-1" />
-          Technique Sheet
+          <FileText className="h-3 w-3 md:mr-1" />
+          <span className="hidden sm:inline">Technique</span>
         </Button>
         <Button
           variant={reportMode === "Report" ? "secondary" : "ghost"}
           size="sm"
           onClick={() => onReportModeChange("Report")}
-          className="h-8 text-xs font-medium"
+          className="h-7 md:h-8 text-[10px] md:text-xs font-medium px-2"
         >
-          <FileSearch className="h-3 w-3 mr-1" />
-          Inspection Report
+          <FileSearch className="h-3 w-3 md:mr-1" />
+          <span className="hidden sm:inline">Report</span>
         </Button>
       </div>
 
-      <Separator orientation="vertical" className="h-8 mx-1" />
-
-      {/* Validation */}
-      <Button variant="ghost" size="icon" onClick={onValidate} title="Validate Document">
-        <CheckCircle className="h-4 w-4" />
-      </Button>
-
       <div className="flex-1" />
 
-      {/* Right Side Tools */}
-      <Button variant="ghost" size="icon" title="Refresh">
-        <RefreshCw className="h-4 w-4" />
-      </Button>
-
-      <Button variant="ghost" size="icon" title="Settings">
-        <Settings className="h-4 w-4" />
+      {/* Right Side Tools - Hidden on small mobile */}
+      <Button variant="ghost" size="icon" title="Settings" className="h-8 w-8 md:h-9 md:w-9 hidden sm:flex">
+        <Settings className="h-3 w-3 md:h-4 md:w-4" />
       </Button>
     </div>
   );

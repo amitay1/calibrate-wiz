@@ -357,12 +357,14 @@ const Index = () => {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
-      {/* Menu Bar */}
-      <MenuBar 
-        onSave={handleSave}
-        onExport={handleExportPDF}
-        onNew={handleNewProject}
-      />
+      {/* Menu Bar - Hidden on Mobile */}
+      <div className="hidden md:block">
+        <MenuBar 
+          onSave={handleSave}
+          onExport={handleExportPDF}
+          onNew={handleNewProject}
+        />
+      </div>
 
       {/* Toolbar */}
       <Toolbar
@@ -373,48 +375,70 @@ const Index = () => {
         onReportModeChange={setReportMode}
       />
 
-      {/* Main Content Area with Resizable Panels */}
-      <ResizablePanelGroup direction="horizontal" className="flex-1">
-        {/* Left Panel: Tools & Standard Selector */}
-        <ResizablePanel defaultSize={15} minSize={10} maxSize={20}>
-          <div className="h-full app-panel flex flex-col">
-            <div className="p-3 border-b border-border">
-              <h3 className="font-semibold text-sm mb-3">Standard</h3>
+      {/* Main Content Area - Responsive Layout */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Mobile: Compact Header with Standard and Completion */}
+        <div className="md:hidden border-b border-border bg-card p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1">
+              <h3 className="font-semibold text-xs mb-2">Standard</h3>
               <StandardSelector 
                 value={standard} 
                 onChange={setStandard} 
               />
             </div>
-            <ScrollArea className="flex-1 p-3">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-xs font-semibold text-muted-foreground mb-2">COMPLETION</h4>
-                  <div className="text-2xl font-bold text-primary">
-                    {Math.round(calculateCompletion())}%
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {(() => {
-                      const completion = calculateCompletion();
-                      const totalFields = reportMode === "Technique" ? 50 : 40;
-                      return Math.round((completion / 100) * totalFields);
-                    })()}/{reportMode === "Technique" ? 50 : 40} fields
-                  </div>
-                </div>
+            <div className="text-center">
+              <div className="text-xl font-bold text-primary">
+                {Math.round(calculateCompletion())}%
               </div>
-            </ScrollArea>
+              <div className="text-xs text-muted-foreground">Complete</div>
+            </div>
           </div>
-        </ResizablePanel>
+        </div>
 
-        <ResizableHandle withHandle />
+        {/* Desktop: Left Panel with Standard Selector */}
+        <div className="hidden md:block md:w-[15%] md:min-w-[200px] md:max-w-[250px]">
+          <ResizablePanelGroup direction="horizontal" className="h-full">
+            <ResizablePanel defaultSize={100}>
+              <div className="h-full app-panel flex flex-col">
+                <div className="p-3 border-b border-border">
+                  <h3 className="font-semibold text-sm mb-3">Standard</h3>
+                  <StandardSelector 
+                    value={standard} 
+                    onChange={setStandard} 
+                  />
+                </div>
+                <ScrollArea className="flex-1 p-3">
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-xs font-semibold text-muted-foreground mb-2">COMPLETION</h4>
+                      <div className="text-2xl font-bold text-primary">
+                        {Math.round(calculateCompletion())}%
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {(() => {
+                          const completion = calculateCompletion();
+                          const totalFields = reportMode === "Technique" ? 50 : 40;
+                          return Math.round((completion / 100) * totalFields);
+                        })()}/{reportMode === "Technique" ? 50 : 40} fields
+                      </div>
+                    </div>
+                  </div>
+                </ScrollArea>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+          </ResizablePanelGroup>
+        </div>
 
-        {/* Center Panel: Main Form */}
-        <ResizablePanel defaultSize={55} minSize={40}>
-          <ScrollArea className="h-full">
-            <div className="p-4">
+        {/* Center Panel: Main Form - Full width on mobile */}
+        <div className="flex-1 overflow-auto">
+          <div className="h-full">
+            <div className="p-2 md:p-4">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 {reportMode === "Technique" ? (
                   <>
-                    <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-1 bg-muted p-1 rounded-md">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 bg-muted p-1 rounded-md text-xs">
                       <TabsTrigger value="setup" className="text-xs">Setup</TabsTrigger>
                       <TabsTrigger value="equipment" className="text-xs">Equipment</TabsTrigger>
                       <TabsTrigger value="calibration" className="text-xs">Calibration</TabsTrigger>
@@ -475,7 +499,7 @@ const Index = () => {
                   </>
                 ) : (
                   <>
-                    <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 gap-1 bg-muted p-1 rounded-md">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 bg-muted p-1 rounded-md text-xs">
                       <TabsTrigger value="cover" className="text-xs">Cover Page</TabsTrigger>
                       <TabsTrigger value="diagram" className="text-xs">Part Diagram</TabsTrigger>
                       <TabsTrigger value="probe" className="text-xs">Probe Details</TabsTrigger>
@@ -516,7 +540,7 @@ const Index = () => {
                         />
                       </TabsContent>
 
-                      <TabsContent value="remarks" className="m-0">
+                       <TabsContent value="remarks" className="m-0">
                         <RemarksTab 
                           remarks={inspectionReport.remarks}
                           onChange={(remarks) => setInspectionReport({ ...inspectionReport, remarks })}
@@ -527,30 +551,33 @@ const Index = () => {
                 )}
               </Tabs>
             </div>
-          </ScrollArea>
-        </ResizablePanel>
-
-        <ResizableHandle withHandle />
-
-        {/* Right Panel: 3D Viewer */}
-        <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
-          <div className="h-full app-panel">
-            <div className="p-3 border-b border-border">
-              <h3 className="font-semibold text-sm">3D Part Viewer</h3>
-            </div>
-            <ThreeDViewer
-              partType={inspectionSetup.partType || ""}
-              material={inspectionSetup.material as MaterialType || ""}
-              dimensions={{
-                length: inspectionSetup.partLength || 100,
-                width: inspectionSetup.partWidth || 50,
-                thickness: inspectionSetup.partThickness || 10,
-                diameter: inspectionSetup.diameter || 50
-              }}
-            />
           </div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+        </div>
+
+        {/* Desktop: Right Panel - 3D Viewer */}
+        <div className="hidden lg:block lg:w-[30%] lg:min-w-[300px] lg:max-w-[450px]">
+          <ResizablePanelGroup direction="horizontal" className="h-full">
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={100}>
+              <div className="h-full app-panel">
+                <div className="p-3 border-b border-border">
+                  <h3 className="font-semibold text-sm">3D Part Viewer</h3>
+                </div>
+                <ThreeDViewer
+                  partType={inspectionSetup.partType || ""}
+                  material={inspectionSetup.material as MaterialType || ""}
+                  dimensions={{
+                    length: inspectionSetup.partLength || 100,
+                    width: inspectionSetup.partWidth || 50,
+                    thickness: inspectionSetup.partThickness || 10,
+                    diameter: inspectionSetup.diameter || 50
+                  }}
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      </div>
 
       {/* Status Bar */}
       <StatusBar
