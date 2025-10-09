@@ -438,13 +438,13 @@ const Index = () => {
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 {reportMode === "Technique" ? (
                   <>
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 bg-muted p-1 rounded-md text-xs">
-                      <TabsTrigger value="setup" className="text-xs">Setup</TabsTrigger>
-                      <TabsTrigger value="equipment" className="text-xs">Equipment</TabsTrigger>
-                      <TabsTrigger value="calibration" className="text-xs">Calibration</TabsTrigger>
-                      <TabsTrigger value="scan" className="text-xs">Scan Params</TabsTrigger>
-                      <TabsTrigger value="acceptance" className="text-xs">Acceptance</TabsTrigger>
-                      <TabsTrigger value="docs" className="text-xs">Documentation</TabsTrigger>
+                    <TabsList className="inline-flex flex-wrap md:flex-nowrap h-auto md:h-10 items-center justify-start md:justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
+                      <TabsTrigger value="setup" className="flex-1 md:flex-initial min-w-[100px]">Setup</TabsTrigger>
+                      <TabsTrigger value="equipment" className="flex-1 md:flex-initial min-w-[100px]">Equipment</TabsTrigger>
+                      <TabsTrigger value="calibration" className="flex-1 md:flex-initial min-w-[100px]">Calibration</TabsTrigger>
+                      <TabsTrigger value="scan" className="flex-1 md:flex-initial min-w-[100px]">Scan Params</TabsTrigger>
+                      <TabsTrigger value="acceptance" className="flex-1 md:flex-initial min-w-[100px]">Acceptance</TabsTrigger>
+                      <TabsTrigger value="docs" className="flex-1 md:flex-initial min-w-[100px]">Documentation</TabsTrigger>
                     </TabsList>
 
                     <div className="mt-4 app-panel rounded-md">
@@ -499,12 +499,12 @@ const Index = () => {
                   </>
                 ) : (
                   <>
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 bg-muted p-1 rounded-md text-xs">
-                      <TabsTrigger value="cover" className="text-xs">Cover Page</TabsTrigger>
-                      <TabsTrigger value="diagram" className="text-xs">Part Diagram</TabsTrigger>
-                      <TabsTrigger value="probe" className="text-xs">Probe Details</TabsTrigger>
-                      <TabsTrigger value="scans" className="text-xs">Scans</TabsTrigger>
-                      <TabsTrigger value="remarks" className="text-xs">Remarks</TabsTrigger>
+                    <TabsList className="inline-flex flex-wrap md:flex-nowrap h-auto md:h-10 items-center justify-start md:justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
+                      <TabsTrigger value="cover" className="flex-1 md:flex-initial min-w-[110px]">Cover Page</TabsTrigger>
+                      <TabsTrigger value="diagram" className="flex-1 md:flex-initial min-w-[110px]">Part Diagram</TabsTrigger>
+                      <TabsTrigger value="probe" className="flex-1 md:flex-initial min-w-[110px]">Probe Details</TabsTrigger>
+                      <TabsTrigger value="scans" className="flex-1 md:flex-initial min-w-[110px]">Scans</TabsTrigger>
+                      <TabsTrigger value="remarks" className="flex-1 md:flex-initial min-w-[110px]">Remarks</TabsTrigger>
                     </TabsList>
 
                     <div className="mt-4 app-panel rounded-md">
