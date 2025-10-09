@@ -32,13 +32,12 @@ export const CalibrationBlockDrawing = ({
 
   return (
     <div 
-      className="flex items-center justify-center border-2 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 p-8 shadow-inner" 
-      style={{ width: width * 1.5, height: height * 1.5, minWidth: 450, minHeight: 300 }}
+      className="flex items-center justify-center border-2 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8 shadow-inner w-full min-h-[250px] md:min-h-[300px] lg:min-h-[400px]" 
     >
       <img 
         src={imageSrc} 
         alt={`${blockType} calibration block - MIL-STD-2154`}
-        className="max-w-full max-h-full object-contain filter contrast-125 brightness-105"
+        className="w-full h-auto max-w-full object-contain filter contrast-125 brightness-105"
         style={{ imageRendering: 'crisp-edges' }}
       />
     </div>
