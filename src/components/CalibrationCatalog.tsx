@@ -198,7 +198,7 @@ export const CalibrationCatalog = ({
           </div>
         )}
 
-        <div className="aspect-video bg-muted rounded-md mb-3 flex items-center justify-center overflow-hidden">
+        <div className="w-full bg-muted rounded-md mb-3 overflow-hidden">
           {model.isCustom ? (
             <img 
               src={model.imageUrl} 
@@ -208,8 +208,6 @@ export const CalibrationCatalog = ({
           ) : (
             <CalibrationBlockDrawing 
               blockType={model.id as CalibrationBlockType}
-              width={400}
-              height={250}
             />
           )}
         </div>
@@ -372,18 +370,16 @@ export const CalibrationCatalog = ({
               {/* Image Preview */}
               <div>
                 <h4 className="font-semibold mb-2">Technical Drawing</h4>
-                <div className="border rounded p-4 bg-white flex items-center justify-center">
+                <div className="border rounded p-4 bg-white">
                   {previewModel.isCustom ? (
                     <img 
                       src={previewModel.imageUrl} 
                       alt={previewModel.name}
-                      className="w-full h-64 object-contain"
+                      className="w-full h-auto object-contain"
                     />
                   ) : (
                     <CalibrationBlockDrawing 
                       blockType={previewModel.id as CalibrationBlockType}
-                      width={600}
-                      height={400}
                     />
                   )}
                 </div>
