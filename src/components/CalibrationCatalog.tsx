@@ -58,9 +58,9 @@ const calibrationModels: CalibrationModel[] = [
   },
   {
     id: "angle_beam",
-    name: "Type IIv Reference Block",
-    figure: "Figure 7",
-    description: "Angle beam reference block for shear wave inspection with side-drilled holes",
+    name: "Angle Beam Test Block",
+    figure: "Figure 4A",
+    description: "Angle beam reference block with side-drilled holes for shear wave inspection",
     beamType: "angle",
     imageUrl: "",
     applications: ["Weld inspection", "Shear wave calibration", "Angle beam technique"]
@@ -76,9 +76,9 @@ const calibrationModels: CalibrationModel[] = [
   },
   {
     id: "iiv_block",
-    name: "IIW (V1/V2) Block",
-    figure: "IIW Standard",
-    description: "International Institute of Welding calibration block for angle beam",
+    name: "IIW Type Block",
+    figure: "Figure 7",
+    description: "International Institute of Welding calibration block for angle beam testing",
     beamType: "angle",
     imageUrl: "",
     applications: ["Weld inspection", "Beam angle verification", "Index point calibration"]
