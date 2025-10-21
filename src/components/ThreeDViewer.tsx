@@ -58,10 +58,17 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "tube":
-    case "ring":
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[d / 2, d / 2, t, 32]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "ring":
+      return (
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[d / 2, t / 4, 16, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
