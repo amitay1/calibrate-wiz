@@ -3,14 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload, X, Wand2, Download } from "lucide-react";
 import { PartDiagramGenerator } from "@/components/PartDiagramGenerator";
-import { lazy, Suspense, useState } from "react";
+import { AdvancedTechnicalDrawingGenerator } from "@/components/AdvancedTechnicalDrawingGenerator";
+import { useState } from "react";
 import { toast } from "sonner";
-
-const AdvancedTechnicalDrawingGenerator = lazy(() => 
-  import("@/components/AdvancedTechnicalDrawingGenerator").then(module => ({
-    default: module.AdvancedTechnicalDrawingGenerator
-  }))
-);
 
 interface PartDiagramTabProps {
   partDiagramImage?: string;
@@ -173,25 +168,23 @@ export const PartDiagramTab = ({
           )}
 
           {isGenerating && (
-            <Suspense fallback={<div>Loading generator...</div>}>
-              {useAdvanced ? (
-                <AdvancedTechnicalDrawingGenerator
-                  partType={partType}
-                  thickness={thickness}
-                  diameter={diameter}
-                  length={length}
-                  onImageGenerated={onDiagramGenerated}
-                />
-              ) : (
-                <PartDiagramGenerator
-                  partType={partType}
-                  thickness={thickness}
-                  diameter={diameter}
-                  length={length}
-                  onImageGenerated={onDiagramGenerated}
-                />
-              )}
-            </Suspense>
+            useAdvanced ? (
+              <AdvancedTechnicalDrawingGenerator
+                partType={partType}
+                thickness={thickness}
+                diameter={diameter}
+                length={length}
+                onImageGenerated={onDiagramGenerated}
+              />
+            ) : (
+              <PartDiagramGenerator
+                partType={partType}
+                thickness={thickness}
+                diameter={diameter}
+                length={length}
+                onImageGenerated={onDiagramGenerated}
+              />
+            )
           )}
         </div>
       </Card>
