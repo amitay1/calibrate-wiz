@@ -9,28 +9,22 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  cacheDir: ".vite-cache-v5",
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
+  },
   optimizeDeps: {
     include: [
       "react",
       "react-dom",
       "react/jsx-runtime",
-      "@radix-ui/react-menubar",
-      "react-resizable-panels",
-      "next-themes",
     ],
-    exclude: [],
-    force: true,
     esbuildOptions: {
       target: 'esnext',
     }
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-    dedupe: ["react", "react-dom"],
   },
   build: {
     commonjsOptions: {
