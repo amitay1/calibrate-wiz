@@ -48,39 +48,43 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
 
   switch (partType) {
     case "plate":
+      // Wide, flat sheet - emphasize width and length, minimize thickness
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l, w, t]} />
+          <boxGeometry args={[l, t, w]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "bar":
+      // Long, narrow beam - emphasize length, small cross-section
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l, t / 2, w / 2]} />
+          <boxGeometry args={[l, w * 0.3, t * 0.3]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "forging":
+      // Irregular, bulky shape - uneven proportions
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l * 0.8, t * 1.2, w * 0.8]} />
+          <boxGeometry args={[l * 0.9, w * 1.3, t * 0.7]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "tube":
+      // Long hollow cylinder - horizontal orientation
       return (
         <group>
           {/* Outer cylinder */}
-          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[d / 2, d / 2, l, 32]} />
             <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Inner cylinder (hollow) */}
-          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[(d / 2) - (t / 2), (d / 2) - (t / 2), l + 0.01, 32]} />
             <meshStandardMaterial color="#1E1E1E" metalness={0.5} roughness={0.5} side={1} />
           </mesh>
@@ -88,17 +92,19 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "ring":
+      // Donut/torus shape - thick ring
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[d / 2, t / 4, 16, 32]} />
+          <torusGeometry args={[d / 2, t / 2, 20, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "disk":
+      // Flat, round coin shape - wide diameter, minimal thickness
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[d / 2, d / 2, t, 32]} />
+          <cylinderGeometry args={[d / 2, d / 2, t * 0.5, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
