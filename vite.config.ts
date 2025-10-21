@@ -17,12 +17,11 @@ export default defineConfig(({ mode }) => ({
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
   optimizeDeps: {
+    force: true,
     include: [
       "react",
       "react-dom",
       "react/jsx-runtime",
-      "paper",
-      "makerjs",
     ],
     esbuildOptions: {
       target: 'esnext',
