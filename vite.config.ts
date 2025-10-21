@@ -21,9 +21,8 @@ export default defineConfig(({ mode }) => ({
       "react",
       "react-dom",
       "react/jsx-runtime",
-      "paper",
-      "makerjs",
     ],
+    force: true,
     esbuildOptions: {
       target: 'esnext',
     }
