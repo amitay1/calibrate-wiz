@@ -48,21 +48,43 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
 
   switch (partType) {
     case "plate":
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l, w, t]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
     case "bar":
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l, t / 2, w / 2]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
     case "forging":
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l, t, w]} />
+          <boxGeometry args={[l * 0.8, t * 1.2, w * 0.8]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "tube":
       return (
-        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[d / 2, d / 2, t, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-        </mesh>
+        <group>
+          {/* Outer cylinder */}
+          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[d / 2, d / 2, l, 32]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Inner cylinder (hollow) */}
+          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[(d / 2) - (t / 2), (d / 2) - (t / 2), l + 0.01, 32]} />
+            <meshStandardMaterial color="#1E1E1E" metalness={0.5} roughness={0.5} side={1} />
+          </mesh>
+        </group>
       );
     
     case "ring":
@@ -76,7 +98,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     case "disk":
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[Math.max(l, w) * 0.5, Math.max(l, w) * 0.5, t, 32]} />
+          <cylinderGeometry args={[d / 2, d / 2, t, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
