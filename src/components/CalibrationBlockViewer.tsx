@@ -11,9 +11,9 @@ const CalibrationBlock = ({ recommendation }: CalibrationBlockViewerProps) => {
   const [length, width, height] = recommendation.visualization3D.blockDimensions;
   const scale = 0.01; // Scale to scene units
   
-  const l = length * scale;
-  const w = width * scale;
-  const h = height * scale;
+  const l = Math.max(length * scale, 0.1);
+  const w = Math.max(width * scale, 0.1);
+  const h = Math.max(height * scale, 0.1);
 
   return (
     <group>
@@ -39,7 +39,7 @@ const CalibrationBlock = ({ recommendation }: CalibrationBlockViewerProps) => {
       {recommendation.visualization3D.fbhPositions.map((fbh, index) => {
         const [x, y, z] = fbh.coordinates;
         const diameter = parseFloat(fbh.size.split('/')[0]) / 64 * 25.4; // Convert to mm
-        const radius = diameter * scale / 2;
+        const radius = Math.max(diameter * scale / 2, 0.02);
         
         return (
           <group key={index} position={[x * scale, -y * scale / 2, z * scale]}>

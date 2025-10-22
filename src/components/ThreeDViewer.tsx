@@ -32,12 +32,12 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
 
   // Scale down for better viewing (convert mm to scene units)
   const scale = 0.01;
-  const l = length * scale;
-  const w = width * scale;
-  const t = thickness * scale;
-  const d = (diameter || 50) * scale;
+  const l = Math.max(length * scale, 0.1);
+  const w = Math.max(width * scale, 0.1);
+  const t = Math.max(thickness * scale, 0.1);
+  const d = Math.max((diameter || 50) * scale, 0.1);
 
-  if (!partType || l === 0 || w === 0 || t === 0) {
+  if (!partType) {
     return (
       <mesh>
         <boxGeometry args={[1, 0.5, 0.5]} />
@@ -76,6 +76,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     
     case "tube":
       // Long hollow cylinder - horizontal orientation
+      const innerDiameter = Math.max((d / 2) - (t / 2), 0.05);
       return (
         <group>
           {/* Outer cylinder */}
@@ -85,7 +86,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
           </mesh>
           {/* Inner cylinder (hollow) */}
           <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[(d / 2) - (t / 2), (d / 2) - (t / 2), l + 0.01, 32]} />
+            <cylinderGeometry args={[innerDiameter, innerDiameter, l + 0.01, 32]} />
             <meshStandardMaterial color="#1E1E1E" metalness={0.5} roughness={0.5} side={1} />
           </mesh>
         </group>
@@ -93,18 +94,22 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     
     case "ring":
       // Donut/torus shape - thick ring
+      const torusRadius = Math.max(d / 2, 0.2);
+      const tubeRadius = Math.max(t / 2, 0.05);
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[d / 2, t / 2, 20, 32]} />
+          <torusGeometry args={[torusRadius, tubeRadius, 20, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "disk":
       // Flat, round coin shape - wide diameter, minimal thickness
+      const diskRadius = Math.max(d / 2, 0.2);
+      const diskHeight = Math.max(t * 0.5, 0.05);
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[d / 2, d / 2, t * 0.5, 32]} />
+          <cylinderGeometry args={[diskRadius, diskRadius, diskHeight, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
