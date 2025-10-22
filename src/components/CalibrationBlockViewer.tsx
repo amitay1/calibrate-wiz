@@ -9,7 +9,7 @@ interface CalibrationBlockViewerProps {
 
 const CalibrationBlock = ({ recommendation }: CalibrationBlockViewerProps) => {
   const [length, width, height] = recommendation.visualization3D.blockDimensions;
-  const scale = 0.01; // Scale to scene units
+  const scale = 0.01; // Scale to scene units - with safety checks
   
   const l = Math.max(length * scale, 0.1);
   const w = Math.max(width * scale, 0.1);

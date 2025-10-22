@@ -30,7 +30,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
   const color = getMaterialColor(material);
   const { length, width, thickness, diameter } = dimensions;
 
-  // Scale down for better viewing (convert mm to scene units)
+  // Scale down for better viewing (convert mm to scene units) - with dimension safety
   const scale = 0.01;
   const l = Math.max(length * scale, 0.1);
   const w = Math.max(width * scale, 0.1);
