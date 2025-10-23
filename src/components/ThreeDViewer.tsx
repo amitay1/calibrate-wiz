@@ -3,7 +3,8 @@ import { OrbitControls, PerspectiveCamera, Environment } from "@react-three/drei
 import { PartGeometry, MaterialType } from "@/types/techniqueSheet";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
+import * as THREE from "three";
 
 interface ThreeDViewerProps {
   partType: PartGeometry | "";
@@ -24,6 +25,62 @@ const getMaterialColor = (material: MaterialType | ""): string => {
     case "magnesium": return "#B0B0B8";
     default: return "#A0A0A0";
   }
+};
+
+// Component for hollow tube with real hole
+const HollowTube = ({ color, outerRadius, innerRadius, length }: { color: string; outerRadius: number; innerRadius: number; length: number }) => {
+  const geometry = useMemo(() => {
+    const shape = new THREE.Shape();
+    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+    shape.holes.push(hole);
+    
+    const extrudeSettings = {
+      depth: length,
+      bevelEnabled: false,
+      steps: 1
+    };
+    
+    const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geom.rotateY(Math.PI / 2);
+    geom.translate(0, 0, -length / 2);
+    return geom;
+  }, [outerRadius, innerRadius, length]);
+  
+  return (
+    <mesh castShadow receiveShadow geometry={geometry}>
+      <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} side={THREE.DoubleSide} />
+    </mesh>
+  );
+};
+
+// Component for hollow ring with real hole
+const HollowRing = ({ color, outerRadius, innerRadius, height }: { color: string; outerRadius: number; innerRadius: number; height: number }) => {
+  const geometry = useMemo(() => {
+    const shape = new THREE.Shape();
+    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+    shape.holes.push(hole);
+    
+    const extrudeSettings = {
+      depth: height,
+      bevelEnabled: false,
+      steps: 1
+    };
+    
+    const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geom.rotateX(Math.PI / 2);
+    geom.translate(0, 0, -height / 2);
+    return geom;
+  }, [outerRadius, innerRadius, height]);
+  
+  return (
+    <mesh castShadow receiveShadow geometry={geometry}>
+      <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} side={THREE.DoubleSide} />
+    </mesh>
+  );
 };
 
 const Part = ({ partType, material, dimensions = { length: 100, width: 50, thickness: 10, diameter: 50 } }: ThreeDViewerProps) => {
@@ -93,41 +150,33 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "tube":
-      // Long hollow cylinder - horizontal orientation
-      const innerDiameter = Math.max((d / 2) - (t / 2), 0.05);
+      // Long hollow cylinder with REAL hole
+      const tubeOuterRadius = d / 2;
+      const tubeInnerRadius = Math.max((d / 2) - t, 0.05);
+      const tubeLength = l;
+      
       return (
-        <group>
-          {/* Outer cylinder */}
-          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[d / 2, d / 2, l, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-          </mesh>
-          {/* Inner cylinder (hollow) */}
-          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[innerDiameter, innerDiameter, l + 0.01, 32]} />
-            <meshStandardMaterial color="#1E1E1E" metalness={0.5} roughness={0.5} side={1} />
-          </mesh>
-        </group>
+        <HollowTube 
+          color={color} 
+          outerRadius={tubeOuterRadius} 
+          innerRadius={tubeInnerRadius} 
+          length={tubeLength} 
+        />
       );
     
     case "ring":
-      // Ring Forging - thick hollow cylinder section
+      // Ring Forging - hollow cylinder with REAL hole
       const ringOuterRadius = Math.max(d / 2, 0.5);
       const ringInnerRadius = Math.max((d / 2) - t, 0.2);
       const ringHeight = Math.max(w * 0.5, 0.3);
+      
       return (
-        <group rotation={[Math.PI / 2, 0, 0]}>
-          {/* Outer cylinder */}
-          <mesh castShadow receiveShadow>
-            <cylinderGeometry args={[ringOuterRadius, ringOuterRadius, ringHeight, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-          </mesh>
-          {/* Inner cylinder (hollow) */}
-          <mesh castShadow receiveShadow>
-            <cylinderGeometry args={[ringInnerRadius, ringInnerRadius, ringHeight + 0.02, 32]} />
-            <meshStandardMaterial color="#1E1E1E" metalness={0.5} roughness={0.5} side={2} />
-          </mesh>
-        </group>
+        <HollowRing 
+          color={color} 
+          outerRadius={ringOuterRadius} 
+          innerRadius={ringInnerRadius} 
+          height={ringHeight} 
+        />
       );
     
     case "disk":
@@ -182,9 +231,15 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
     }
   };
 
+  // Create a unique key based on props to force re-render when dimensions change
+  const viewerKey = useMemo(() => {
+    const dims = props.dimensions;
+    return `${props.partType}-${props.material}-${dims?.length}-${dims?.width}-${dims?.thickness}-${dims?.diameter}`;
+  }, [props.partType, props.material, props.dimensions]);
+
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border border-border overflow-hidden">
-      <Canvas shadows>
+      <Canvas key={viewerKey} shadows>
         <PerspectiveCamera makeDefault position={[3, 2, 3]} />
         <OrbitControls 
           ref={controlsRef}
@@ -237,6 +292,9 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
             `${props.partType.charAt(0).toUpperCase() + props.partType.slice(1)} • ${props.material || "No material"}` :
             "Configure part geometry"
           }
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {props.dimensions && `${props.dimensions.thickness}mm thick`}
         </p>
       </div>
     </div>
