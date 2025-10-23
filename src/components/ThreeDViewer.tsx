@@ -46,7 +46,25 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     );
   }
 
-  switch (partType) {
+  // Normalize part type to handle detailed names
+  const normalizedPartType = partType.toLowerCase().replace(/\s*⭐\s*/g, '').trim();
+
+  // Determine geometry type from normalized name
+  const getGeometryType = (): string => {
+    if (normalizedPartType.includes('ring')) return 'ring';
+    if (normalizedPartType.includes('disk')) return 'disk';
+    if (normalizedPartType.includes('tube') || normalizedPartType.includes('pipe')) return 'tube';
+    if (normalizedPartType.includes('plate') || normalizedPartType.includes('flat')) return 'plate';
+    if (normalizedPartType.includes('bar') || normalizedPartType.includes('rectangular')) return 'bar';
+    if (normalizedPartType.includes('hex')) return 'hex';
+    if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
+    if (normalizedPartType.includes('forging') && !normalizedPartType.includes('ring') && !normalizedPartType.includes('disk')) return 'forging';
+    return 'plate'; // default
+  };
+
+  const geometryType = getGeometryType();
+
+  switch (geometryType) {
     case "plate":
       // Wide, flat sheet - emphasize width and length, minimize thickness
       return (
@@ -93,23 +111,54 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "ring":
-      // Donut/torus shape - thick ring
-      const torusRadius = Math.max(d / 2, 0.2);
-      const tubeRadius = Math.max(t / 2, 0.05);
+      // Ring Forging - thick hollow cylinder section
+      const ringOuterRadius = Math.max(d / 2, 0.5);
+      const ringInnerRadius = Math.max((d / 2) - t, 0.2);
+      const ringHeight = Math.max(w * 0.5, 0.3);
+      return (
+        <group rotation={[Math.PI / 2, 0, 0]}>
+          {/* Outer cylinder */}
+          <mesh castShadow receiveShadow>
+            <cylinderGeometry args={[ringOuterRadius, ringOuterRadius, ringHeight, 32]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Inner cylinder (hollow) */}
+          <mesh castShadow receiveShadow>
+            <cylinderGeometry args={[ringInnerRadius, ringInnerRadius, ringHeight + 0.02, 32]} />
+            <meshStandardMaterial color="#1E1E1E" metalness={0.5} roughness={0.5} side={2} />
+          </mesh>
+        </group>
+      );
+    
+    case "disk":
+      // Disk Forging - flat, solid circular shape
+      const diskRadius = Math.max(d / 2, 0.5);
+      const diskHeight = Math.max(t, 0.1);
       return (
         <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[torusRadius, tubeRadius, 20, 32]} />
+          <cylinderGeometry args={[diskRadius, diskRadius, diskHeight, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
-    case "disk":
-      // Flat, round coin shape - wide diameter, minimal thickness
-      const diskRadius = Math.max(d / 2, 0.2);
-      const diskHeight = Math.max(t * 0.5, 0.05);
+    case "hex":
+      // Hex Bar - hexagonal prism
+      const hexRadius = Math.max(w * 0.5, 0.2);
+      const hexHeight = Math.max(l, 0.5);
       return (
-        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[diskRadius, diskRadius, diskHeight, 32]} />
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[hexRadius, hexRadius, hexHeight, 6]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "round":
+      // Round Bar / Cylinder - solid round stock
+      const roundRadius = Math.max(d / 2, 0.2);
+      const roundHeight = Math.max(l, 0.5);
+      return (
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[roundRadius, roundRadius, roundHeight, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
