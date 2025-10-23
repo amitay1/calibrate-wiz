@@ -19,6 +19,7 @@ import { PartDiagramTab } from "@/components/tabs/PartDiagramTab";
 import { ProbeDetailsTab } from "@/components/tabs/ProbeDetailsTab";
 import { ScansTab } from "@/components/tabs/ScansTab";
 import { RemarksTab } from "@/components/tabs/RemarksTab";
+import { ScanDetailsTab, ScanDetailsData } from "@/components/tabs/ScanDetailsTab";
 import { 
   StandardType, 
   InspectionSetupData, 
@@ -109,6 +110,10 @@ const Index = () => {
     revision: "A",
     additionalNotes: "",
     approvalRequired: false,
+  });
+
+  const [scanDetails, setScanDetails] = useState<ScanDetailsData>({
+    scanDetails: []
   });
 
   const [inspectionReport, setInspectionReport] = useState<InspectionReportData>({
@@ -202,9 +207,10 @@ const Index = () => {
       scanParameters,
       acceptanceCriteria,
       documentation,
+      scanDetails,
     };
     localStorage.setItem("techniqueSheet", JSON.stringify(data));
-  }, [standard, inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation]);
+  }, [standard, inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation, scanDetails]);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -219,6 +225,7 @@ const Index = () => {
         setScanParameters(data.scanParameters || scanParameters);
         setAcceptanceCriteria(data.acceptanceCriteria || acceptanceCriteria);
         setDocumentation(data.documentation || documentation);
+        setScanDetails(data.scanDetails || { scanDetails: [] });
       } catch (error) {
         console.error("Failed to load saved data", error);
       }
@@ -443,6 +450,7 @@ const Index = () => {
                       <TabsTrigger value="equipment" className="flex-1 md:flex-initial min-w-[100px]">Equipment</TabsTrigger>
                       <TabsTrigger value="calibration" className="flex-1 md:flex-initial min-w-[100px]">Calibration</TabsTrigger>
                       <TabsTrigger value="scan" className="flex-1 md:flex-initial min-w-[100px]">Scan Params</TabsTrigger>
+                      <TabsTrigger value="scandetails" className="flex-1 md:flex-initial min-w-[100px]">Scan Details</TabsTrigger>
                       <TabsTrigger value="acceptance" className="flex-1 md:flex-initial min-w-[100px]">Acceptance</TabsTrigger>
                       <TabsTrigger value="docs" className="flex-1 md:flex-initial min-w-[100px]">Documentation</TabsTrigger>
                     </TabsList>
@@ -478,6 +486,14 @@ const Index = () => {
                           data={scanParameters}
                           onChange={setScanParameters}
                           standard={standard}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="scandetails" className="m-0">
+                        <ScanDetailsTab
+                          data={scanDetails}
+                          onChange={setScanDetails}
+                          partType={inspectionSetup.partType}
                         />
                       </TabsContent>
 
