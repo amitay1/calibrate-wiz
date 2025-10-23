@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -56,11 +56,11 @@ const DEFAULT_SCAN_DETAILS: ScanDetail[] = [
 
 export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps) => {
   // Initialize with default scan details if empty
-  React.useEffect(() => {
+  useEffect(() => {
     if (!data.scanDetails || data.scanDetails.length === 0) {
       onChange({ scanDetails: DEFAULT_SCAN_DETAILS });
     }
-  }, []);
+  }, [data.scanDetails, onChange]);
 
   const updateScanDetail = (index: number, field: keyof ScanDetail, value: string) => {
     const newScanDetails = [...data.scanDetails];
