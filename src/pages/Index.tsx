@@ -452,6 +452,7 @@ const Index = () => {
                         <InspectionSetupTab 
                           data={inspectionSetup} 
                           onChange={setInspectionSetup}
+                          acceptanceClass={acceptanceCriteria.acceptanceClass}
                         />
                       </TabsContent>
 
