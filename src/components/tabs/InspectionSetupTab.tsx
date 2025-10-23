@@ -1,15 +1,17 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InspectionSetupData, MaterialType, PartGeometry } from "@/types/techniqueSheet";
+import { InspectionSetupData, MaterialType, PartGeometry, AcceptanceClass } from "@/types/techniqueSheet";
 import { Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { materialDatabase } from "@/utils/autoFillLogic";
+import { SmartRecommendations } from "@/components/SmartRecommendations";
 
 interface InspectionSetupTabProps {
   data: InspectionSetupData;
   onChange: (data: InspectionSetupData) => void;
+  acceptanceClass?: AcceptanceClass | "";
 }
 
 const materials: { value: MaterialType; label: string }[] = [
@@ -19,13 +21,20 @@ const materials: { value: MaterialType; label: string }[] = [
   { value: "magnesium", label: "Magnesium" },
 ];
 
-const partTypes: { value: PartGeometry; label: string }[] = [
-  { value: "plate", label: "Plate" },
-  { value: "bar", label: "Bar" },
-  { value: "forging", label: "Forging" },
-  { value: "tube", label: "Tube" },
-  { value: "ring", label: "Ring" },
-  { value: "disk", label: "Disk" },
+const partTypes: { value: PartGeometry; label: string; description?: string }[] = [
+  { value: "plate", label: "Plate", description: "W/T > 5" },
+  { value: "flat_bar", label: "Flat Bar", description: "W/T > 5" },
+  { value: "rectangular_bar", label: "Rectangular Bar", description: "W/T < 5, scan from 2 sides" },
+  { value: "round_bar", label: "Round Bar", description: "Radial + axial scans" },
+  { value: "round_forging_stock", label: "Round Forging Stock", description: "Consider grain structure" },
+  { value: "ring_forging", label: "Ring Forging ⭐", description: "Radial + axial + shear wave" },
+  { value: "disk_forging", label: "Disk Forging", description: "Flat face + radial" },
+  { value: "hex_bar", label: "Hex Bar", description: "3 adjacent faces" },
+  { value: "tube", label: "Tube", description: "ID + OD coverage" },
+  { value: "bar", label: "Bar (Generic)", description: "Use specific type if known" },
+  { value: "forging", label: "Forging (Generic)", description: "Use specific type if known" },
+  { value: "ring", label: "Ring (Generic)", description: "Use ring_forging if applicable" },
+  { value: "disk", label: "Disk (Generic)", description: "Use disk_forging if applicable" },
 ];
 
 const materialSpecs: Record<MaterialType, string[]> = {
@@ -74,7 +83,7 @@ const FieldWithHelp = ({
   </div>
 );
 
-export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) => {
+export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: InspectionSetupTabProps) => {
   const updateField = (field: keyof InspectionSetupData, value: any) => {
     onChange({ ...data, [field]: value });
   };
@@ -186,7 +195,12 @@ export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) 
             <SelectContent>
               {partTypes.map((type) => (
                 <SelectItem key={type.value} value={type.value}>
-                  {type.label}
+                  <div className="flex flex-col">
+                    <span className="font-medium">{type.label}</span>
+                    {type.description && (
+                      <span className="text-xs text-muted-foreground">{type.description}</span>
+                    )}
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -258,6 +272,17 @@ export const InspectionSetupTab = ({ data, onChange }: InspectionSetupTabProps) 
           </FieldWithHelp>
         )}
       </div>
+
+      {/* Smart Recommendations Panel */}
+      <SmartRecommendations
+        geometry={data.partType}
+        material={data.material}
+        thickness={data.partThickness}
+        width={data.partWidth}
+        length={data.partLength}
+        diameter={data.diameter}
+        acceptanceClass={acceptanceClass}
+      />
     </div>
   );
 };

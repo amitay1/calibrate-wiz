@@ -112,19 +112,61 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     calibrationBlockType: ["flat_block"],
     scanPattern: "Raster scan, 0° and 90° directions",
     transducerType: "immersion",
-    specialConsiderations: "Check for laminar discontinuities, back reflection loss"
+    specialConsiderations: "If W/T > 5, check laminar discontinuities. If W or T > 228.6mm, scan from opposite side."
+  },
+  flat_bar: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Straight beam perpendicular to surface",
+    transducerType: "immersion",
+    specialConsiderations: "Same as plate - If W/T > 5. Surface resolution requirements for thick sections."
+  },
+  rectangular_bar: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Scan from two adjacent sides",
+    transducerType: "contact",
+    specialConsiderations: "If W/T < 5, scan from two adjacent sides. If T or W > 228.6mm, scan from opposite sides."
+  },
+  round_bar: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Radial scan from circumference",
+    transducerType: "immersion",
+    specialConsiderations: "Full circumferential coverage required. Axial scan from end face."
+  },
+  round_forging_stock: {
+    calibrationBlockType: ["flat_block", "curved_block"],
+    scanPattern: "Radial and axial scans",
+    transducerType: "immersion",
+    specialConsiderations: "Consider grain structure orientation. Full coverage required."
+  },
+  ring_forging: {
+    calibrationBlockType: ["curved_block", "cylinder_fbh"],
+    scanPattern: "Radial, axial, and circumferential shear wave",
+    transducerType: "immersion",
+    specialConsiderations: "CRITICAL: If thickness > 20% OD or L/T < 5, special scans required. Circumferential shear wave per Appendix A."
+  },
+  disk_forging: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "From flat face and radially from circumference",
+    transducerType: "immersion",
+    specialConsiderations: "Scan from at least one flat face. Radial scan from circumference when practical."
+  },
+  hex_bar: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Scan from three adjacent faces",
+    transducerType: "contact",
+    specialConsiderations: "When T exceeds attenuation limit, scan from opposite sides. Three-face coverage minimum."
   },
   bar: {
     calibrationBlockType: ["flat_block"],
     scanPattern: "Longitudinal scan along bar axis",
     transducerType: "contact",
-    specialConsiderations: "Scan from multiple surfaces if diameter permits"
+    specialConsiderations: "Generic bar - use specific type (round_bar, rectangular_bar, etc.) if known"
   },
   forging: {
     calibrationBlockType: ["curved_block", "flat_block"],
     scanPattern: "Contour following, multiple orientations",
     transducerType: "contact",
-    specialConsiderations: "Match calibration block to part curvature, check grain structure effects"
+    specialConsiderations: "Generic forging - use specific type (ring_forging, disk_forging, etc.) if known. Match calibration block to part curvature."
   },
   tube: {
     calibrationBlockType: ["cylinder_fbh", "cylinder_notched"],
@@ -136,13 +178,13 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     calibrationBlockType: ["curved_block", "cylinder_fbh"],
     scanPattern: "Circumferential scan, axial and radial",
     transducerType: "immersion",
-    specialConsiderations: "Curvature compensation, grain structure orientation"
+    specialConsiderations: "Generic ring - use ring_forging if applicable. Curvature compensation required."
   },
   disk: {
     calibrationBlockType: ["flat_block"],
     scanPattern: "Radial and circumferential patterns",
     transducerType: "immersion",
-    specialConsiderations: "Center bore area requires special attention, rim inspection"
+    specialConsiderations: "Generic disk - use disk_forging if applicable. Center bore and rim inspection critical."
   }
 };
 

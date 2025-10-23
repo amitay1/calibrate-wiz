@@ -2,7 +2,20 @@ export type StandardType = "MIL-STD-2154" | "AMS-STD-2154E" | "ASTM-E-114";
 
 export type MaterialType = "aluminum" | "steel" | "titanium" | "magnesium";
 
-export type PartGeometry = "plate" | "bar" | "forging" | "tube" | "ring" | "disk";
+export type PartGeometry = 
+  | "plate" 
+  | "flat_bar" 
+  | "rectangular_bar" 
+  | "round_bar" 
+  | "round_forging_stock" 
+  | "ring_forging" 
+  | "disk_forging" 
+  | "hex_bar" 
+  | "bar" 
+  | "forging" 
+  | "tube" 
+  | "ring" 
+  | "disk";
 
 export type AcceptanceClass = "AAA" | "AA" | "A" | "B" | "C";
 
