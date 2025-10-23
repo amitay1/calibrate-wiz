@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import variousShapesOverview from "@/assets/scan-diagrams/various-shapes-overview.png";
-import ringDiskHexDiagrams from "@/assets/scan-diagrams/ring-disk-hex-diagrams.jpg";
-import ringForgingDetail from "@/assets/scan-diagrams/ring-forging-detail.jpg";
 
 export interface ScanDetail {
   scanningDirection: string;
@@ -57,10 +54,10 @@ const DEFAULT_SCAN_DETAILS: ScanDetail[] = [
 export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps) => {
   // Initialize with default scan details if empty
   useEffect(() => {
-    if (!data.scanDetails || data.scanDetails.length === 0) {
+    if (!data?.scanDetails || data.scanDetails.length === 0) {
       onChange({ scanDetails: DEFAULT_SCAN_DETAILS });
     }
-  }, [data.scanDetails, onChange]);
+  }, []);
 
   const updateScanDetail = (index: number, field: keyof ScanDetail, value: string) => {
     const newScanDetails = [...data.scanDetails];
@@ -76,7 +73,6 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     // Show ring forging specific diagram
     if (partTypeLower.includes("ring")) {
       return {
-        image: ringForgingDetail,
         title: "Ring Forging - Scan Directions",
         notes: [
           "Scan with straight beam from circumference with sound beam directed radially if thickness ≤ 20% of OD",
@@ -89,7 +85,6 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     // Show disk forging diagram
     if (partTypeLower.includes("disk")) {
       return {
-        image: ringDiskHexDiagrams,
         title: "Disk Forging - Scan Directions",
         notes: [
           "Scan with straight beams from at least one flat face",
@@ -101,7 +96,6 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     // Show hex bar diagram
     if (partTypeLower.includes("hex")) {
       return {
-        image: ringDiskHexDiagrams,
         title: "Hex Bar - Scan Directions",
         notes: [
           "Scan with straight beam from three adjacent faces",
@@ -112,7 +106,6 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     
     // Default overview for other shapes
     return {
-      image: variousShapesOverview,
       title: "Sound Beam Directions - Reference Diagram",
       notes: [
         "Select appropriate scanning directions based on part geometry",
@@ -132,14 +125,6 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold">{diagram.title}</h3>
               <Badge variant="secondary">Reference</Badge>
-            </div>
-            
-            <div className="bg-muted/30 p-4 rounded-lg">
-              <img 
-                src={diagram.image} 
-                alt={diagram.title}
-                className="w-full h-auto rounded-lg border border-border"
-              />
             </div>
 
             <div className="space-y-2">
