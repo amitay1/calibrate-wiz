@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import beamDirectionsExample from "@/assets/scan-diagrams/beam-directions-example.jpg";
 
 export interface ScanDetail {
   scanningDirection: string;
@@ -73,8 +74,11 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     // Show ring forging specific diagram
     if (partTypeLower.includes("ring")) {
       return {
-        title: "Ring Forging - Scan Directions",
+        image: beamDirectionsExample,
+        title: "Ring Forging - Scan Directions (כיווני סריקה)",
         notes: [
+          "Direzione fascio (0°, onde longitudinali) - Beam direction (0°, longitudinal waves)",
+          "Direzione fascio (45°, onde trasversali assiali) - Beam direction (45°, axial shear waves)",
           "Scan with straight beam from circumference with sound beam directed radially if thickness ≤ 20% of OD",
           "Axial scanning required only if L/T < 5",
           "Circumferential shear wave technique required per Appendix A"
@@ -85,10 +89,12 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     // Show disk forging diagram
     if (partTypeLower.includes("disk")) {
       return {
-        title: "Disk Forging - Scan Directions",
+        image: beamDirectionsExample,
+        title: "Disk Forging - Scan Directions (כיווני סריקה)",
         notes: [
           "Scan with straight beams from at least one flat face",
-          "Scan radially from circumference whenever practical"
+          "Scan radially from circumference whenever practical",
+          "Reference diagram shows longitudinal and shear wave directions"
         ]
       };
     }
@@ -96,20 +102,24 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     // Show hex bar diagram
     if (partTypeLower.includes("hex")) {
       return {
-        title: "Hex Bar - Scan Directions",
+        image: beamDirectionsExample,
+        title: "Hex Bar - Scan Directions (כיווני סריקה)",
         notes: [
           "Scan with straight beam from three adjacent faces",
-          "When T exceeds attenuation limits, scan from opposite sides"
+          "When T exceeds attenuation limits, scan from opposite sides",
+          "Reference diagram shows various beam angles and directions"
         ]
       };
     }
     
     // Default overview for other shapes
     return {
-      title: "Sound Beam Directions - Reference Diagram",
+      image: beamDirectionsExample,
+      title: "Sound Beam Directions - Reference Diagram (תרשים כיווני קרן קול)",
       notes: [
         "Select appropriate scanning directions based on part geometry",
-        "Follow MIL-STD-2154 guidelines for coverage requirements"
+        "Follow MIL-STD-2154 guidelines for coverage requirements",
+        "Diagram shows SIDE A and SIDE B beam directions with longitudinal (0°) and shear wave (45°) angles"
       ]
     };
   };
@@ -126,11 +136,23 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
               <h3 className="text-lg font-semibold">{diagram.title}</h3>
               <Badge variant="secondary">Reference</Badge>
             </div>
+            
+            {/* Diagram Image */}
+            <div className="bg-muted/30 p-4 rounded-lg border-2 border-primary/20">
+              <img 
+                src={diagram.image} 
+                alt={diagram.title}
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                תרשים כיווני סריקה - Beam Direction Reference Diagram
+              </p>
+            </div>
 
             <div className="space-y-2">
               <h4 className="text-sm font-semibold flex items-center gap-2">
                 <Info className="h-4 w-4 text-primary" />
-                Important Notes:
+                Important Notes (הערות חשובות):
               </h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 {diagram.notes.map((note, idx) => (
