@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { materialDatabase } from "@/utils/autoFillLogic";
 import { SmartRecommendations } from "@/components/SmartRecommendations";
+import { PartTypeVisualSelector } from "@/components/PartTypeVisualSelector";
 
 interface InspectionSetupTabProps {
   data: InspectionSetupData;
@@ -181,32 +182,18 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
           </Select>
         </FieldWithHelp>
 
-        <FieldWithHelp
-          label="Part Type/Geometry"
-          help="General geometry classification of the part"
-          required
-        >
-          <Select
-            value={data.partType}
-            onValueChange={(value) => updateField("partType", value)}
+        <div className="md:col-span-2">
+          <FieldWithHelp
+            label="Part Type/Geometry"
+            help="Select the geometry of your part visually"
+            required
           >
-            <SelectTrigger className="bg-background">
-              <SelectValue placeholder="Select geometry..." />
-            </SelectTrigger>
-            <SelectContent>
-              {partTypes.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{type.label}</span>
-                    {type.description && (
-                      <span className="text-xs text-muted-foreground">{type.description}</span>
-                    )}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FieldWithHelp>
+            <PartTypeVisualSelector
+              value={data.partType}
+              onChange={(value) => updateField("partType", value)}
+            />
+          </FieldWithHelp>
+        </div>
 
         <FieldWithHelp
           label="Part Thickness (mm)"
