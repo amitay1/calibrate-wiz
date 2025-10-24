@@ -103,20 +103,33 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     );
   }
 
-  // Normalize part type to handle detailed names
-  const normalizedPartType = partType.toLowerCase().replace(/\s*⭐\s*/g, '').trim();
+  // Normalize part type to handle detailed names and underscores
+  const normalizedPartType = partType.toLowerCase().replace(/\s*⭐\s*/g, '').replace(/_/g, ' ').trim();
 
   // Determine geometry type from normalized name
-  // IMPORTANT: Check specific types BEFORE general types (e.g., 'hex' before 'bar')
+  // IMPORTANT: Check EXACT and SPECIFIC types BEFORE general types
   const getGeometryType = (): string => {
+    // EXACT matches first (with underscores converted to spaces)
+    if (normalizedPartType === 'flat bar' || normalizedPartType === 'plate') return 'plate';
+    if (normalizedPartType === 'rectangular bar') return 'bar';
+    if (normalizedPartType === 'round bar' || normalizedPartType === 'round forging stock') return 'round';
+    if (normalizedPartType === 'hex bar') return 'hex';
+    if (normalizedPartType === 'ring forging' || normalizedPartType === 'ring') return 'ring';
+    if (normalizedPartType === 'disk forging' || normalizedPartType === 'disk') return 'disk';
+    if (normalizedPartType === 'tube') return 'tube';
+    if (normalizedPartType === 'bar') return 'bar';
+    if (normalizedPartType === 'forging') return 'forging';
+    
+    // Partial matches as fallback (for variations)
     if (normalizedPartType.includes('ring')) return 'ring';
     if (normalizedPartType.includes('disk')) return 'disk';
     if (normalizedPartType.includes('tube') || normalizedPartType.includes('pipe')) return 'tube';
-    if (normalizedPartType.includes('plate') || normalizedPartType.includes('flat')) return 'plate';
-    if (normalizedPartType.includes('hex')) return 'hex'; // Check hex BEFORE bar
+    if (normalizedPartType.includes('hex')) return 'hex';
     if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
+    if (normalizedPartType.includes('flat') || normalizedPartType.includes('plate')) return 'plate';
+    if (normalizedPartType.includes('forging')) return 'forging';
     if (normalizedPartType.includes('bar') || normalizedPartType.includes('rectangular')) return 'bar';
-    if (normalizedPartType.includes('forging') && !normalizedPartType.includes('ring') && !normalizedPartType.includes('disk')) return 'forging';
+    
     return 'plate'; // default
   };
 
