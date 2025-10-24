@@ -17,248 +17,281 @@ interface PartTypeOption {
   icon: React.ReactNode;
 }
 
-// SVG Icons with 3D effects, gradients, and lighting
+// SVG Icons - Each shape is UNIQUE and DISTINCTIVE
 const ShapeIcons = {
+  // 1. PLATE - Wide, thin, flat view from above
   plate: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 1 }} />
-          <stop offset="50%" style={{ stopColor: "currentColor", stopOpacity: 0.7 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: "#3b82f6", stopOpacity: 0.9 }} />
+          <stop offset="50%" style={{ stopColor: "#60a5fa", stopOpacity: 0.8 }} />
+          <stop offset="100%" style={{ stopColor: "#93c5fd", stopOpacity: 0.7 }} />
         </linearGradient>
-        <filter id="plateShadow">
-          <feDropShadow dx="2" dy="4" stdDeviation="3" floodOpacity="0.3"/>
-        </filter>
       </defs>
-      <rect x="15" y="30" width="90" height="45" fill="url(#plateGrad)" filter="url(#plateShadow)" rx="2"/>
-      <rect x="15" y="30" width="90" height="12" fill="currentColor" opacity="0.25"/>
-      <path d="M 15 30 L 20 25 L 110 25 L 105 30 Z" fill="currentColor" opacity="0.4"/>
+      {/* Top surface - very wide */}
+      <rect x="10" y="25" width="100" height="50" fill="url(#plateGrad)" stroke="#1e40af" strokeWidth="2" rx="3"/>
+      {/* Thickness indicator - thin edge */}
+      <rect x="10" y="75" width="100" height="6" fill="#1e3a8a" opacity="0.6"/>
+      <text x="60" y="55" fontSize="14" fontWeight="bold" fill="#1e40af" textAnchor="middle">PLATE</text>
     </svg>
   ),
+
+  // 2. FLAT BAR - Rectangular, medium width, side view
   flat_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
         <linearGradient id="flatBarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.9 }} />
-          <stop offset="60%" style={{ stopColor: "currentColor", stopOpacity: 0.6 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.3 }} />
+          <stop offset="0%" style={{ stopColor: "#10b981", stopOpacity: 0.9 }} />
+          <stop offset="100%" style={{ stopColor: "#34d399", stopOpacity: 0.6 }} />
         </linearGradient>
-        <filter id="barShadow">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
-          <feOffset dx="3" dy="3" result="offsetblur"/>
-          <feComponentTransfer><feFuncA type="linear" slope="0.4"/></feComponentTransfer>
-          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
       </defs>
-      <path d="M 20 35 L 25 30 L 95 30 L 100 35 L 100 65 L 95 70 L 25 70 L 20 65 Z" 
-            fill="url(#flatBarGrad)" filter="url(#barShadow)"/>
-      <rect x="20" y="35" width="80" height="10" fill="currentColor" opacity="0.3"/>
-      <path d="M 20 35 L 25 30 L 95 30 L 100 35 Z" fill="currentColor" opacity="0.5"/>
+      {/* 3D perspective flat bar */}
+      <path d="M 15 35 L 25 25 L 95 25 L 105 35 L 105 65 L 95 75 L 25 75 L 15 65 Z" 
+            fill="url(#flatBarGrad)" stroke="#047857" strokeWidth="2"/>
+      {/* Top face */}
+      <path d="M 15 35 L 25 25 L 95 25 L 105 35 Z" fill="#10b981" opacity="0.5"/>
+      {/* Side face */}
+      <path d="M 105 35 L 105 65 L 95 75 L 95 25 Z" fill="#047857" opacity="0.4"/>
+      <line x1="15" y1="50" x2="105" y2="50" stroke="#fff" strokeWidth="1" opacity="0.3" strokeDasharray="5,5"/>
     </svg>
   ),
+
+  // 3. RECTANGULAR BAR - Square cross-section, thick
   rectangular_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="rectBarGrad" x1="30%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 1 }} />
-          <stop offset="50%" style={{ stopColor: "currentColor", stopOpacity: 0.7 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <linearGradient id="rectGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#f59e0b", stopOpacity: 0.95 }} />
+          <stop offset="100%" style={{ stopColor: "#fbbf24", stopOpacity: 0.7 }} />
         </linearGradient>
-        <radialGradient id="rectHighlight">
-          <stop offset="0%" style={{ stopColor: "#fff", stopOpacity: 0.3 }} />
-          <stop offset="100%" style={{ stopColor: "#fff", stopOpacity: 0 }} />
-        </radialGradient>
       </defs>
-      <path d="M 35 30 L 40 25 L 80 25 L 85 30 L 85 70 L 80 75 L 40 75 L 35 70 Z" 
-            fill="url(#rectBarGrad)" stroke="currentColor" strokeWidth="1.5"/>
-      <rect x="35" y="30" width="50" height="15" fill="url(#rectHighlight)"/>
-      <path d="M 35 30 L 40 25 L 80 25 L 85 30 Z" fill="currentColor" opacity="0.5"/>
-      <rect x="38" y="33" width="44" height="8" fill="currentColor" opacity="0.2" rx="1"/>
+      {/* Thick square bar in 3D */}
+      <path d="M 30 25 L 45 15 L 90 15 L 105 25 L 105 75 L 90 85 L 45 85 L 30 75 Z" 
+            fill="url(#rectGrad)" stroke="#d97706" strokeWidth="2"/>
+      {/* Top face - visible */}
+      <path d="M 30 25 L 45 15 L 90 15 L 105 25 Z" fill="#fbbf24" opacity="0.6"/>
+      {/* Right face */}
+      <path d="M 105 25 L 105 75 L 90 85 L 90 15 Z" fill="#b45309" opacity="0.5"/>
+      {/* Grid pattern for thickness */}
+      <rect x="40" y="40" width="50" height="30" fill="none" stroke="#fff" strokeWidth="1" opacity="0.3"/>
     </svg>
   ),
+
+  // 4. ROUND BAR - Cylinder lying down, clearly round
   round_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <radialGradient id="roundGrad" cx="40%" cy="35%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 1 }} />
-          <stop offset="50%" style={{ stopColor: "currentColor", stopOpacity: 0.7 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.35 }} />
+        <radialGradient id="roundGrad" cx="30%" cy="40%">
+          <stop offset="0%" style={{ stopColor: "#8b5cf6", stopOpacity: 1 }} />
+          <stop offset="70%" style={{ stopColor: "#a78bfa", stopOpacity: 0.7 }} />
+          <stop offset="100%" style={{ stopColor: "#c4b5fd", stopOpacity: 0.5 }} />
         </radialGradient>
-        <linearGradient id="cylinderGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.5 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.2 }} />
-        </linearGradient>
       </defs>
-      <ellipse cx="60" cy="50" rx="35" ry="30" fill="url(#roundGrad)" stroke="currentColor" strokeWidth="1.5"/>
-      <ellipse cx="60" cy="38" rx="35" ry="10" fill="url(#cylinderGrad)"/>
-      <ellipse cx="60" cy="38" rx="28" ry="8" fill="currentColor" opacity="0.15"/>
-      <path d="M 25 50 L 25 73 Q 60 85 95 73 L 95 50" fill="currentColor" opacity="0.15"/>
-      <ellipse cx="55" cy="42" rx="8" ry="6" fill="white" opacity="0.3"/>
+      {/* Cylinder body */}
+      <ellipse cx="60" cy="50" rx="40" ry="28" fill="url(#roundGrad)" stroke="#6d28d9" strokeWidth="2"/>
+      {/* Highlight strip */}
+      <ellipse cx="45" cy="40" rx="15" ry="20" fill="#fff" opacity="0.3"/>
+      {/* Circular ends visible */}
+      <circle cx="25" cy="50" r="12" fill="#6d28d9" opacity="0.4" stroke="#4c1d95" strokeWidth="1.5"/>
+      <circle cx="95" cy="50" r="12" fill="#a78bfa" opacity="0.3" stroke="#6d28d9" strokeWidth="1.5"/>
+      {/* Axis line */}
+      <line x1="20" y1="50" x2="100" y2="50" stroke="#4c1d95" strokeWidth="1" strokeDasharray="3,3" opacity="0.5"/>
     </svg>
   ),
+
+  // 5. ROUND FORGING STOCK - Round with grain flow pattern
   round_forging_stock: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <radialGradient id="forgingGrad" cx="35%" cy="30%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 1 }} />
-          <stop offset="40%" style={{ stopColor: "currentColor", stopOpacity: 0.8 }} />
-          <stop offset="80%" style={{ stopColor: "currentColor", stopOpacity: 0.5 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.3 }} />
+        <radialGradient id="forgingGrad" cx="35%" cy="35%">
+          <stop offset="0%" style={{ stopColor: "#ef4444", stopOpacity: 0.95 }} />
+          <stop offset="60%" style={{ stopColor: "#f87171", stopOpacity: 0.75 }} />
+          <stop offset="100%" style={{ stopColor: "#fca5a5", stopOpacity: 0.55 }} />
         </radialGradient>
-        <pattern id="grainPattern" patternUnits="userSpaceOnUse" width="8" height="8">
-          <circle cx="4" cy="4" r="1" fill="currentColor" opacity="0.15"/>
+        <pattern id="grain" patternUnits="userSpaceOnUse" width="15" height="15">
+          <path d="M 0 7.5 Q 7.5 5 15 7.5" stroke="#991b1b" strokeWidth="1" fill="none" opacity="0.3"/>
         </pattern>
       </defs>
-      <ellipse cx="60" cy="50" rx="38" ry="32" fill="url(#forgingGrad)" stroke="currentColor" strokeWidth="1.5"/>
-      <ellipse cx="60" cy="36" rx="38" ry="12" fill="currentColor" opacity="0.35"/>
-      <ellipse cx="60" cy="50" rx="38" ry="32" fill="url(#grainPattern)"/>
-      <circle cx="60" cy="50" r="15" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3,2" opacity="0.4"/>
-      <ellipse cx="52" cy="40" rx="10" ry="8" fill="white" opacity="0.25"/>
+      {/* Forging stock with grain flow */}
+      <ellipse cx="60" cy="50" rx="42" ry="32" fill="url(#forgingGrad)" stroke="#991b1b" strokeWidth="2"/>
+      <ellipse cx="60" cy="50" rx="42" ry="32" fill="url(#grain)"/>
+      {/* Grain direction indicators */}
+      <path d="M 30 50 Q 60 35 90 50" stroke="#7f1d1d" strokeWidth="2" fill="none" opacity="0.4"/>
+      <path d="M 30 55 Q 60 70 90 55" stroke="#7f1d1d" strokeWidth="2" fill="none" opacity="0.4"/>
+      {/* Center mark */}
+      <circle cx="60" cy="50" r="8" fill="none" stroke="#fff" strokeWidth="2" opacity="0.4"/>
     </svg>
   ),
+
+  // 6. RING FORGING - Obvious ring/donut shape with star
   ring_forging: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
         <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.95 }} />
-          <stop offset="50%" style={{ stopColor: "currentColor", stopOpacity: 0.7 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+          <stop offset="0%" style={{ stopColor: "#ec4899", stopOpacity: 0.95 }} />
+          <stop offset="50%" style={{ stopColor: "#f472b6", stopOpacity: 0.8 }} />
+          <stop offset="100%" style={{ stopColor: "#f9a8d4", stopOpacity: 0.6 }} />
         </linearGradient>
-        <radialGradient id="ringHighlight" cx="35%" cy="30%">
-          <stop offset="0%" style={{ stopColor: "#fff", stopOpacity: 0.4 }} />
-          <stop offset="100%" style={{ stopColor: "#fff", stopOpacity: 0 }} />
-        </radialGradient>
-        <filter id="ringShadow">
-          <feDropShadow dx="2" dy="5" stdDeviation="4" floodOpacity="0.35"/>
-        </filter>
       </defs>
-      <ellipse cx="60" cy="50" rx="40" ry="32" fill="none" stroke="url(#ringGrad)" strokeWidth="12" filter="url(#ringShadow)"/>
-      <ellipse cx="60" cy="38" rx="40" ry="12" fill="currentColor" opacity="0.3"/>
-      <ellipse cx="60" cy="62" rx="40" ry="12" fill="currentColor" opacity="0.15"/>
-      <ellipse cx="60" cy="50" rx="40" ry="32" fill="url(#ringHighlight)" pointerEvents="none"/>
-      <path d="M 20 50 Q 20 40 28 38 Q 30 48 32 50 Q 30 52 28 62 Q 20 60 20 50 Z" fill="white" opacity="0.2"/>
+      {/* Ring/Torus shape */}
+      <ellipse cx="60" cy="50" rx="45" ry="35" fill="none" stroke="url(#ringGrad)" strokeWidth="16"/>
+      {/* Inner hole - clearly visible */}
+      <ellipse cx="60" cy="50" rx="22" ry="16" fill="hsl(var(--background))" stroke="#be185d" strokeWidth="2"/>
+      {/* 3D depth effect */}
+      <ellipse cx="60" cy="42" rx="45" ry="12" fill="#ec4899" opacity="0.3"/>
+      <ellipse cx="60" cy="58" rx="45" ry="12" fill="#be185d" opacity="0.2"/>
+      {/* Star indicator */}
+      <text x="105" y="25" fontSize="16">⭐</text>
+      {/* Highlight */}
+      <path d="M 20 35 Q 25 30 35 35" stroke="#fff" strokeWidth="3" opacity="0.5" fill="none"/>
     </svg>
   ),
+
+  // 7. DISK FORGING - Flat disk with center hole
   disk_forging: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <radialGradient id="diskGrad" cx="40%" cy="35%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 1 }} />
-          <stop offset="60%" style={{ stopColor: "currentColor", stopOpacity: 0.75 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <radialGradient id="diskGrad" cx="40%" cy="30%">
+          <stop offset="0%" style={{ stopColor: "#14b8a6", stopOpacity: 1 }} />
+          <stop offset="60%" style={{ stopColor: "#2dd4bf", stopOpacity: 0.8 }} />
+          <stop offset="100%" style={{ stopColor: "#5eead4", stopOpacity: 0.6 }} />
         </radialGradient>
-        <filter id="diskShadow">
-          <feDropShadow dx="2" dy="4" stdDeviation="3" floodOpacity="0.3"/>
-        </filter>
       </defs>
-      <ellipse cx="60" cy="50" rx="40" ry="35" fill="url(#diskGrad)" stroke="currentColor" strokeWidth="1.5" filter="url(#diskShadow)"/>
-      <ellipse cx="60" cy="35" rx="40" ry="14" fill="currentColor" opacity="0.35"/>
-      <circle cx="60" cy="50" r="10" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
-      <circle cx="60" cy="50" r="10" fill="currentColor" opacity="0.1"/>
-      <ellipse cx="50" cy="38" rx="12" ry="9" fill="white" opacity="0.3"/>
+      {/* Disk main body */}
+      <ellipse cx="60" cy="50" rx="48" ry="38" fill="url(#diskGrad)" stroke="#0f766e" strokeWidth="2"/>
+      {/* Top edge - flat appearance */}
+      <ellipse cx="60" cy="35" rx="48" ry="15" fill="#14b8a6" opacity="0.4"/>
+      {/* Center hole */}
+      <ellipse cx="60" cy="50" rx="14" ry="11" fill="hsl(var(--background))" stroke="#0f766e" strokeWidth="2.5"/>
+      <ellipse cx="60" cy="50" rx="14" ry="11" fill="#000" opacity="0.15"/>
+      {/* Radial lines for disk appearance */}
+      <line x1="60" y1="12" x2="60" y2="35" stroke="#0d9488" strokeWidth="1.5" opacity="0.4"/>
+      <line x1="30" y1="30" x2="45" y2="42" stroke="#0d9488" strokeWidth="1.5" opacity="0.4"/>
+      <line x1="90" y1="30" x2="75" y2="42" stroke="#0d9488" strokeWidth="1.5" opacity="0.4"/>
     </svg>
   ),
+
+  // 8. HEX BAR - Clear hexagon with 6 visible sides
   hex_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="hexGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.5 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.8 }} />
+        <linearGradient id="hexFace1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: "#06b6d4", stopOpacity: 0.9 }} />
+          <stop offset="100%" style={{ stopColor: "#22d3ee", stopOpacity: 0.7 }} />
         </linearGradient>
-        <linearGradient id="hexGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.9 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.6 }} />
+        <linearGradient id="hexFace2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#0891b2", stopOpacity: 0.85 }} />
+          <stop offset="100%" style={{ stopColor: "#06b6d4", stopOpacity: 0.6 }} />
         </linearGradient>
-        <linearGradient id="hexGrad3" x1="100%" y1="0%" x2="0%" y2="0%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.7 }} />
+        <linearGradient id="hexFace3" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#164e63", stopOpacity: 0.7 }} />
+          <stop offset="100%" style={{ stopColor: "#0891b2", stopOpacity: 0.5 }} />
         </linearGradient>
       </defs>
-      <polygon points="60,20 85,32.5 85,57.5 60,70 35,57.5 35,32.5" 
-               fill="url(#hexGrad2)" stroke="currentColor" strokeWidth="1.5"/>
-      <polygon points="60,20 65,17 90,29.5 85,32.5" fill="url(#hexGrad1)"/>
-      <polygon points="85,32.5 90,29.5 90,54.5 85,57.5" fill="url(#hexGrad3)"/>
-      <polygon points="60,20 85,32.5 85,37 60,24.5 35,37 35,32.5" fill="currentColor" opacity="0.35"/>
-      <path d="M 48 35 L 52 30 L 68 30 L 72 35 Z" fill="white" opacity="0.25"/>
+      {/* Hexagon in 3D - main face */}
+      <polygon points="60,18 88,33 88,63 60,78 32,63 32,33" 
+               fill="url(#hexFace2)" stroke="#0e7490" strokeWidth="2"/>
+      {/* Top face */}
+      <polygon points="60,18 68,13 96,28 88,33" fill="url(#hexFace1)"/>
+      {/* Right face */}
+      <polygon points="88,33 96,28 96,58 88,63" fill="url(#hexFace3)"/>
+      {/* Hex labels on faces */}
+      <text x="60" y="52" fontSize="20" fontWeight="bold" fill="#fff" textAnchor="middle">HEX</text>
+      {/* Edge highlights */}
+      <line x1="60" y1="18" x2="88" y2="33" stroke="#67e8f9" strokeWidth="1.5" opacity="0.6"/>
+      <line x1="32" y1="33" x2="32" y2="63" stroke="#164e63" strokeWidth="1.5" opacity="0.5"/>
     </svg>
   ),
+
+  // 9. TUBE - Hollow cylinder with visible wall thickness
   tube: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="tubeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.9 }} />
-          <stop offset="50%" style={{ stopColor: "currentColor", stopOpacity: 0.65 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.35 }} />
+        <linearGradient id="tubeOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#64748b", stopOpacity: 0.95 }} />
+          <stop offset="50%" style={{ stopColor: "#94a3b8", stopOpacity: 0.75 }} />
+          <stop offset="100%" style={{ stopColor: "#cbd5e1", stopOpacity: 0.55 }} />
         </linearGradient>
-        <radialGradient id="tubeInner" cx="50%" cy="50%">
-          <stop offset="0%" style={{ stopColor: "#000", stopOpacity: 0.3 }} />
-          <stop offset="100%" style={{ stopColor: "#000", stopOpacity: 0 }} />
-        </radialGradient>
       </defs>
-      <ellipse cx="60" cy="50" rx="35" ry="28" fill="none" stroke="url(#tubeGrad)" strokeWidth="12"/>
-      <ellipse cx="60" cy="38" rx="35" ry="10" fill="currentColor" opacity="0.3"/>
-      <ellipse cx="60" cy="62" rx="35" ry="10" fill="currentColor" opacity="0.15"/>
-      <ellipse cx="60" cy="50" rx="18" ry="14" fill="hsl(var(--background))" stroke="currentColor" strokeWidth="1.5"/>
-      <ellipse cx="60" cy="50" rx="18" ry="14" fill="url(#tubeInner)"/>
-      <path d="M 25 50 Q 25 42 30 40 L 32 45 Q 28 47 28 50 Q 28 53 32 55 L 30 60 Q 25 58 25 50 Z" 
-            fill="white" opacity="0.25"/>
+      {/* Outer wall */}
+      <ellipse cx="60" cy="50" rx="42" ry="30" fill="none" stroke="url(#tubeOuter)" strokeWidth="14"/>
+      {/* Wall thickness visible on ends */}
+      <ellipse cx="60" cy="38" rx="42" ry="10" fill="#475569" opacity="0.4"/>
+      <ellipse cx="60" cy="62" rx="42" ry="10" fill="#1e293b" opacity="0.3"/>
+      {/* Inner hollow space - clear void */}
+      <ellipse cx="60" cy="50" rx="25" ry="18" fill="hsl(var(--background))" stroke="#334155" strokeWidth="2"/>
+      <ellipse cx="60" cy="50" rx="25" ry="18" fill="#000" opacity="0.2"/>
+      {/* Wall thickness indicator */}
+      <line x1="18" y1="50" x2="35" y2="50" stroke="#f59e0b" strokeWidth="2.5"/>
+      <text x="10" y="45" fontSize="10" fill="#f59e0b" fontWeight="bold">t</text>
+      {/* Shine effect */}
+      <ellipse cx="40" cy="38" rx="12" ry="8" fill="#fff" opacity="0.4"/>
     </svg>
   ),
+
+  // 10. BAR (Generic) - Simple bar with question mark
   bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="genericBarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.7 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <linearGradient id="genericBar" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#71717a", stopOpacity: 0.7 }} />
+          <stop offset="100%" style={{ stopColor: "#a1a1aa", stopOpacity: 0.5 }} />
         </linearGradient>
       </defs>
-      <path d="M 25 35 L 30 30 L 90 30 L 95 35 L 95 65 L 90 70 L 30 70 L 25 65 Z" 
-            fill="url(#genericBarGrad)" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4,2"/>
-      <path d="M 25 35 L 30 30 L 90 30 L 95 35 Z" fill="currentColor" opacity="0.3"/>
-      <text x="60" y="55" fontSize="20" fontWeight="bold" fill="currentColor" textAnchor="middle" opacity="0.5">?</text>
+      <rect x="20" y="35" width="80" height="30" fill="url(#genericBar)" 
+            stroke="#52525b" strokeWidth="2" strokeDasharray="5,3" rx="2"/>
+      <text x="60" y="57" fontSize="28" fontWeight="bold" fill="#27272a" textAnchor="middle">?</text>
+      <text x="60" y="85" fontSize="12" fill="#52525b" textAnchor="middle">Generic Bar</text>
     </svg>
   ),
+
+  // 11. FORGING (Generic) - Round forging with F
   forging: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <radialGradient id="genericForgingGrad" cx="40%" cy="35%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.85 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <radialGradient id="genericForging" cx="40%" cy="35%">
+          <stop offset="0%" style={{ stopColor: "#78716c", stopOpacity: 0.8 }} />
+          <stop offset="100%" style={{ stopColor: "#a8a29e", stopOpacity: 0.5 }} />
         </radialGradient>
       </defs>
-      <ellipse cx="60" cy="50" rx="35" ry="30" fill="url(#genericForgingGrad)" 
-               stroke="currentColor" strokeWidth="1.5" strokeDasharray="3,3"/>
-      <ellipse cx="60" cy="37" rx="35" ry="11" fill="currentColor" opacity="0.3"/>
-      <text x="60" y="58" fontSize="22" fontWeight="bold" fill="hsl(var(--background))" textAnchor="middle">F</text>
+      <ellipse cx="60" cy="50" rx="38" ry="30" fill="url(#genericForging)" 
+               stroke="#57534e" strokeWidth="2" strokeDasharray="4,2"/>
+      <text x="60" y="60" fontSize="32" fontWeight="bold" fill="#292524" textAnchor="middle">F</text>
+      <text x="60" y="85" fontSize="11" fill="#57534e" textAnchor="middle">Generic Forging</text>
     </svg>
   ),
+
+  // 12. RING (Generic) - Simple ring with question mark
   ring: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="genericRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.75 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <linearGradient id="genericRing" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#6b7280", stopOpacity: 0.75 }} />
+          <stop offset="100%" style={{ stopColor: "#9ca3af", stopOpacity: 0.5 }} />
         </linearGradient>
       </defs>
-      <ellipse cx="60" cy="50" rx="35" ry="28" fill="none" stroke="url(#genericRingGrad)" 
-               strokeWidth="10" strokeDasharray="4,2"/>
-      <ellipse cx="60" cy="38" rx="35" ry="10" fill="currentColor" opacity="0.25"/>
-      <text x="60" y="58" fontSize="20" fontWeight="bold" fill="currentColor" textAnchor="middle" opacity="0.5">?</text>
+      <ellipse cx="60" cy="50" rx="38" ry="28" fill="none" 
+               stroke="url(#genericRing)" strokeWidth="12" strokeDasharray="6,3"/>
+      <text x="60" y="57" fontSize="26" fontWeight="bold" fill="#4b5563" textAnchor="middle">?</text>
+      <text x="60" y="85" fontSize="11" fill="#4b5563" textAnchor="middle">Generic Ring</text>
     </svg>
   ),
+
+  // 13. DISK (Generic) - Flat disk with question mark
   disk: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <radialGradient id="genericDiskGrad" cx="40%" cy="35%">
-          <stop offset="0%" style={{ stopColor: "currentColor", stopOpacity: 0.8 }} />
-          <stop offset="100%" style={{ stopColor: "currentColor", stopOpacity: 0.4 }} />
+        <radialGradient id="genericDisk" cx="40%" cy="35%">
+          <stop offset="0%" style={{ stopColor: "#737373", stopOpacity: 0.8 }} />
+          <stop offset="100%" style={{ stopColor: "#a3a3a3", stopOpacity: 0.5 }} />
         </radialGradient>
       </defs>
-      <ellipse cx="60" cy="50" rx="37" ry="32" fill="url(#genericDiskGrad)" 
-               stroke="currentColor" strokeWidth="1.5" strokeDasharray="3,3"/>
-      <ellipse cx="60" cy="36" rx="37" ry="12" fill="currentColor" opacity="0.3"/>
-      <text x="60" y="58" fontSize="20" fontWeight="bold" fill="hsl(var(--background))" textAnchor="middle" opacity="0.7">?</text>
+      <ellipse cx="60" cy="50" rx="40" ry="32" fill="url(#genericDisk)" 
+               stroke="#525252" strokeWidth="2" strokeDasharray="4,2"/>
+      <ellipse cx="60" cy="38" rx="40" ry="12" fill="#404040" opacity="0.3"/>
+      <text x="60" y="58" fontSize="30" fontWeight="bold" fill="#262626" textAnchor="middle">?</text>
+      <text x="60" y="85" fontSize="11" fill="#525252" textAnchor="middle">Generic Disk</text>
     </svg>
   ),
 };
