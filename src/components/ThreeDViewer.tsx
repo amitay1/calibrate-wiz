@@ -107,14 +107,15 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
   const normalizedPartType = partType.toLowerCase().replace(/\s*⭐\s*/g, '').trim();
 
   // Determine geometry type from normalized name
+  // IMPORTANT: Check specific types BEFORE general types (e.g., 'hex' before 'bar')
   const getGeometryType = (): string => {
     if (normalizedPartType.includes('ring')) return 'ring';
     if (normalizedPartType.includes('disk')) return 'disk';
     if (normalizedPartType.includes('tube') || normalizedPartType.includes('pipe')) return 'tube';
     if (normalizedPartType.includes('plate') || normalizedPartType.includes('flat')) return 'plate';
-    if (normalizedPartType.includes('bar') || normalizedPartType.includes('rectangular')) return 'bar';
-    if (normalizedPartType.includes('hex')) return 'hex';
+    if (normalizedPartType.includes('hex')) return 'hex'; // Check hex BEFORE bar
     if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
+    if (normalizedPartType.includes('bar') || normalizedPartType.includes('rectangular')) return 'bar';
     if (normalizedPartType.includes('forging') && !normalizedPartType.includes('ring') && !normalizedPartType.includes('disk')) return 'forging';
     return 'plate'; // default
   };
