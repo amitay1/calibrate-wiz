@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScanDirectionVisualizer, type ScanVisualization } from "@/components/ScanDirectionVisualizer";
 
 export interface ScanDetail {
   scanningDirection: string;
@@ -65,8 +66,63 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     onChange({ scanDetails: newScanDetails });
   };
 
+  // Convert scan details to visualization format
+  const scanVisualizations: ScanVisualization[] = data.scanDetails.map(detail => {
+    // Parse wave mode to determine scan mode
+    let mode: ScanVisualization['mode'] = 'Longitudinal0';
+    if (detail.waveMode.toLowerCase().includes('shear') || detail.waveMode.toLowerCase().includes('angle')) {
+      if (detail.waveMode.includes('45')) mode = 'Shear45';
+      else if (detail.waveMode.includes('60')) mode = 'Shear60';
+      else if (detail.waveMode.includes('70')) mode = 'Shear70';
+    }
+    
+    // Parse scanning direction to determine path
+    let path: ScanVisualization['path'] = 'Radial';
+    let side: ScanVisualization['side'] = 'A';
+    let direction: ScanVisualization['direction'] = 'None';
+    
+    const dirLower = detail.scanningDirection.toLowerCase();
+    if (dirLower.includes('circumferential') || dirLower.includes('circ')) {
+      path = 'Circumferential';
+      if (dirLower.includes('cw') || dirLower.includes('clockwise')) direction = 'CW';
+      if (dirLower.includes('ccw') || dirLower.includes('counter')) direction = 'CCW';
+    } else if (dirLower.includes('axial') || dirLower.includes('length')) {
+      path = 'Axial';
+    } else if (dirLower.includes('radial') || dirLower.includes('od') || dirLower.includes('id')) {
+      path = 'Radial';
+    } else if (dirLower.includes('helix') || dirLower.includes('spiral')) {
+      path = 'Helix';
+      if (dirLower.includes('cw')) direction = 'CW';
+      if (dirLower.includes('ccw')) direction = 'CCW';
+    }
+    
+    if (dirLower.includes('side b') || dirLower.includes('b direction')) side = 'B';
+    
+    return {
+      scanningDirection: detail.scanningDirection,
+      waveMode: detail.waveMode,
+      mode,
+      path,
+      side,
+      direction
+    };
+  });
+
   return (
     <div className="space-y-6">
+      {/* Visualization */}
+      {partType && data.scanDetails.length > 0 && (
+        <ScanDirectionVisualizer
+          partType={partType}
+          dimensions={{
+            outerDiameter: 640,
+            innerDiameter: 478,
+            length: 736
+          }}
+          scans={scanVisualizations}
+        />
+      )}
+      
       {/* Scan Details Table */}
       <Card className="p-6">
         <div className="space-y-4">
