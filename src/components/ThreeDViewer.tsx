@@ -254,12 +254,10 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
     }
   };
 
-  // Create a unique key based on props to force re-render when dimensions change
+  // Only re-render when part type or material changes, NOT dimensions
   const viewerKey = useMemo(() => {
-    const dims = props.dimensions;
-    const visibleScans = scanDirections.filter(s => s.isVisible).map(s => s.direction).join(',');
-    return `${props.partType}-${props.material}-${dims?.length}-${dims?.width}-${dims?.thickness}-${dims?.diameter}-${visibleScans}`;
-  }, [props.partType, props.material, props.dimensions, scanDirections]);
+    return `${props.partType}-${props.material}`;
+  }, [props.partType, props.material]);
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border border-border overflow-hidden">

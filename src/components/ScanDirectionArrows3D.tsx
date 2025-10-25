@@ -38,10 +38,10 @@ const ScanArrow = ({
   label: string;
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const arrowLength = 1.2;
-  const arrowRadius = 0.08;
-  const coneHeight = 0.3;
-  const coneRadius = 0.15;
+  const arrowLength = 0.9; // Shorter arrow
+  const arrowRadius = 0.06;
+  const coneHeight = 0.25;
+  const coneRadius = 0.12;
 
   // Gentle pulsing animation
   useFrame(({ clock }) => {
@@ -65,9 +65,9 @@ const ScanArrow = ({
         />
       </mesh>
       
-      {/* Glowing ring at base */}
+      {/* Glowing ring at base - smaller */}
       <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[arrowRadius * 2, arrowRadius * 0.3, 16, 32]} />
+        <torusGeometry args={[arrowRadius * 1.5, arrowRadius * 0.25, 12, 24]} />
         <meshStandardMaterial 
           color={color}
           emissive={color}
@@ -92,10 +92,10 @@ const ScanArrow = ({
         />
       </Cone>
       
-      {/* Professional label with shadow */}
-      <Html position={[0, arrowLength + coneHeight + 0.4, 0]} distanceFactor={8}>
+      {/* Professional label with shadow - closer */}
+      <Html position={[0, arrowLength + coneHeight + 0.2, 0]} distanceFactor={6}>
         <div 
-          className="px-3 py-1.5 rounded-full font-bold text-xs shadow-2xl border-2 whitespace-nowrap pointer-events-none"
+          className="px-2.5 py-1 rounded-full font-bold text-xs shadow-2xl border-2 whitespace-nowrap pointer-events-none"
           style={{ 
             backgroundColor: color,
             color: '#ffffff',
@@ -118,7 +118,7 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
 
   const getArrowPositionAndRotation = (scan: ScanDirectionArrow, index: number) => {
     const color = getScanColor(scan.direction);
-    const offset = (index - visibleScans.length / 2) * 0.3;
+    const offset = (index - visibleScans.length / 2) * 0.2;
     
     // Determine position and rotation based on scan path
     const waveMode = scan.waveMode.toLowerCase();
@@ -129,27 +129,27 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
     let label = `${scan.direction}: ${scan.waveMode}`;
     
     if (path.includes('axial') || path.includes('longitudinal')) {
-      // Axial/longitudinal direction - arrows along Z axis
-      position = [offset, 0, -1.5];
+      // Axial/longitudinal direction - arrows along Z axis, CLOSE to part
+      position = [offset * 0.5, 0, 0.3];
       rotation = [0, 0, 0]; // Pointing up
       label = `${scan.direction}: Axial`;
     } else if (path.includes('circumferential') || path.includes('clockwise') || path.includes('counter')) {
-      // Circumferential direction - arrows around the part
+      // Circumferential direction - arrows around the part, CLOSE
       const angle = (index / visibleScans.length) * Math.PI * 2;
-      const radius = 1.5;
+      const radius = 0.8; // Much closer!
       position = [Math.cos(angle) * radius, 0, Math.sin(angle) * radius];
       rotation = [0, -angle + Math.PI / 2, Math.PI / 2]; // Pointing inward
       label = `${scan.direction}: Circ`;
     } else if (path.includes('radial') || path.includes('od') || path.includes('id')) {
-      // Radial direction - arrows pointing toward center
+      // Radial direction - arrows pointing toward center, CLOSE
       const angle = (index / visibleScans.length) * Math.PI * 2;
-      const radius = 1.8;
+      const radius = 0.9; // Much closer!
       position = [Math.cos(angle) * radius, 0, Math.sin(angle) * radius];
       rotation = [0, -angle, Math.PI / 2]; // Pointing toward center
       label = `${scan.direction}: Radial`;
     } else {
-      // Default positioning
-      position = [offset, 0, 1.5];
+      // Default positioning - CLOSE
+      position = [offset * 0.5, 0, 0.5];
       rotation = [0, 0, 0];
     }
     
