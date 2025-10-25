@@ -567,6 +567,7 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({ 
               <ShapeCard
                 title={option.label}
                 description={option.description}
+                partType={option.value}
                 baseIcon={option.icon}
                 detailsIcon={option.icon}
                 edgesIcon={option.icon}

@@ -1,11 +1,13 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Shape3DViewer from "@/components/3d/Shape3DViewer";
 import "./shape-card.css";
 
 type Props = {
   title: string;
   description?: string;
+  partType: string; // NEW: part type for 3D geometry
   baseIcon: React.ReactNode;
   edgesIcon?: React.ReactNode;
   highlightsIcon?: React.ReactNode;
@@ -18,6 +20,7 @@ type Props = {
 export default function ShapeCard({
   title,
   description,
+  partType,
   baseIcon,
   edgesIcon,
   highlightsIcon,
@@ -27,6 +30,7 @@ export default function ShapeCard({
   onClick,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   // pointer → motion
   const mx = useMotionValue(0.5);
@@ -48,7 +52,14 @@ export default function ShapeCard({
     mx.set((e.clientX - r.left) / r.width);
     my.set((e.clientY - r.top) / r.height);
   }
-  function reset() { mx.set(0.5); my.set(0.5); }
+  function reset() { 
+    mx.set(0.5); 
+    my.set(0.5);
+    setIsHovered(false);
+  }
+  function onHover() {
+    setIsHovered(true);
+  }
 
   return (
     <motion.div
@@ -56,6 +67,7 @@ export default function ShapeCard({
       className={cn("shape-card", isSelected && "selected")}
       style={{ rotateX: rotX, rotateY: rotY, ["--halo" as any]: color }}
       onMouseMove={onMove}
+      onMouseEnter={onHover}
       onMouseLeave={reset}
       onClick={onClick}
       whileHover={{ scale: 1.04 }}
@@ -70,19 +82,26 @@ export default function ShapeCard({
           <div className="shadow-ellip" />
         </motion.div>
 
-        {/* base */}
+        {/* 3D VIEWER - The main attraction! */}
         <motion.div
-          className="layer z2"
+          className="layer z2 shape-3d-container"
           style={{ x: px(6), y: py(6) }}
         >
-          {baseIcon}
+          <Shape3DViewer
+            partType={partType}
+            color={color}
+            isHovered={isHovered}
+            mouseX={sMx.get()}
+            mouseY={sMy.get()}
+          />
         </motion.div>
 
+        {/* Keep existing icon layers for fallback/loading */}
         {/* details */}
         {detailsIcon && (
           <motion.div
             className="layer z3"
-            style={{ x: px(10), y: py(10) }}
+            style={{ x: px(10), y: py(10), opacity: 0 }}
           >
             {detailsIcon}
           </motion.div>
@@ -92,7 +111,7 @@ export default function ShapeCard({
         {edgesIcon && (
           <motion.div
             className="layer z4 add-glow"
-            style={{ x: px(14), y: py(14) }}
+            style={{ x: px(14), y: py(14), opacity: 0 }}
           >
             {edgesIcon}
           </motion.div>
@@ -102,7 +121,7 @@ export default function ShapeCard({
         {highlightsIcon && (
           <motion.div
             className="layer z5 add-bloom"
-            style={{ x: px(18), y: py(18) }}
+            style={{ x: px(18), y: py(18), opacity: 0 }}
           >
             {highlightsIcon}
           </motion.div>
