@@ -118,7 +118,10 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
 
   const getArrowPositionAndRotation = (scan: ScanDirectionArrow, index: number) => {
     const color = getScanColor(scan.direction);
-    const offset = (index - visibleScans.length / 2) * 0.2;
+    
+    // Distribute arrows in a circle around the part, each at unique position
+    const angle = (index / visibleScans.length) * Math.PI * 2;
+    const baseRadius = 0.85;
     
     // Determine position and rotation based on scan path
     const waveMode = scan.waveMode.toLowerCase();
@@ -129,27 +132,24 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
     let label = `${scan.direction}: ${scan.waveMode}`;
     
     if (path.includes('axial') || path.includes('longitudinal')) {
-      // Axial/longitudinal direction - arrows along Z axis, CLOSE to part
-      position = [offset * 0.5, 0, 0.3];
+      // Axial/longitudinal - arrows pointing up from top of part
+      // Distribute in circle around part
+      position = [Math.cos(angle) * baseRadius * 0.6, 0, Math.sin(angle) * baseRadius * 0.6];
       rotation = [0, 0, 0]; // Pointing up
       label = `${scan.direction}: Axial`;
     } else if (path.includes('circumferential') || path.includes('clockwise') || path.includes('counter')) {
-      // Circumferential direction - arrows around the part, CLOSE
-      const angle = (index / visibleScans.length) * Math.PI * 2;
-      const radius = 0.8; // Much closer!
-      position = [Math.cos(angle) * radius, 0, Math.sin(angle) * radius];
-      rotation = [0, -angle + Math.PI / 2, Math.PI / 2]; // Pointing inward
+      // Circumferential - arrows tangent to part surface
+      position = [Math.cos(angle) * baseRadius, 0, Math.sin(angle) * baseRadius];
+      rotation = [0, -angle + Math.PI / 2, Math.PI / 2]; // Tangent to circle
       label = `${scan.direction}: Circ`;
     } else if (path.includes('radial') || path.includes('od') || path.includes('id')) {
-      // Radial direction - arrows pointing toward center, CLOSE
-      const angle = (index / visibleScans.length) * Math.PI * 2;
-      const radius = 0.9; // Much closer!
-      position = [Math.cos(angle) * radius, 0, Math.sin(angle) * radius];
-      rotation = [0, -angle, Math.PI / 2]; // Pointing toward center
+      // Radial - arrows pointing toward center from outside
+      position = [Math.cos(angle) * baseRadius * 1.1, 0, Math.sin(angle) * baseRadius * 1.1];
+      rotation = [0, -angle, Math.PI / 2]; // Pointing inward
       label = `${scan.direction}: Radial`;
     } else {
-      // Default positioning - CLOSE
-      position = [offset * 0.5, 0, 0.5];
+      // Default - distribute around part
+      position = [Math.cos(angle) * baseRadius, 0, Math.sin(angle) * baseRadius];
       rotation = [0, 0, 0];
     }
     
