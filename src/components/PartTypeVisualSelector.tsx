@@ -300,25 +300,19 @@ const partTypeOptions: PartTypeOption[] = [
   { 
     value: "plate", 
     label: "Plate", 
-    description: "W/T > 5",
+    description: "Flat, thin surface",
     icon: ShapeIcons.plate
-  },
-  { 
-    value: "flat_bar", 
-    label: "Flat Bar", 
-    description: "W/T > 5",
-    icon: ShapeIcons.flat_bar
   },
   { 
     value: "rectangular_bar", 
     label: "Rectangular Bar", 
-    description: "W/T < 5",
+    description: "Thick cross-section",
     icon: ShapeIcons.rectangular_bar
   },
   { 
     value: "round_bar", 
     label: "Round Bar", 
-    description: "Radial + axial",
+    description: "Cylindrical solid",
     icon: ShapeIcons.round_bar
   },
   { 
@@ -330,50 +324,26 @@ const partTypeOptions: PartTypeOption[] = [
   { 
     value: "ring_forging", 
     label: "Ring Forging ⭐", 
-    description: "Full coverage",
+    description: "Hollow ring shape",
     icon: ShapeIcons.ring_forging
   },
   { 
     value: "disk_forging", 
     label: "Disk Forging", 
-    description: "Flat + radial",
+    description: "Flat circular part",
     icon: ShapeIcons.disk_forging
   },
   { 
     value: "hex_bar", 
     label: "Hex Bar", 
-    description: "3 adj. faces",
+    description: "6-sided profile",
     icon: ShapeIcons.hex_bar
   },
   { 
     value: "tube", 
     label: "Tube", 
-    description: "ID + OD",
+    description: "Hollow cylinder",
     icon: ShapeIcons.tube
-  },
-  { 
-    value: "bar", 
-    label: "Bar (Generic)", 
-    description: "Unspecified",
-    icon: ShapeIcons.bar
-  },
-  { 
-    value: "forging", 
-    label: "Forging (Generic)", 
-    description: "Unspecified",
-    icon: ShapeIcons.forging
-  },
-  { 
-    value: "ring", 
-    label: "Ring (Generic)", 
-    description: "Use specific",
-    icon: ShapeIcons.ring
-  },
-  { 
-    value: "disk", 
-    label: "Disk (Generic)", 
-    description: "Use specific",
-    icon: ShapeIcons.disk
   },
 ];
 
