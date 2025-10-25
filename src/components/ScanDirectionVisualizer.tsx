@@ -63,7 +63,7 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
       <svg width={svgWidth} height={svgHeight} className="border border-border rounded-lg bg-card">
         {/* Title */}
         <text x={centerX} y={25} textAnchor="middle" className="fill-foreground font-semibold text-sm">
-          Plan View (מבט על) - SIDE A
+          Plan View - SIDE A
         </text>
         
         {/* Coordinate system */}
@@ -169,7 +169,7 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
         
         {/* Labels */}
         <text x={20} y={svgHeight - 10} className="fill-muted-foreground text-xs">
-          תרשים מבט על
+          Plan diagram
         </text>
       </svg>
     );
@@ -184,7 +184,7 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
       <svg width={svgWidth} height={svgHeight} className="border border-border rounded-lg bg-card">
         {/* Title */}
         <text x={centerX} y={25} textAnchor="middle" className="fill-foreground font-semibold text-sm">
-          Section View (מבט חתך) - A-A
+          Section View - A-A
         </text>
         
         {/* Coordinate system */}
@@ -327,7 +327,7 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
         </text>
         
         <text x={20} y={svgHeight - 10} className="fill-muted-foreground text-xs">
-          חתך רוחבי
+          Cross-section
         </text>
       </svg>
     );
@@ -361,7 +361,7 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
     <Card className="p-6">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Scan Direction Visualization (הדמיית כיווני סריקה)</h3>
+          <h3 className="text-lg font-semibold">Scan Direction Visualization</h3>
           <Badge variant="secondary">MIL-STD-2154 Compliant</Badge>
         </div>
         
@@ -372,7 +372,7 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
         
         {/* Legend */}
         <div className="border-t pt-4">
-          <h4 className="font-semibold text-sm mb-2">Scan Legend (מקרא):</h4>
+          <h4 className="font-semibold text-sm mb-2">Scan Legend:</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {scans.map((scan, idx) => (
               <div key={idx} className="flex items-center gap-2 text-sm">
@@ -391,10 +391,10 @@ export const ScanDirectionVisualizer: React.FC<ScanDirectionVisualizerProps> = (
         
         {/* Technical notes */}
         <div className="bg-muted/30 p-3 rounded-lg text-xs text-muted-foreground space-y-1">
-          <p>• <strong>R</strong> = Radial direction (כיוון רדיאלי)</p>
-          <p>• <strong>X</strong> = Circumferential reference (ייחוס היקפי)</p>
-          <p>• <strong>Z</strong> = Axial/Length direction (כיוון אורכי)</p>
-          <p>• <strong>CW/CCW</strong> = Clockwise/Counter-clockwise (עם/נגד כיוון השעון)</p>
+          <p>• <strong>R</strong> = Radial direction</p>
+          <p>• <strong>X</strong> = Circumferential reference</p>
+          <p>• <strong>Z</strong> = Axial/Length direction</p>
+          <p>• <strong>CW/CCW</strong> = Clockwise/Counter-clockwise</p>
         </div>
       </div>
     </Card>
