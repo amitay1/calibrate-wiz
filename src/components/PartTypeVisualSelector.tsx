@@ -524,6 +524,9 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({ 
                 title={option.label}
                 description={option.description}
                 baseIcon={option.icon}
+                detailsIcon={option.icon}
+                edgesIcon={option.icon}
+                highlightsIcon={option.icon}
                 color={option.color}
                 isSelected={value === option.value}
                 onClick={() => onChange(option.value)}
