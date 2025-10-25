@@ -32,8 +32,8 @@ export default function ShapeCard({
   const sMx = useSpring(mx, { stiffness: 180, damping: 24 });
   const sMy = useSpring(my, { stiffness: 180, damping: 24 });
 
-  const rotX = useTransform(sMy, (v) => (v - 0.5) * 16); // -8°..8°
-  const rotY = useTransform(sMx, (v) => (0.5 - v) * 16);
+  const rotX = useTransform(sMy, (v) => (v - 0.5) * 40); // -20°..20°
+  const rotY = useTransform(sMx, (v) => (0.5 - v) * 40); // -20°..20°
 
   function onMove(e: React.MouseEvent) {
     if (!ref.current) return;
@@ -61,9 +61,10 @@ export default function ShapeCard({
       onMouseMove={onMove}
       onMouseLeave={reset}
       onClick={onClick}
-      initial={{ rotateX: 0, rotateY: 0 }}
-      whileHover={{ scale: 1.04 }}
+      initial={{ rotateX: 0, rotateY: 0, z: 0 }}
+      whileHover={{ scale: 1.08, z: 50 }}
       whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
       <div className="stage">
         {/* Shadow layer */}

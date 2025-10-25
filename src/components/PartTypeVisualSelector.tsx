@@ -300,10 +300,24 @@ const partTypeOptions: PartTypeOption[] = [
   // PLATES & SHEETS
   { 
     value: "plate", 
-    label: "Plate / Sheet", 
-    description: "Flat thin surface",
+    label: "Plate", 
+    description: "Flat rectangular",
     icon: ShapeIcons.plate,
     color: "#3b82f6"
+  },
+  { 
+    value: "sheet", 
+    label: "Sheet", 
+    description: "Thin flat",
+    icon: ShapeIcons.plate,
+    color: "#60a5fa"
+  },
+  { 
+    value: "slab", 
+    label: "Slab", 
+    description: "Thick flat",
+    icon: ShapeIcons.plate,
+    color: "#2563eb"
   },
   
   // SOLID BARS
@@ -331,18 +345,32 @@ const partTypeOptions: PartTypeOption[] = [
   { 
     value: "rectangular_bar", 
     label: "Rectangular Bar", 
-    description: "Flat cross-section",
+    description: "Flat section",
     icon: ShapeIcons.flat_bar,
     color: "#10b981"
+  },
+  { 
+    value: "flat_bar", 
+    label: "Flat Bar", 
+    description: "Thin rectangle",
+    icon: ShapeIcons.flat_bar,
+    color: "#059669"
   },
   
   // HOLLOW (TUBES/PIPES)
   { 
     value: "tube", 
-    label: "Tube / Pipe", 
+    label: "Tube", 
     description: "Hollow cylinder",
     icon: ShapeIcons.tube,
     color: "#64748b"
+  },
+  { 
+    value: "pipe", 
+    label: "Pipe", 
+    description: "Industrial tube",
+    icon: ShapeIcons.tube,
+    color: "#475569"
   },
   
   // DISKS
@@ -350,6 +378,13 @@ const partTypeOptions: PartTypeOption[] = [
     value: "disk", 
     label: "Disk", 
     description: "Flat circular",
+    icon: ShapeIcons.disk,
+    color: "#737373"
+  },
+  { 
+    value: "disk_forging", 
+    label: "Disk Forging", 
+    description: "Forged disk",
     icon: ShapeIcons.disk_forging,
     color: "#14b8a6"
   },
@@ -357,8 +392,15 @@ const partTypeOptions: PartTypeOption[] = [
   // RINGS
   { 
     value: "ring", 
-    label: "Ring ⭐", 
-    description: "Hollow ring/torus",
+    label: "Ring", 
+    description: "Generic ring",
+    icon: ShapeIcons.ring,
+    color: "#6b7280"
+  },
+  { 
+    value: "ring_forging", 
+    label: "Ring Forging ⭐", 
+    description: "Forged ring",
     icon: ShapeIcons.ring_forging,
     color: "#ec4899"
   },
@@ -376,27 +418,92 @@ const partTypeOptions: PartTypeOption[] = [
   { 
     value: "forging", 
     label: "Forging", 
-    description: "Irregular shape",
+    description: "Complex shape",
     icon: ShapeIcons.forging,
     color: "#78716c"
+  },
+  { 
+    value: "round_forging_stock", 
+    label: "Round Forging", 
+    description: "Round stock",
+    icon: ShapeIcons.round_forging_stock,
+    color: "#ef4444"
   },
   
   // BILLETS/BLOCKS
   { 
     value: "billet", 
-    label: "Billet / Block", 
-    description: "Large rectangular",
+    label: "Billet", 
+    description: "Semi-finished",
     icon: ShapeIcons.rectangular_bar,
     color: "#fbbf24"
+  },
+  { 
+    value: "block", 
+    label: "Block", 
+    description: "Solid block",
+    icon: ShapeIcons.rectangular_bar,
+    color: "#f59e0b"
+  },
+  
+  // EXTRUSIONS
+  { 
+    value: "extrusion_l", 
+    label: "L-Extrusion", 
+    description: "L-shaped profile",
+    icon: ShapeIcons.flat_bar,
+    color: "#0891b2"
+  },
+  { 
+    value: "extrusion_t", 
+    label: "T-Extrusion", 
+    description: "T-shaped profile",
+    icon: ShapeIcons.flat_bar,
+    color: "#0e7490"
+  },
+  { 
+    value: "extrusion_i", 
+    label: "I-Extrusion", 
+    description: "I-beam profile",
+    icon: ShapeIcons.flat_bar,
+    color: "#155e75"
+  },
+  { 
+    value: "extrusion_u", 
+    label: "U-Extrusion", 
+    description: "U-channel",
+    icon: ShapeIcons.flat_bar,
+    color: "#164e63"
+  },
+  { 
+    value: "extrusion_channel", 
+    label: "Channel", 
+    description: "Channel section",
+    icon: ShapeIcons.flat_bar,
+    color: "#0c4a6e"
+  },
+  { 
+    value: "extrusion_angle", 
+    label: "Angle", 
+    description: "Angle section",
+    icon: ShapeIcons.flat_bar,
+    color: "#082f49"
   },
   
   // SLEEVES/BUSHINGS
   { 
     value: "sleeve", 
-    label: "Sleeve / Bushing", 
+    label: "Sleeve", 
     description: "Short hollow",
     icon: ShapeIcons.tube,
     color: "#94a3b8"
+  },
+  { 
+    value: "bushing", 
+    label: "Bushing", 
+    description: "Bearing sleeve",
+    icon: ShapeIcons.tube,
+    color: "#64748b"
   },
 ];
 
