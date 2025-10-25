@@ -3,19 +3,53 @@ export type StandardType = "MIL-STD-2154" | "AMS-STD-2154E" | "ASTM-E-114";
 export type MaterialType = "aluminum" | "steel" | "titanium" | "magnesium";
 
 export type PartGeometry = 
+  // Plates & Sheets
   | "plate" 
-  | "flat_bar" 
-  | "rectangular_bar" 
-  | "round_bar" 
-  | "round_forging_stock" 
-  | "ring_forging" 
-  | "disk_forging" 
-  | "hex_bar" 
-  | "bar" 
-  | "forging" 
-  | "tube" 
-  | "ring" 
-  | "disk";
+  | "sheet"
+  | "slab"
+  
+  // Bars (solid prismatic)
+  | "round_bar"
+  | "square_bar"
+  | "hex_bar"
+  | "rectangular_bar"
+  | "flat_bar"
+  | "bar" // Generic fallback
+  
+  // Tubes & Pipes (hollow)
+  | "tube"
+  | "pipe"
+  
+  // Disks
+  | "disk"
+  | "disk_forging"
+  
+  // Rings
+  | "ring"
+  | "ring_forging"
+  
+  // Shafts
+  | "shaft"
+  
+  // Forgings
+  | "forging"
+  | "round_forging_stock"
+  
+  // Billets & Blocks
+  | "billet"
+  | "block"
+  
+  // Extrusions
+  | "extrusion_l"
+  | "extrusion_t"
+  | "extrusion_i"
+  | "extrusion_u"
+  | "extrusion_channel"
+  | "extrusion_angle"
+  
+  // Sleeves & Bushings
+  | "sleeve"
+  | "bushing";
 
 export type AcceptanceClass = "AAA" | "AA" | "A" | "B" | "C";
 

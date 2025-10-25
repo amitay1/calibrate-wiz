@@ -44,7 +44,29 @@ const selectBlockType = (partType: PartGeometry, thickness: number): {
   figure: string;
   reasoning: string;
 } => {
-  if (partType === "plate" || partType === "bar" || partType === "forging") {
+  // Group 1: Flat geometries (plates, bars, billets, extrusions)
+  const flatGeometries: PartGeometry[] = [
+    "plate", "sheet", "slab", "flat_bar", "rectangular_bar", "square_bar", 
+    "bar", "forging", "billet", "block",
+    "extrusion_l", "extrusion_t", "extrusion_i", "extrusion_u", "extrusion_channel", "extrusion_angle"
+  ];
+  
+  // Group 2: Cylindrical/tubular (tubes, pipes, sleeves, shafts)
+  const tubularGeometries: PartGeometry[] = [
+    "tube", "pipe", "ring", "ring_forging", "sleeve", "bushing"
+  ];
+  
+  // Group 3: Solid rounds
+  const roundGeometries: PartGeometry[] = [
+    "round_bar", "round_forging_stock", "shaft"
+  ];
+  
+  // Group 4: Disks
+  const diskGeometries: PartGeometry[] = [
+    "disk", "disk_forging"
+  ];
+  
+  if (flatGeometries.includes(partType)) {
     if (thickness > 100) {
       return {
         type: "flat_block",
@@ -55,9 +77,9 @@ const selectBlockType = (partType: PartGeometry, thickness: number): {
     return {
       type: "flat_block",
       figure: "Figure 4",
-      reasoning: "Flat block suitable for plate geometry per standard"
+      reasoning: "Flat block suitable for plate/bar geometry per standard"
     };
-  } else if (partType === "tube" || partType === "ring") {
+  } else if (tubularGeometries.includes(partType)) {
     if (thickness < 25) {
       return {
         type: "cylinder_notched",
@@ -70,18 +92,31 @@ const selectBlockType = (partType: PartGeometry, thickness: number): {
       figure: "Figure 6",
       reasoning: "FBH cylinder for thick-walled tubular geometry"
     };
-  } else if (partType === "disk") {
+  } else if (diskGeometries.includes(partType)) {
     return {
       type: "flat_block",
       figure: "Figure 4",
       reasoning: "Flat block for disk (treated as thick plate)"
     };
+  } else if (roundGeometries.includes(partType)) {
+    return {
+      type: "flat_block",
+      figure: "Figure 4",
+      reasoning: "Flat block for round bar (radial inspection)"
+    };
+  } else if (partType === "hex_bar") {
+    return {
+      type: "flat_block",
+      figure: "Figure 4",
+      reasoning: "Flat block for hex bar (multi-face inspection)"
+    };
   }
   
+  // Default fallback
   return {
     type: "flat_block",
     figure: "Figure 4",
-    reasoning: "Standard flat block configuration"
+    reasoning: "Flat block (default for unknown geometry)"
   };
 };
 

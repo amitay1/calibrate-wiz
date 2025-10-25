@@ -195,6 +195,127 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     conditions: ["Center bore requires special attention"],
     specialNotes: ["Rim inspection critical", "Use disk_forging type if applicable"],
     diagramReference: "Generic Disk"
+  },
+  // NEW SHAPES
+  sheet: {
+    displayName: "Sheet",
+    scanDirection: ["Two-axis raster"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Similar to plate"],
+    specialNotes: ["Check laminar discontinuities"],
+    diagramReference: "Sheet"
+  },
+  slab: {
+    displayName: "Slab",
+    scanDirection: ["Two-axis raster", "Diagonal passes"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Heavy section"],
+    specialNotes: ["May require multi-side scanning"],
+    diagramReference: "Slab"
+  },
+  square_bar: {
+    displayName: "Square Bar",
+    scanDirection: ["From adjacent faces"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Similar to rectangular bar"],
+    specialNotes: ["Ensure corner coverage"],
+    diagramReference: "Square Bar"
+  },
+  pipe: {
+    displayName: "Pipe",
+    scanDirection: ["Helical scan", "Circumferential scan"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Same as tube"],
+    specialNotes: ["Check both ID and OD surfaces"],
+    diagramReference: "Pipe"
+  },
+  shaft: {
+    displayName: "Shaft",
+    scanDirection: ["Axial", "Circumferential"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Localized radial scans at critical sections"],
+    specialNotes: ["Check shoulders, keyways"],
+    diagramReference: "Shaft"
+  },
+  billet: {
+    displayName: "Billet / Block",
+    scanDirection: ["Two-axis raster in orthogonal directions"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Add diagonal passes if needed"],
+    specialNotes: ["Large cross-section"],
+    diagramReference: "Billet"
+  },
+  block: {
+    displayName: "Block",
+    scanDirection: ["Two-axis raster through-thickness"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Similar to billet"],
+    specialNotes: ["Check for internal voids"],
+    diagramReference: "Block"
+  },
+  sleeve: {
+    displayName: "Sleeve / Bushing",
+    scanDirection: ["Circumferential", "Radial through wall"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Short hollow cylinder"],
+    specialNotes: ["Similar to tube but shorter"],
+    diagramReference: "Sleeve"
+  },
+  bushing: {
+    displayName: "Bushing",
+    scanDirection: ["Circumferential", "Radial"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Short hollow cylinder"],
+    specialNotes: ["Check wall thickness uniformity"],
+    diagramReference: "Bushing"
+  },
+  extrusion_l: {
+    displayName: "L-Extrusion",
+    scanDirection: ["Axial along extrusion", "Indexed transverse scans"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Scan flanges and web separately"],
+    specialNotes: ["Check corners/fillets"],
+    diagramReference: "L-Extrusion"
+  },
+  extrusion_t: {
+    displayName: "T-Extrusion",
+    scanDirection: ["Axial", "Indexed transverse per feature"],
+    waveMode: ["Longitudinal"],
+    conditions: ["T-section requires multi-orientation scans"],
+    specialNotes: ["Scan from multiple surfaces"],
+    diagramReference: "T-Extrusion"
+  },
+  extrusion_i: {
+    displayName: "I-Extrusion (I-Beam)",
+    scanDirection: ["Axial", "Indexed scans on flanges and web"],
+    waveMode: ["Longitudinal"],
+    conditions: ["I-beam geometry"],
+    specialNotes: ["Scan from multiple surfaces"],
+    diagramReference: "I-Extrusion"
+  },
+  extrusion_u: {
+    displayName: "U-Extrusion",
+    scanDirection: ["Axial", "Transverse indexed scans"],
+    waveMode: ["Longitudinal"],
+    conditions: ["U-channel requires coverage of all faces"],
+    specialNotes: ["Check web and flanges"],
+    diagramReference: "U-Extrusion"
+  },
+  extrusion_channel: {
+    displayName: "Channel Extrusion",
+    scanDirection: ["Axial", "Indexed transverse scans"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Similar to U-extrusion"],
+    specialNotes: ["Check web and flanges"],
+    diagramReference: "Channel"
+  },
+  extrusion_angle: {
+    displayName: "Angle Extrusion",
+    scanDirection: ["Axial along legs", "Radial from edges"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Angle section requires scans along both legs"],
+    specialNotes: ["Check corner fillet"],
+    diagramReference: "Angle"
   }
 };
 

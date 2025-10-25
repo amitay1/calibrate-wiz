@@ -23,21 +23,32 @@ const materials: { value: MaterialType; label: string }[] = [
   { value: "magnesium", label: "Magnesium" },
 ];
 
-const partTypes: { value: PartGeometry; label: string; description?: string }[] = [
-  { value: "plate", label: "Plate", description: "W/T > 5" },
-  { value: "flat_bar", label: "Flat Bar", description: "W/T > 5" },
-  { value: "rectangular_bar", label: "Rectangular Bar", description: "W/T < 5, scan from 2 sides" },
+
+interface PartTypeOption {
+  value: PartGeometry;
+  label: string;
+  description?: string;
+}
+
+const partTypes: PartTypeOption[] = [
+  { value: "plate", label: "Plate", description: "Two-axis raster" },
+  { value: "rectangular_bar", label: "Rectangular Bar", description: "Scan from multiple faces" },
   { value: "round_bar", label: "Round Bar", description: "Radial + axial scans" },
+  { value: "square_bar", label: "Square Bar", description: "Scan from adjacent faces" },
   { value: "round_forging_stock", label: "Round Forging Stock", description: "Consider grain structure" },
   { value: "ring_forging", label: "Ring Forging ⭐", description: "Radial + axial + shear wave" },
   { value: "disk_forging", label: "Disk Forging", description: "Flat face + radial" },
   { value: "hex_bar", label: "Hex Bar", description: "3 adjacent faces" },
-  { value: "tube", label: "Tube", description: "ID + OD coverage" },
+  { value: "tube", label: "Tube / Pipe", description: "ID + OD coverage" },
+  { value: "shaft", label: "Shaft", description: "Axial + circumferential" },
+  { value: "billet", label: "Billet / Block", description: "Two-axis raster" },
+  { value: "sleeve", label: "Sleeve / Bushing", description: "Short hollow cylinder" },
   { value: "bar", label: "Bar (Generic)", description: "Use specific type if known" },
   { value: "forging", label: "Forging (Generic)", description: "Use specific type if known" },
   { value: "ring", label: "Ring (Generic)", description: "Use ring_forging if applicable" },
   { value: "disk", label: "Disk (Generic)", description: "Use disk_forging if applicable" },
 ];
+
 
 const materialSpecs: Record<MaterialType, string[]> = {
   aluminum: ["7075-T6 (QQ-A200/11)", "2024 (QQ-A-200/3)", "6061-T6", "2219-T87"],

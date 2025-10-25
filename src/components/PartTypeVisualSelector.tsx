@@ -297,52 +297,93 @@ const ShapeIcons = {
 };
 
 const partTypeOptions: PartTypeOption[] = [
+  // PLATES & SHEETS
   { 
     value: "plate", 
-    label: "Plate", 
-    description: "Flat, thin surface",
+    label: "Plate / Sheet", 
+    description: "Flat thin surface",
     icon: ShapeIcons.plate
   },
-  { 
-    value: "rectangular_bar", 
-    label: "Rectangular Bar", 
-    description: "Thick cross-section",
-    icon: ShapeIcons.rectangular_bar
-  },
+  
+  // SOLID BARS
   { 
     value: "round_bar", 
     label: "Round Bar", 
-    description: "Cylindrical solid",
+    description: "Solid cylinder",
     icon: ShapeIcons.round_bar
   },
   { 
-    value: "round_forging_stock", 
-    label: "Round Forging", 
-    description: "Grain structure",
-    icon: ShapeIcons.round_forging_stock
-  },
-  { 
-    value: "ring_forging", 
-    label: "Ring Forging ⭐", 
-    description: "Hollow ring shape",
-    icon: ShapeIcons.ring_forging
-  },
-  { 
-    value: "disk_forging", 
-    label: "Disk Forging", 
-    description: "Flat circular part",
-    icon: ShapeIcons.disk_forging
+    value: "square_bar", 
+    label: "Square Bar", 
+    description: "4-sided solid",
+    icon: ShapeIcons.rectangular_bar
   },
   { 
     value: "hex_bar", 
     label: "Hex Bar", 
-    description: "6-sided profile",
+    description: "6-sided solid",
     icon: ShapeIcons.hex_bar
   },
   { 
+    value: "rectangular_bar", 
+    label: "Rectangular Bar", 
+    description: "Flat cross-section",
+    icon: ShapeIcons.flat_bar
+  },
+  
+  // HOLLOW (TUBES/PIPES)
+  { 
     value: "tube", 
-    label: "Tube", 
+    label: "Tube / Pipe", 
     description: "Hollow cylinder",
+    icon: ShapeIcons.tube
+  },
+  
+  // DISKS
+  { 
+    value: "disk", 
+    label: "Disk", 
+    description: "Flat circular",
+    icon: ShapeIcons.disk_forging
+  },
+  
+  // RINGS
+  { 
+    value: "ring", 
+    label: "Ring ⭐", 
+    description: "Hollow ring/torus",
+    icon: ShapeIcons.ring_forging
+  },
+  
+  // SHAFTS
+  { 
+    value: "shaft", 
+    label: "Shaft", 
+    description: "Long cylinder",
+    icon: ShapeIcons.round_bar
+  },
+  
+  // FORGINGS
+  { 
+    value: "forging", 
+    label: "Forging", 
+    description: "Irregular shape",
+    icon: ShapeIcons.forging
+  },
+  
+  // BILLETS/BLOCKS
+  { 
+    value: "billet", 
+    label: "Billet / Block", 
+    description: "Large rectangular",
+    icon: ShapeIcons.rectangular_bar
+  },
+  
+  // SLEEVES/BUSHINGS
+  { 
+    value: "sleeve", 
+    label: "Sleeve / Bushing", 
+    description: "Short hollow",
     icon: ShapeIcons.tube
   },
 ];

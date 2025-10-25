@@ -185,6 +185,97 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     scanPattern: "Radial and circumferential patterns",
     transducerType: "immersion",
     specialConsiderations: "Generic disk - use disk_forging if applicable. Center bore and rim inspection critical."
+  },
+  // NEW SHAPES
+  sheet: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Two-axis raster scan",
+    transducerType: "immersion",
+    specialConsiderations: "Similar to plate. Check laminar discontinuities."
+  },
+  slab: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Two-axis raster with diagonal passes",
+    transducerType: "immersion",
+    specialConsiderations: "Heavy section, may require multi-side scanning."
+  },
+  square_bar: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Scan from adjacent faces",
+    transducerType: "contact",
+    specialConsiderations: "Similar to rectangular bar, ensure corner coverage."
+  },
+  pipe: {
+    calibrationBlockType: ["cylinder_fbh", "cylinder_notched"],
+    scanPattern: "Helical or circumferential scan",
+    transducerType: "immersion",
+    specialConsiderations: "Same as tube. Check both ID and OD surfaces."
+  },
+  shaft: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial and circumferential scans",
+    transducerType: "immersion",
+    specialConsiderations: "Localized radial scans at critical sections (shoulders, keyways)."
+  },
+  billet: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Two-axis raster in orthogonal directions",
+    transducerType: "immersion",
+    specialConsiderations: "Add diagonal passes if needed. Large cross-section."
+  },
+  block: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Two-axis raster through-thickness",
+    transducerType: "immersion",
+    specialConsiderations: "Similar to billet. Check for internal voids."
+  },
+  sleeve: {
+    calibrationBlockType: ["cylinder_fbh"],
+    scanPattern: "Circumferential and radial through wall",
+    transducerType: "immersion",
+    specialConsiderations: "Short hollow cylinder. Similar to tube but shorter axial length."
+  },
+  bushing: {
+    calibrationBlockType: ["cylinder_fbh"],
+    scanPattern: "Circumferential and radial scans",
+    transducerType: "contact",
+    specialConsiderations: "Short hollow cylinder. Check wall thickness uniformity."
+  },
+  extrusion_l: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial along extrusion, indexed transverse scans",
+    transducerType: "contact",
+    specialConsiderations: "Scan flanges and web separately. Check corners/fillets."
+  },
+  extrusion_t: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial and indexed transverse scans per feature",
+    transducerType: "contact",
+    specialConsiderations: "T-section requires multi-orientation scans."
+  },
+  extrusion_i: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial with indexed scans on flanges and web",
+    transducerType: "contact",
+    specialConsiderations: "I-beam geometry, scan from multiple surfaces."
+  },
+  extrusion_u: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial and transverse indexed scans",
+    transducerType: "contact",
+    specialConsiderations: "U-channel requires coverage of all faces."
+  },
+  extrusion_channel: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial with indexed transverse scans",
+    transducerType: "contact",
+    specialConsiderations: "Similar to U-extrusion. Check web and flanges."
+  },
+  extrusion_angle: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial along legs, radial from edges",
+    transducerType: "contact",
+    specialConsiderations: "Angle section requires scans along both legs."
   }
 };
 

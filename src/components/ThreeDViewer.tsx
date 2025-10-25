@@ -117,26 +117,44 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
   // Determine geometry type from normalized name
   // IMPORTANT: Check EXACT and SPECIFIC types BEFORE general types
   const getGeometryType = (): string => {
-    // EXACT matches first (with underscores converted to spaces)
-    if (normalizedPartType === 'flat bar' || normalizedPartType === 'plate') return 'plate';
-    if (normalizedPartType === 'rectangular bar') return 'bar';
-    if (normalizedPartType === 'round bar' || normalizedPartType === 'round forging stock') return 'round';
-    if (normalizedPartType === 'hex bar') return 'hex';
-    if (normalizedPartType === 'ring forging' || normalizedPartType === 'ring') return 'ring';
-    if (normalizedPartType === 'disk forging' || normalizedPartType === 'disk') return 'disk';
-    if (normalizedPartType === 'tube') return 'tube';
-    if (normalizedPartType === 'bar') return 'bar';
-    if (normalizedPartType === 'forging') return 'forging';
+    // PLATES & SHEETS
+    if (normalizedPartType === 'plate' || normalizedPartType === 'sheet' || normalizedPartType === 'slab') return 'plate';
+    if (normalizedPartType.includes('plate') || normalizedPartType.includes('sheet')) return 'plate';
     
-    // Partial matches as fallback (for variations)
-    if (normalizedPartType.includes('ring')) return 'ring';
-    if (normalizedPartType.includes('disk')) return 'disk';
+    // SOLID BARS
+    if (normalizedPartType === 'round bar' || normalizedPartType === 'shaft') return 'round';
+    if (normalizedPartType === 'square bar') return 'square';
+    if (normalizedPartType === 'hex bar') return 'hex';
+    if (normalizedPartType === 'rectangular bar' || normalizedPartType === 'flat bar') return 'bar';
+    
+    // HOLLOW (TUBES/PIPES)
+    if (normalizedPartType === 'tube' || normalizedPartType === 'pipe') return 'tube';
+    if (normalizedPartType === 'sleeve' || normalizedPartType === 'bushing') return 'sleeve';
     if (normalizedPartType.includes('tube') || normalizedPartType.includes('pipe')) return 'tube';
-    if (normalizedPartType.includes('hex')) return 'hex';
-    if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
-    if (normalizedPartType.includes('flat') || normalizedPartType.includes('plate')) return 'plate';
+    
+    // DISKS
+    if (normalizedPartType === 'disk' || normalizedPartType === 'disk forging') return 'disk';
+    if (normalizedPartType.includes('disk')) return 'disk';
+    
+    // RINGS
+    if (normalizedPartType === 'ring' || normalizedPartType === 'ring forging') return 'ring';
+    if (normalizedPartType.includes('ring')) return 'ring';
+    
+    // FORGINGS
+    if (normalizedPartType === 'forging' || normalizedPartType === 'round forging stock') return 'forging';
     if (normalizedPartType.includes('forging')) return 'forging';
-    if (normalizedPartType.includes('bar') || normalizedPartType.includes('rectangular')) return 'bar';
+    
+    // BILLETS/BLOCKS
+    if (normalizedPartType === 'billet' || normalizedPartType === 'block') return 'billet';
+    if (normalizedPartType.includes('billet') || normalizedPartType.includes('block')) return 'billet';
+    
+    // EXTRUSIONS (treat as rectangular bars for now)
+    if (normalizedPartType.includes('extrusion')) return 'bar';
+    
+    // Fallback for general terms
+    if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
+    if (normalizedPartType.includes('hex')) return 'hex';
+    if (normalizedPartType.includes('bar')) return 'bar';
     
     return 'plate'; // default
   };
@@ -232,6 +250,41 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
           <cylinderGeometry args={[roundRadius, roundRadius, roundHeight, 32]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
+      );
+    
+    case "square":
+      // Square Bar - square cross-section
+      const squareSize = Math.max(w * 0.5, 0.2);
+      const squareLength = Math.max(l, 0.5);
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[squareLength, squareSize, squareSize]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "billet":
+      // Billet/Block - large rectangular solid
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l * 0.8, w * 0.8, t * 0.8]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "sleeve":
+      // Sleeve/Bushing - short hollow cylinder
+      const sleeveOuterRadius = d / 2;
+      const sleeveInnerRadius = Math.max((d / 2) - t, 0.05);
+      const sleeveLength = Math.min(l * 0.5, w); // Short length
+      
+      return (
+        <HollowTube 
+          color={color} 
+          outerRadius={sleeveOuterRadius} 
+          innerRadius={sleeveInnerRadius} 
+          length={sleeveLength} 
+        />
       );
     
     default:
