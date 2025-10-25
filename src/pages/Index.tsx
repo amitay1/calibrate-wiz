@@ -589,6 +589,11 @@ const Index = () => {
                     thickness: inspectionSetup.partThickness || 10,
                     diameter: inspectionSetup.diameter || 50
                   }}
+                  scanDirections={scanDetails.scanDetails.map(detail => ({
+                    direction: detail.scanningDirection,
+                    waveMode: detail.waveMode,
+                    isVisible: detail.isVisible || false
+                  }))}
                 />
               </div>
             </ResizablePanel>

@@ -2,9 +2,16 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment } from "@react-three/drei";
 import { PartGeometry, MaterialType } from "@/types/techniqueSheet";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Navigation } from "lucide-react";
 import { useRef, useMemo } from "react";
 import * as THREE from "three";
+import { ScanDirectionArrows3D } from "./ScanDirectionArrows3D";
+
+export interface ScanDirectionArrow {
+  direction: string;
+  waveMode: string;
+  isVisible: boolean;
+}
 
 interface ThreeDViewerProps {
   partType: PartGeometry | "";
@@ -15,6 +22,7 @@ interface ThreeDViewerProps {
     thickness: number;
     diameter?: number;
   };
+  scanDirections?: ScanDirectionArrow[];
 }
 
 const getMaterialColor = (material: MaterialType | ""): string => {
@@ -238,6 +246,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
 
 export const ThreeDViewer = (props: ThreeDViewerProps) => {
   const controlsRef = useRef<any>();
+  const { scanDirections = [] } = props;
 
   const handleReset = () => {
     if (controlsRef.current) {
@@ -248,8 +257,9 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
   // Create a unique key based on props to force re-render when dimensions change
   const viewerKey = useMemo(() => {
     const dims = props.dimensions;
-    return `${props.partType}-${props.material}-${dims?.length}-${dims?.width}-${dims?.thickness}-${dims?.diameter}`;
-  }, [props.partType, props.material, props.dimensions]);
+    const visibleScans = scanDirections.filter(s => s.isVisible).map(s => s.direction).join(',');
+    return `${props.partType}-${props.material}-${dims?.length}-${dims?.width}-${dims?.thickness}-${dims?.diameter}-${visibleScans}`;
+  }, [props.partType, props.material, props.dimensions, scanDirections]);
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border border-border overflow-hidden">
@@ -283,6 +293,14 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
         
         {/* Part */}
         <Part {...props} />
+        
+        {/* Scan Direction Arrows */}
+        {scanDirections && scanDirections.length > 0 && (
+          <ScanDirectionArrows3D 
+            scanDirections={scanDirections} 
+            partScale={0.01}
+          />
+        )}
       </Canvas>
 
       {/* Controls overlay */}
@@ -300,7 +318,10 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
 
       {/* Info overlay */}
       <div className="absolute top-4 left-4 bg-card/90 backdrop-blur-sm rounded-md p-3 border border-border shadow-lg">
-        <p className="text-xs font-medium text-foreground mb-1">Part Visualization</p>
+        <p className="text-xs font-medium text-foreground mb-1 flex items-center gap-2">
+          <Navigation className="h-3 w-3" />
+          Part Visualization
+        </p>
         <p className="text-xs text-muted-foreground">
           {props.partType ? 
             `${props.partType.charAt(0).toUpperCase() + props.partType.slice(1)} • ${props.material || "No material"}` :
@@ -310,6 +331,13 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
         <p className="text-xs text-muted-foreground mt-1">
           {props.dimensions && `${props.dimensions.thickness}mm thick`}
         </p>
+        {scanDirections && scanDirections.filter(s => s.isVisible).length > 0 && (
+          <div className="mt-2 pt-2 border-t border-border">
+            <p className="text-xs font-medium text-primary">
+              {scanDirections.filter(s => s.isVisible).length} Scan{scanDirections.filter(s => s.isVisible).length > 1 ? 's' : ''} Active
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

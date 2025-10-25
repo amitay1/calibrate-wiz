@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Info } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Info, Eye, EyeOff } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScanDirectionVisualizer, type ScanVisualization } from "@/components/ScanDirectionVisualizer";
 
@@ -16,6 +17,7 @@ export interface ScanDetail {
   make: string;
   probe: string;
   remarkDetails: string;
+  isVisible?: boolean; // Controls 3D visualization display
 }
 
 export interface ScanDetailsData {
@@ -40,16 +42,16 @@ const WAVE_MODES = [
 const SCAN_DIRECTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "L"];
 
 const DEFAULT_SCAN_DETAILS: ScanDetail[] = [
-  { scanningDirection: "A", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "B", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "C", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "D", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "E", waveMode: "Axial shear wave 45° OD", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "F", waveMode: "Axial shear wave 45° OD", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "G", waveMode: "Shear wave 45° clockwise", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "H", waveMode: "Shear wave 45° counter clockwise", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "I", waveMode: "Shear wave 45° counter clockwise", frequency: "", make: "", probe: "", remarkDetails: "" },
-  { scanningDirection: "L", waveMode: "Shear wave 45° counter clockwise", frequency: "", make: "", probe: "", remarkDetails: "" }
+  { scanningDirection: "A", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "B", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "C", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "D", waveMode: "Longitudinal", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "E", waveMode: "Axial shear wave 45° OD", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "F", waveMode: "Axial shear wave 45° OD", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "G", waveMode: "Shear wave 45° clockwise", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "H", waveMode: "Shear wave 45° counter clockwise", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "I", waveMode: "Shear wave 45° counter clockwise", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false },
+  { scanningDirection: "L", waveMode: "Shear wave 45° counter clockwise", frequency: "", make: "", probe: "", remarkDetails: "", isVisible: false }
 ];
 
 export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps) => {
@@ -60,10 +62,14 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
     }
   }, []);
 
-  const updateScanDetail = (index: number, field: keyof ScanDetail, value: string) => {
+  const updateScanDetail = (index: number, field: keyof ScanDetail, value: string | boolean) => {
     const newScanDetails = [...data.scanDetails];
     newScanDetails[index] = { ...newScanDetails[index], [field]: value };
     onChange({ scanDetails: newScanDetails });
+  };
+
+  const toggleVisibility = (index: number) => {
+    updateScanDetail(index, 'isVisible', !data.scanDetails[index].isVisible);
   };
 
   // Convert scan details to visualization format
@@ -144,6 +150,21 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b">
+                  <th className="text-center p-2 font-semibold text-sm w-[80px]">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <div className="flex flex-col items-center gap-1 cursor-help">
+                            <Eye className="h-4 w-4 text-primary" />
+                            <span className="text-xs">Show 3D</span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs text-xs">Check to visualize this scan direction on the 3D model</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </th>
                   <th className="text-left p-2 font-semibold text-sm">Direction</th>
                   <th className="text-left p-2 font-semibold text-sm">Wave Mode</th>
                   <th className="text-left p-2 font-semibold text-sm">Frequency (MHz)</th>
@@ -154,9 +175,37 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
               </thead>
               <tbody>
                 {data.scanDetails?.map((detail, index) => (
-                  <tr key={index} className="border-b hover:bg-muted/50">
+                  <tr 
+                    key={index} 
+                    className={`border-b hover:bg-muted/50 transition-all ${
+                      detail.isVisible ? 'bg-primary/5 border-l-4 border-l-primary' : ''
+                    }`}
+                  >
+                  <td className="p-2 text-center">
+                    <div className="flex items-center justify-center">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Checkbox
+                                checked={detail.isVisible || false}
+                                onCheckedChange={() => toggleVisibility(index)}
+                                className="h-5 w-5"
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Toggle 3D visualization for this scan direction</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </td>
                     <td className="p-2">
-                      <Badge variant="outline" className="font-mono">
+                      <Badge 
+                        variant="outline" 
+                        className={`font-mono ${detail.isVisible ? 'border-primary text-primary' : ''}`}
+                      >
                         {detail.scanningDirection}
                       </Badge>
                     </td>
@@ -219,8 +268,9 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
             </table>
           </div>
 
-          <div className="text-xs text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg">
-            💡 <strong>Tip:</strong> Scanning directions are labeled A through L. Configure only the directions required for your part geometry. Leave unused rows empty.
+          <div className="text-xs text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg space-y-1">
+            <p>💡 <strong>Tip:</strong> Scanning directions are labeled A through L. Configure only the directions required for your part geometry.</p>
+            <p>🎯 <strong>3D Visualization:</strong> Check the boxes to see scan directions displayed on the 3D model in real-time.</p>
           </div>
         </div>
       </Card>
