@@ -1,9 +1,8 @@
 import React from "react";
 import { PartGeometry } from "@/types/techniqueSheet";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import ShapeCard from "@/components/ui/ShapeCard";
 
 interface PartTypeVisualSelectorProps {
   value: string;
@@ -15,6 +14,7 @@ interface PartTypeOption {
   label: string;
   description: string;
   icon: React.ReactNode;
+  color: string;
 }
 
 // SVG Icons - Each shape is UNIQUE and DISTINCTIVE
@@ -302,7 +302,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "plate", 
     label: "Plate / Sheet", 
     description: "Flat thin surface",
-    icon: ShapeIcons.plate
+    icon: ShapeIcons.plate,
+    color: "#3b82f6"
   },
   
   // SOLID BARS
@@ -310,25 +311,29 @@ const partTypeOptions: PartTypeOption[] = [
     value: "round_bar", 
     label: "Round Bar", 
     description: "Solid cylinder",
-    icon: ShapeIcons.round_bar
+    icon: ShapeIcons.round_bar,
+    color: "#8b5cf6"
   },
   { 
     value: "square_bar", 
     label: "Square Bar", 
     description: "4-sided solid",
-    icon: ShapeIcons.rectangular_bar
+    icon: ShapeIcons.rectangular_bar,
+    color: "#f59e0b"
   },
   { 
     value: "hex_bar", 
     label: "Hex Bar", 
     description: "6-sided solid",
-    icon: ShapeIcons.hex_bar
+    icon: ShapeIcons.hex_bar,
+    color: "#06b6d4"
   },
   { 
     value: "rectangular_bar", 
     label: "Rectangular Bar", 
     description: "Flat cross-section",
-    icon: ShapeIcons.flat_bar
+    icon: ShapeIcons.flat_bar,
+    color: "#10b981"
   },
   
   // HOLLOW (TUBES/PIPES)
@@ -336,7 +341,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "tube", 
     label: "Tube / Pipe", 
     description: "Hollow cylinder",
-    icon: ShapeIcons.tube
+    icon: ShapeIcons.tube,
+    color: "#64748b"
   },
   
   // DISKS
@@ -344,7 +350,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "disk", 
     label: "Disk", 
     description: "Flat circular",
-    icon: ShapeIcons.disk_forging
+    icon: ShapeIcons.disk_forging,
+    color: "#14b8a6"
   },
   
   // RINGS
@@ -352,7 +359,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "ring", 
     label: "Ring ⭐", 
     description: "Hollow ring/torus",
-    icon: ShapeIcons.ring_forging
+    icon: ShapeIcons.ring_forging,
+    color: "#ec4899"
   },
   
   // SHAFTS
@@ -360,7 +368,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "shaft", 
     label: "Shaft", 
     description: "Long cylinder",
-    icon: ShapeIcons.round_bar
+    icon: ShapeIcons.round_bar,
+    color: "#a78bfa"
   },
   
   // FORGINGS
@@ -368,7 +377,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "forging", 
     label: "Forging", 
     description: "Irregular shape",
-    icon: ShapeIcons.forging
+    icon: ShapeIcons.forging,
+    color: "#78716c"
   },
   
   // BILLETS/BLOCKS
@@ -376,7 +386,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "billet", 
     label: "Billet / Block", 
     description: "Large rectangular",
-    icon: ShapeIcons.rectangular_bar
+    icon: ShapeIcons.rectangular_bar,
+    color: "#fbbf24"
   },
   
   // SLEEVES/BUSHINGS
@@ -384,7 +395,8 @@ const partTypeOptions: PartTypeOption[] = [
     value: "sleeve", 
     label: "Sleeve / Bushing", 
     description: "Short hollow",
-    icon: ShapeIcons.tube
+    icon: ShapeIcons.tube,
+    color: "#94a3b8"
   },
 ];
 
@@ -400,51 +412,20 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({ 
       >
         <CarouselContent className="-ml-2 md:-ml-4">
           {partTypeOptions.map((option) => (
-            <CarouselItem key={option.value} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
-              <Card
-                className={cn(
-                  "cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg",
-                  value === option.value
-                    ? "ring-2 ring-primary shadow-lg bg-primary/5"
-                    : "hover:bg-accent/50"
-                )}
+            <CarouselItem key={option.value} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+              <ShapeCard
+                title={option.label}
+                description={option.description}
+                baseIcon={option.icon}
+                color={option.color}
+                isSelected={value === option.value}
                 onClick={() => onChange(option.value)}
-              >
-                <CardContent className="p-4 flex flex-col items-center gap-2">
-                  {/* Visual Icon */}
-                  <div className={cn(
-                    "w-20 h-16 flex items-center justify-center rounded-lg transition-colors",
-                    value === option.value ? "text-primary" : "text-muted-foreground"
-                  )}>
-                    {option.icon}
-                  </div>
-                  
-                  {/* Label */}
-                  <div className="text-center space-y-1 w-full">
-                    <p className={cn(
-                      "text-sm font-medium leading-tight",
-                      value === option.value ? "text-primary" : "text-foreground"
-                    )}>
-                      {option.label}
-                    </p>
-                    <p className="text-xs text-muted-foreground leading-tight">
-                      {option.description}
-                    </p>
-                  </div>
-                  
-                  {/* Selected Badge */}
-                  {value === option.value && (
-                    <Badge variant="default" className="text-xs">
-                      Selected
-                    </Badge>
-                  )}
-                </CardContent>
-              </Card>
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-0" />
-        <CarouselNext className="right-0" />
+        <CarouselPrevious className="-left-12" />
+        <CarouselNext className="-right-12" />
       </Carousel>
     </div>
   );

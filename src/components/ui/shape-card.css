@@ -1,0 +1,188 @@
+.shape-card {
+  width: 280px;
+  height: 360px;
+  border-radius: 16px;
+  background: radial-gradient(120% 100% at 50% 0%, hsl(var(--card)) 0%, hsl(var(--background)) 60%, hsl(var(--background)) 100%);
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15);
+  transform-style: preserve-3d;
+  perspective: 900px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  transition: box-shadow 0.3s ease;
+}
+
+.shape-card:hover {
+  box-shadow: 0 20px 60px hsl(var(--primary) / 0.25);
+}
+
+.stage {
+  position: absolute;
+  inset: 20% 8% 22% 8%;
+  transform-style: preserve-3d;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shadow {
+  filter: blur(8px) opacity(0.4);
+  transform: translateZ(-40px);
+}
+
+.z2 {
+  transform: translateZ(0px);
+  transition: opacity 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.z3 {
+  transform: translateZ(14px);
+  opacity: 0.85;
+  transition: opacity 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.z4 {
+  transform: translateZ(26px);
+  opacity: 0.85;
+  transition: opacity 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.z5 {
+  transform: translateZ(40px);
+  opacity: 0.85;
+  transition: opacity 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.shape-card:hover .z2 {
+  transform: translateZ(0px) scale(1);
+  opacity: 1;
+}
+
+.shape-card:hover .z3 {
+  transform: translateZ(16px) scale(1.02);
+  opacity: 1;
+}
+
+.shape-card:hover .z4 {
+  transform: translateZ(30px) scale(1.03);
+  opacity: 1;
+}
+
+.shape-card:hover .z5 {
+  transform: translateZ(46px) scale(1.04);
+  opacity: 1;
+}
+
+/* הילה ובוהק עדין */
+.add-glow {
+  filter: drop-shadow(0 0 12px hsl(var(--primary) / 0.6));
+}
+
+.add-bloom {
+  mix-blend-mode: screen;
+  filter: blur(0.3px) saturate(110%);
+}
+
+/* אפקט כרומטיק עדין על hover */
+.shape-card:hover .z4 {
+  filter: drop-shadow(1px 0 hsl(var(--primary) / 0.6))
+    drop-shadow(-1px 0 hsl(210 100% 70% / 0.35));
+}
+
+/* כותרת */
+.card-title {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.2;
+  box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.3), 0 2px 8px hsl(var(--foreground) / 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.card-description {
+  position: absolute;
+  left: 12px;
+  bottom: 46px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: hsl(var(--muted) / 0.8);
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+  line-height: 1.2;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.shape-card:hover .card-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Selected state */
+.shape-card.selected {
+  border: 2px solid hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.2), 0 20px 60px hsl(var(--primary) / 0.3);
+}
+
+.selected-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.4);
+}
+
+/* Sparkle animation for highlights */
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0.85;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.15);
+  }
+}
+
+.shape-card:hover .z5 {
+  animation: sparkle 1.2s ease-in-out infinite;
+}
+
+/* Performance optimizations */
+.shape-card,
+.layer {
+  will-change: transform;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .shape-card,
+  .layer {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .shape-card:hover .z4 {
+    filter: none;
+  }
+}
