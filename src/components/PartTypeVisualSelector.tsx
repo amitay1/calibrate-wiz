@@ -19,25 +19,69 @@ interface PartTypeOption {
 
 // SVG Icons - Each shape is UNIQUE and DISTINCTIVE
 const ShapeIcons = {
-  // 1. PLATE - Wide, thin, flat view from above
+  // 1. PLATE - Medium thickness flat
   plate: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
-        <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style={{ stopColor: "#3b82f6", stopOpacity: 0.9 }} />
-          <stop offset="50%" style={{ stopColor: "#60a5fa", stopOpacity: 0.8 }} />
-          <stop offset="100%" style={{ stopColor: "#93c5fd", stopOpacity: 0.7 }} />
+          <stop offset="100%" style={{ stopColor: "#60a5fa", stopOpacity: 0.7 }} />
         </linearGradient>
       </defs>
-      {/* Top surface - very wide */}
-      <rect x="10" y="25" width="100" height="50" fill="url(#plateGrad)" stroke="#1e40af" strokeWidth="2" rx="3"/>
-      {/* Thickness indicator - thin edge */}
-      <rect x="10" y="75" width="100" height="6" fill="#1e3a8a" opacity="0.6"/>
-      <text x="60" y="55" fontSize="14" fontWeight="bold" fill="#1e40af" textAnchor="middle">PLATE</text>
+      {/* 3D plate with medium thickness */}
+      <path d="M 15 30 L 25 22 L 105 22 L 115 30 L 115 60 L 105 68 L 25 68 L 15 60 Z" 
+            fill="url(#plateGrad)" stroke="#1e40af" strokeWidth="2"/>
+      {/* Top face */}
+      <path d="M 15 30 L 25 22 L 105 22 L 115 30 Z" fill="#60a5fa" opacity="0.5"/>
+      {/* Side face */}
+      <path d="M 115 30 L 115 60 L 105 68 L 105 22 Z" fill="#1e3a8a" opacity="0.6"/>
+      <text x="60" y="50" fontSize="13" fontWeight="bold" fill="#fff" textAnchor="middle">PLATE</text>
     </svg>
   ),
 
-  // 2. FLAT BAR - Rectangular, medium width, side view
+  // 2. SHEET - Very thin, almost 2D
+  sheet: (
+    <svg viewBox="0 0 120 100" className="w-full h-full">
+      <defs>
+        <linearGradient id="sheetGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: "#60a5fa", stopOpacity: 0.95 }} />
+          <stop offset="100%" style={{ stopColor: "#93c5fd", stopOpacity: 0.7 }} />
+        </linearGradient>
+      </defs>
+      {/* Very thin sheet - minimal depth */}
+      <rect x="10" y="35" width="100" height="30" fill="url(#sheetGrad)" stroke="#2563eb" strokeWidth="2" rx="2"/>
+      {/* Paper-thin edge indicator */}
+      <rect x="10" y="65" width="100" height="2" fill="#1e3a8a" opacity="0.7"/>
+      {/* Slight wave/flex effect */}
+      <path d="M 10 50 Q 35 48 60 50 T 110 50" stroke="#fff" strokeWidth="1" opacity="0.3" fill="none"/>
+      <text x="60" y="53" fontSize="12" fontWeight="bold" fill="#1e40af" textAnchor="middle">SHEET</text>
+    </svg>
+  ),
+
+  // 3. SLAB - Very thick, heavy block
+  slab: (
+    <svg viewBox="0 0 120 100" className="w-full h-full">
+      <defs>
+        <linearGradient id="slabGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#2563eb", stopOpacity: 0.95 }} />
+          <stop offset="100%" style={{ stopColor: "#3b82f6", stopOpacity: 0.75 }} />
+        </linearGradient>
+      </defs>
+      {/* Thick heavy slab */}
+      <path d="M 20 20 L 35 10 L 100 10 L 115 20 L 115 70 L 100 80 L 35 80 L 20 70 Z" 
+            fill="url(#slabGrad)" stroke="#1e40af" strokeWidth="2.5"/>
+      {/* Top face - clearly visible */}
+      <path d="M 20 20 L 35 10 L 100 10 L 115 20 Z" fill="#3b82f6" opacity="0.6"/>
+      {/* Right face - thick appearance */}
+      <path d="M 115 20 L 115 70 L 100 80 L 100 10 Z" fill="#1e3a8a" opacity="0.7"/>
+      {/* Thickness lines */}
+      <line x1="20" y1="35" x2="115" y2="35" stroke="#1e3a8a" strokeWidth="1" opacity="0.3"/>
+      <line x1="20" y1="55" x2="115" y2="55" stroke="#1e3a8a" strokeWidth="1" opacity="0.3"/>
+      <text x="60" y="50" fontSize="14" fontWeight="bold" fill="#fff" textAnchor="middle">SLAB</text>
+    </svg>
+  ),
+
+  // 4. FLAT BAR - Rectangular, medium width, side view
   flat_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -57,7 +101,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 3. RECTANGULAR BAR - Square cross-section, thick
+  // 5. RECTANGULAR BAR - Square cross-section, thick
   rectangular_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -78,7 +122,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 4. ROUND BAR - Cylinder lying down, clearly round
+  // 6. ROUND BAR - Cylinder lying down, clearly round
   round_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -100,7 +144,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 5. ROUND FORGING STOCK - Round with grain flow pattern
+  // 7. ROUND FORGING STOCK - Round with grain flow pattern
   round_forging_stock: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -124,7 +168,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 6. RING FORGING - Obvious ring/donut shape with star
+  // 8. RING FORGING - Obvious ring/donut shape with star
   ring_forging: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -148,7 +192,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 7. DISK FORGING - Flat disk with center hole
+  // 9. DISK FORGING - Flat disk with center hole
   disk_forging: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -172,7 +216,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 8. HEX BAR - Clear hexagon with 6 visible sides
+  // 10. HEX BAR - Clear hexagon with 6 visible sides
   hex_bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -204,7 +248,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 9. TUBE - Hollow cylinder with visible wall thickness
+  // 11. TUBE - Hollow cylinder with visible wall thickness
   tube: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -230,7 +274,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 10. BAR (Generic) - Simple bar with question mark
+  // 12. BAR (Generic) - Simple bar with question mark
   bar: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -246,7 +290,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 11. FORGING (Generic) - Round forging with F
+  // 13. FORGING (Generic) - Round forging with F
   forging: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -262,7 +306,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 12. RING (Generic) - Simple ring with question mark
+  // 14. RING (Generic) - Simple ring with question mark
   ring: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -278,7 +322,7 @@ const ShapeIcons = {
     </svg>
   ),
 
-  // 13. DISK (Generic) - Flat disk with question mark
+  // 15. DISK (Generic) - Flat disk with question mark
   disk: (
     <svg viewBox="0 0 120 100" className="w-full h-full">
       <defs>
@@ -301,22 +345,22 @@ const partTypeOptions: PartTypeOption[] = [
   { 
     value: "plate", 
     label: "Plate", 
-    description: "Flat rectangular",
+    description: "Medium thickness",
     icon: ShapeIcons.plate,
     color: "#3b82f6"
   },
   { 
     value: "sheet", 
     label: "Sheet", 
-    description: "Thin flat",
-    icon: ShapeIcons.plate,
+    description: "Very thin",
+    icon: ShapeIcons.sheet,
     color: "#60a5fa"
   },
   { 
     value: "slab", 
     label: "Slab", 
-    description: "Thick flat",
-    icon: ShapeIcons.plate,
+    description: "Very thick",
+    icon: ShapeIcons.slab,
     color: "#2563eb"
   },
   
