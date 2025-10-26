@@ -90,15 +90,26 @@ export default function ShapeCard({
     <motion.div
       ref={ref}
       className={cn("shape-card", isSelected && "selected", isActive && "active")}
-      style={{ rotateX: rotX, rotateY: rotY, ["--halo" as any]: color }}
+      style={{ 
+        rotateX: isActive ? 0 : rotX, 
+        rotateY: isActive ? 0 : rotY, 
+        ["--halo" as any]: color,
+        position: isActive ? "fixed" : "relative",
+        top: isActive ? "50%" : "auto",
+        left: isActive ? "50%" : "auto",
+        translateX: isActive ? "-50%" : "0",
+        translateY: isActive ? "-50%" : "0",
+        zIndex: isActive ? 9999 : "auto",
+      }}
       onMouseMove={onMove}
       onMouseEnter={onHover}
       onMouseLeave={reset}
       onClick={handleClick}
       whileHover={{ scale: isActive ? 1 : 1.04 }}
       animate={{ 
-        scale: isActive ? 1.08 : 1,
-        z: isActive ? 50 : 0,
+        scale: isActive ? 1.2 : 1,
+        rotateX: isActive ? 0 : undefined,
+        rotateY: isActive ? 0 : undefined,
       }}
       transition={{ type: "spring", stiffness: 260, damping: 28 }}
     >
