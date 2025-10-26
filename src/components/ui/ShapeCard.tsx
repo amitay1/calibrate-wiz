@@ -58,9 +58,11 @@ export default function ShapeCard({
   }
   function handleClick() {
     if (isActive) {
-      // Deactivate - return to normal
+      // Deactivate - return to normal AND reset position
       setIsActive(false);
       setIsHovered(false);
+      mx.set(0.5); // Reset to center
+      my.set(0.5); // Reset to center
       onClick();
     } else {
       // Activate - enter interactive mode
