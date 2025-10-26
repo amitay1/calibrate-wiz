@@ -13,7 +13,6 @@ interface PartTypeOption {
   value: PartGeometry;
   label: string;
   description: string;
-  icon: React.ReactNode;
   color: string;
 }
 
@@ -346,21 +345,18 @@ const partTypeOptions: PartTypeOption[] = [
     value: "plate", 
     label: "Plate", 
     description: "Medium thickness",
-    icon: ShapeIcons.plate,
     color: "#3b82f6"
   },
   { 
     value: "sheet", 
     label: "Sheet", 
     description: "Very thin",
-    icon: ShapeIcons.sheet,
     color: "#60a5fa"
   },
   { 
     value: "slab", 
     label: "Slab", 
     description: "Very thick",
-    icon: ShapeIcons.slab,
     color: "#2563eb"
   },
   
@@ -369,35 +365,30 @@ const partTypeOptions: PartTypeOption[] = [
     value: "round_bar", 
     label: "Round Bar", 
     description: "Solid cylinder",
-    icon: ShapeIcons.round_bar,
     color: "#8b5cf6"
   },
   { 
     value: "square_bar", 
     label: "Square Bar", 
     description: "4-sided solid",
-    icon: ShapeIcons.rectangular_bar,
     color: "#f59e0b"
   },
   { 
     value: "hex_bar", 
     label: "Hex Bar", 
     description: "6-sided solid",
-    icon: ShapeIcons.hex_bar,
     color: "#06b6d4"
   },
   { 
     value: "rectangular_bar", 
     label: "Rectangular Bar", 
     description: "Flat section",
-    icon: ShapeIcons.flat_bar,
     color: "#10b981"
   },
   { 
     value: "flat_bar", 
     label: "Flat Bar", 
     description: "Thin rectangle",
-    icon: ShapeIcons.flat_bar,
     color: "#059669"
   },
   
@@ -406,14 +397,12 @@ const partTypeOptions: PartTypeOption[] = [
     value: "tube", 
     label: "Tube", 
     description: "Hollow cylinder",
-    icon: ShapeIcons.tube,
     color: "#64748b"
   },
   { 
     value: "pipe", 
     label: "Pipe", 
     description: "Industrial tube",
-    icon: ShapeIcons.tube,
     color: "#475569"
   },
   
@@ -422,14 +411,12 @@ const partTypeOptions: PartTypeOption[] = [
     value: "disk", 
     label: "Disk", 
     description: "Flat circular",
-    icon: ShapeIcons.disk,
     color: "#737373"
   },
   { 
     value: "disk_forging", 
     label: "Disk Forging", 
     description: "Forged disk",
-    icon: ShapeIcons.disk_forging,
     color: "#14b8a6"
   },
   
@@ -438,14 +425,12 @@ const partTypeOptions: PartTypeOption[] = [
     value: "ring", 
     label: "Ring", 
     description: "Generic ring",
-    icon: ShapeIcons.ring,
     color: "#6b7280"
   },
   { 
     value: "ring_forging", 
     label: "Ring Forging ⭐", 
     description: "Forged ring",
-    icon: ShapeIcons.ring_forging,
     color: "#ec4899"
   },
   
@@ -454,7 +439,6 @@ const partTypeOptions: PartTypeOption[] = [
     value: "shaft", 
     label: "Shaft", 
     description: "Long cylinder",
-    icon: ShapeIcons.round_bar,
     color: "#a78bfa"
   },
   
@@ -463,14 +447,12 @@ const partTypeOptions: PartTypeOption[] = [
     value: "forging", 
     label: "Forging", 
     description: "Complex shape",
-    icon: ShapeIcons.forging,
     color: "#78716c"
   },
   { 
     value: "round_forging_stock", 
     label: "Round Forging", 
     description: "Round stock",
-    icon: ShapeIcons.round_forging_stock,
     color: "#ef4444"
   },
   
@@ -479,14 +461,12 @@ const partTypeOptions: PartTypeOption[] = [
     value: "billet", 
     label: "Billet", 
     description: "Semi-finished",
-    icon: ShapeIcons.rectangular_bar,
     color: "#fbbf24"
   },
   { 
     value: "block", 
     label: "Block", 
     description: "Solid block",
-    icon: ShapeIcons.rectangular_bar,
     color: "#f59e0b"
   },
   
@@ -495,42 +475,36 @@ const partTypeOptions: PartTypeOption[] = [
     value: "extrusion_l", 
     label: "L-Extrusion", 
     description: "L-shaped profile",
-    icon: ShapeIcons.flat_bar,
     color: "#0891b2"
   },
   { 
     value: "extrusion_t", 
     label: "T-Extrusion", 
     description: "T-shaped profile",
-    icon: ShapeIcons.flat_bar,
     color: "#0e7490"
   },
   { 
     value: "extrusion_i", 
     label: "I-Extrusion", 
     description: "I-beam profile",
-    icon: ShapeIcons.flat_bar,
     color: "#155e75"
   },
   { 
     value: "extrusion_u", 
     label: "U-Extrusion", 
     description: "U-channel",
-    icon: ShapeIcons.flat_bar,
     color: "#164e63"
   },
   { 
     value: "extrusion_channel", 
     label: "Channel", 
     description: "Channel section",
-    icon: ShapeIcons.flat_bar,
     color: "#0c4a6e"
   },
   { 
     value: "extrusion_angle", 
     label: "Angle", 
     description: "Angle section",
-    icon: ShapeIcons.flat_bar,
     color: "#082f49"
   },
   
@@ -539,14 +513,12 @@ const partTypeOptions: PartTypeOption[] = [
     value: "sleeve", 
     label: "Sleeve", 
     description: "Short hollow",
-    icon: ShapeIcons.tube,
     color: "#94a3b8"
   },
   { 
     value: "bushing", 
     label: "Bushing", 
     description: "Bearing sleeve",
-    icon: ShapeIcons.tube,
     color: "#64748b"
   },
 ];
@@ -568,10 +540,6 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({ 
                 title={option.label}
                 description={option.description}
                 partType={option.value}
-                baseIcon={option.icon}
-                detailsIcon={option.icon}
-                edgesIcon={option.icon}
-                highlightsIcon={option.icon}
                 color={option.color}
                 isSelected={value === option.value}
                 onClick={() => onChange(option.value)}

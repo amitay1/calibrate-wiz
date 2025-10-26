@@ -7,11 +7,7 @@ import "./shape-card.css";
 type Props = {
   title: string;
   description?: string;
-  partType: string; // NEW: part type for 3D geometry
-  baseIcon: React.ReactNode;
-  edgesIcon?: React.ReactNode;
-  highlightsIcon?: React.ReactNode;
-  detailsIcon?: React.ReactNode;
+  partType: string;
   color: string;
   isSelected: boolean;
   onClick: () => void;
@@ -21,10 +17,6 @@ export default function ShapeCard({
   title,
   description,
   partType,
-  baseIcon,
-  edgesIcon,
-  highlightsIcon,
-  detailsIcon,
   color,
   isSelected,
   onClick,
@@ -43,19 +35,11 @@ export default function ShapeCard({
   const rotX = useTransform(sMy, (v) => (v - 0.5) * 16); // -8..8°
   const rotY = useTransform(sMx, (v) => (0.5 - v) * 16);
 
-  // Pre-calculate all parallax offsets (must be unconditional to satisfy hooks rules)
+  // Pre-calculate parallax offsets for shadow and 3D viewer
   const pxNeg10 = useTransform(sMx, (v) => (v - 0.5) * -10);
   const py8 = useTransform(sMy, (v) => (v - 0.5) * 8);
-  const px0 = useTransform(sMx, (v) => (v - 0.5) * 0);
-  const py0 = useTransform(sMy, (v) => (v - 0.5) * 0);
   const px6 = useTransform(sMx, (v) => (v - 0.5) * 6);
   const py6 = useTransform(sMy, (v) => (v - 0.5) * 6);
-  const px10 = useTransform(sMx, (v) => (v - 0.5) * 10);
-  const py10 = useTransform(sMy, (v) => (v - 0.5) * 10);
-  const px14 = useTransform(sMx, (v) => (v - 0.5) * 14);
-  const py14 = useTransform(sMy, (v) => (v - 0.5) * 14);
-  const px18 = useTransform(sMx, (v) => (v - 0.5) * 18);
-  const py18 = useTransform(sMy, (v) => (v - 0.5) * 18);
 
   function onMove(e: React.MouseEvent) {
     if (!ref.current || isActive) return; // Don't move if active
@@ -110,86 +94,29 @@ export default function ShapeCard({
           <div className="shadow-ellip" />
         </motion.div>
 
-        {/* Base icon - visible when not hovered and not active */}
+        {/* 3D VIEWER - Always visible! */}
         <motion.div
-          className="layer z2"
-          style={{ 
-            x: px0, 
-            y: py0,
-            opacity: (isHovered || isActive) ? 0 : 1,
+          className="layer z2 shape-3d-container"
+          style={{ x: px6, y: py6 }}
+          animate={{ 
+            scale: isActive ? 1.3 : isHovered ? 1.15 : 1,
+            z: isActive ? 100 : isHovered ? 40 : 0,
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ 
+            type: "spring",
+            stiffness: 200,
+            damping: 25,
+          }}
         >
-          {baseIcon}
+          <Shape3DViewer
+            partType={partType}
+            color={color}
+            isHovered={isHovered}
+            isActive={isActive}
+            mouseX={sMx.get()}
+            mouseY={sMy.get()}
+          />
         </motion.div>
-
-        {/* 3D VIEWER - appears on hover or click */}
-        {(isHovered || isActive) && (
-          <motion.div
-            className="layer z2 shape-3d-container"
-            style={{ x: px6, y: py6 }}
-            initial={{ opacity: 0, scale: 0.85, z: -50 }}
-            animate={{ 
-              opacity: 1, 
-              scale: isActive ? 1.3 : 1.15, // Bigger when active
-              z: isActive ? 100 : 40, // Pop out more when active
-            }}
-            transition={{ 
-              type: "spring",
-              stiffness: 200,
-              damping: 25,
-            }}
-          >
-            <Shape3DViewer
-              partType={partType}
-              color={color}
-              isHovered={isHovered}
-              isActive={isActive}
-              mouseX={sMx.get()}
-              mouseY={sMy.get()}
-            />
-          </motion.div>
-        )}
-
-        {/* Icon layers - visible when not hovered and not active */}
-        {detailsIcon && (
-          <motion.div
-            className="layer z3"
-            style={{ 
-              x: px10, 
-              y: py10, 
-              opacity: (isHovered || isActive) ? 0 : 0.92,
-            }}
-          >
-            {detailsIcon}
-          </motion.div>
-        )}
-
-        {edgesIcon && (
-          <motion.div
-            className="layer z4 add-glow"
-            style={{ 
-              x: px14, 
-              y: py14, 
-              opacity: (isHovered || isActive) ? 0 : 0.92,
-            }}
-          >
-            {edgesIcon}
-          </motion.div>
-        )}
-
-        {highlightsIcon && (
-          <motion.div
-            className="layer z5 add-bloom"
-            style={{ 
-              x: px18, 
-              y: py18, 
-              opacity: (isHovered || isActive) ? 0 : 0.92,
-            }}
-          >
-            {highlightsIcon}
-          </motion.div>
-        )}
       </div>
 
       <div className="card-title">{title}</div>

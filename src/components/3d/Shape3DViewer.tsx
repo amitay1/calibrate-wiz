@@ -39,8 +39,8 @@ function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMesh
       meshRef.current.scale.setScalar(currentScale + (targetScale - currentScale) * 0.1);
     } else {
       // Gentle auto-rotation when not hovered
-      meshRef.current.rotation.x += 0.002;
-      meshRef.current.rotation.y += 0.003;
+      meshRef.current.rotation.x += 0.001;
+      meshRef.current.rotation.y += 0.002;
       
       // Return to original position
       meshRef.current.position.z += (0 - meshRef.current.position.z) * 0.1;
@@ -84,13 +84,13 @@ export default function Shape3DViewer({
     <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
       <Canvas
         gl={{ 
-          antialias: isActive, // High quality when active
+          antialias: isActive || isHovered, // High quality when interactive
           alpha: true,
           powerPreference: 'high-performance',
           preserveDrawingBuffer: false,
         }}
-        dpr={isActive ? 2 : 1} // Better quality when interactive
-        frameloop={isActive ? 'always' : isHovered ? 'always' : 'demand'}
+        dpr={isActive ? 2 : isHovered ? 1.5 : 1} // Better quality when interactive
+        frameloop={isActive || isHovered ? 'always' : 'always'} // Always animate for smooth rotation
       >
         <Suspense fallback={null}>
           <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
@@ -107,17 +107,26 @@ export default function Shape3DViewer({
             />
           )}
           
-          {/* Enhanced lighting for better 3D effect */}
-          <ambientLight intensity={0.4} />
-          <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
-          <directionalLight position={[-5, 3, -5]} intensity={0.4} />
-          <directionalLight position={[0, -5, 0]} intensity={0.3} color="#4488ff" />
+          {/* Lighting - simpler when not active/hovered */}
+          <ambientLight intensity={isActive || isHovered ? 0.4 : 0.6} />
+          <directionalLight 
+            position={[5, 5, 5]} 
+            intensity={isActive || isHovered ? 1 : 0.8} 
+            castShadow={isActive || isHovered}
+          />
+          <directionalLight 
+            position={[-5, 3, -5]} 
+            intensity={isActive || isHovered ? 0.4 : 0.3} 
+          />
           
-          {/* Rim light for dramatic effect */}
-          <pointLight position={[0, 0, 10]} intensity={0.8} color={color} />
-          
-          {/* Environment for reflections */}
-          <Environment preset="sunset" />
+          {/* Extra dramatic lighting only when hovered/active */}
+          {(isActive || isHovered) && (
+            <>
+              <directionalLight position={[0, -5, 0]} intensity={0.3} color="#4488ff" />
+              <pointLight position={[0, 0, 10]} intensity={0.8} color={color} />
+              <Environment preset="sunset" />
+            </>
+          )}
           
           <Shape3DMesh 
             partType={partType} 
