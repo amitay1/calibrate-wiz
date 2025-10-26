@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PartGeometry } from "@/types/techniqueSheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ShapeCard from "@/components/ui/ShapeCard";
@@ -294,9 +294,15 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
   value,
   onChange,
 }) => {
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(
-    categoryGroups.map((group) => group.category)
-  );
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [mountedCategories, setMountedCategories] = useState<Set<string>>(new Set());
+
+  // Track when categories are expanded to force re-render of 3D models
+  useEffect(() => {
+    const newMounted = new Set(mountedCategories);
+    expandedCategories.forEach(cat => newMounted.add(cat));
+    setMountedCategories(newMounted);
+  }, [expandedCategories]);
 
   return (
     <div className="w-full space-y-6">
@@ -315,43 +321,50 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
         onValueChange={setExpandedCategories}
         className="w-full space-y-4"
       >
-        {categoryGroups.map((group) => (
-          <AccordionItem
-            key={group.category}
-            value={group.category}
-            className="border rounded-lg bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all"
-          >
-            <AccordionTrigger className="px-6 py-4 hover:no-underline group">
-              <div className="flex items-center gap-4 text-left flex-1">
-                <span className="text-3xl">{group.icon}</span>
-                <div className="flex-1">
-                  <h4 className="text-lg font-semibold group-hover:text-primary transition-colors">
-                    {group.category}
-                  </h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {group.description}
-                  </p>
+        {categoryGroups.map((group) => {
+          const isExpanded = expandedCategories.includes(group.category);
+          const renderKey = `${group.category}-${isExpanded ? 'open' : 'closed'}-${mountedCategories.has(group.category) ? 'mounted' : 'initial'}`;
+          
+          return (
+            <AccordionItem
+              key={group.category}
+              value={group.category}
+              className="border rounded-lg bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all"
+            >
+              <AccordionTrigger className="px-6 py-4 hover:no-underline group">
+                <div className="flex items-center gap-4 text-left flex-1">
+                  <span className="text-3xl">{group.icon}</span>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                      {group.category}
+                    </h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {group.description}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-90" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-90" />
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4">
-                {group.options.map((option) => (
-                  <ShapeCard
-                    key={option.value}
-                    title={option.label}
-                    description={option.description}
-                    partType={option.value}
-                    color={option.color}
-                    isSelected={value === option.value}
-                    onClick={() => onChange(option.value)}
-                  />
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-6">
+                {isExpanded && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4">
+                    {group.options.map((option) => (
+                      <ShapeCard
+                        key={`${renderKey}-${option.value}`}
+                        title={option.label}
+                        description={option.description}
+                        partType={option.value}
+                        color={option.color}
+                        isSelected={value === option.value}
+                        onClick={() => onChange(option.value)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </div>
   );

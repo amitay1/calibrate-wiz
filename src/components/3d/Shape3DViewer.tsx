@@ -1,4 +1,4 @@
-import { useRef, useEffect, Suspense } from 'react';
+import { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
@@ -89,71 +89,108 @@ export default function Shape3DViewer({
   mouseX,
   mouseY 
 }: Shape3DViewerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Use IntersectionObserver to detect when canvas is visible
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // Force re-render when container becomes visible
+  useEffect(() => {
+    if (isVisible && containerRef.current) {
+      const timer = setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
+
   return (
-    <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
-      <Canvas
-        gl={{ 
-          antialias: isActive || isHovered, // High quality when interactive
-          alpha: true,
-          powerPreference: 'high-performance',
-          preserveDrawingBuffer: false,
-        }}
-        dpr={isActive ? 2 : isHovered ? 1.5 : 1} // Better quality when interactive
-        frameloop={isActive || isHovered ? 'always' : 'always'} // Always animate for smooth rotation
-      >
-        <Suspense fallback={null}>
-          <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-          
-          {/* OrbitControls - only active when isActive */}
-          {isActive && (
-            <OrbitControls 
-              enableZoom={true}
-              enablePan={false}
-              minDistance={3}
-              maxDistance={8}
-              enableDamping={true}
-              dampingFactor={0.05}
+    <div 
+      ref={containerRef}
+      style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}
+    >
+      {isVisible && (
+        <Canvas
+          gl={{ 
+            antialias: isActive || isHovered,
+            alpha: true,
+            powerPreference: 'high-performance',
+            preserveDrawingBuffer: false,
+          }}
+          dpr={isActive ? 2 : isHovered ? 1.5 : 1}
+          frameloop="always"
+          resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
+        >
+          <Suspense fallback={null}>
+            <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+            
+            {isActive && (
+              <OrbitControls 
+                enableZoom={true}
+                enablePan={false}
+                minDistance={3}
+                maxDistance={8}
+                enableDamping={true}
+                dampingFactor={0.05}
+              />
+            )}
+            
+            <ambientLight intensity={isActive || isHovered ? 0.4 : 0.6} />
+            <directionalLight 
+              position={[5, 5, 5]} 
+              intensity={isActive || isHovered ? 1 : 0.8} 
+              castShadow={isActive || isHovered}
             />
-          )}
-          
-          {/* Lighting - simpler when not active/hovered */}
-          <ambientLight intensity={isActive || isHovered ? 0.4 : 0.6} />
-          <directionalLight 
-            position={[5, 5, 5]} 
-            intensity={isActive || isHovered ? 1 : 0.8} 
-            castShadow={isActive || isHovered}
-          />
-          <directionalLight 
-            position={[-5, 3, -5]} 
-            intensity={isActive || isHovered ? 0.4 : 0.3} 
-          />
-          
-          {/* Extra dramatic lighting only when hovered/active */}
-          {(isActive || isHovered) && (
-            <>
-              <directionalLight position={[0, -5, 0]} intensity={0.3} color="#4488ff" />
-              <pointLight position={[0, 0, 10]} intensity={0.8} color={color} />
-              <Environment preset="sunset" />
-            </>
-          )}
-          
-          <Shape3DMesh 
-            partType={partType} 
-            color={color}
-            isHovered={isHovered}
-            mouseX={mouseX}
-            mouseY={mouseY}
-          />
-          
-          {/* Dramatic shadow when hovered/active */}
-          {(isHovered || isActive) && (
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
-              <planeGeometry args={[10, 10]} />
-              <shadowMaterial opacity={0.4} />
-            </mesh>
-          )}
-        </Suspense>
-      </Canvas>
+            <directionalLight 
+              position={[-5, 3, -5]} 
+              intensity={isActive || isHovered ? 0.4 : 0.3} 
+            />
+            
+            {(isActive || isHovered) && (
+              <>
+                <directionalLight position={[0, -5, 0]} intensity={0.3} color="#4488ff" />
+                <pointLight position={[0, 0, 10]} intensity={0.8} color={color} />
+                <Environment preset="sunset" />
+              </>
+            )}
+            
+            <Shape3DMesh 
+              partType={partType} 
+              color={color}
+              isHovered={isHovered}
+              mouseX={mouseX}
+              mouseY={mouseY}
+            />
+            
+            {(isHovered || isActive) && (
+              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
+                <planeGeometry args={[10, 10]} />
+                <shadowMaterial opacity={0.4} />
+              </mesh>
+            )}
+          </Suspense>
+        </Canvas>
+      )}
     </div>
   );
 }
