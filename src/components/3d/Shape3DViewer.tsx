@@ -18,24 +18,47 @@ function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: S
   const meshRef = useRef<THREE.Mesh>(null);
   const geometry = getGeometryByType(partType);
   const material = getMaterialByType(partType);
+  
+  // Store initial state to reset to
+  const initialStateRef = useRef({
+    position: new THREE.Vector3(0, 0, 0),
+    rotation: new THREE.Euler(0, 0, 0),
+    scale: 1
+  });
 
-  // Reset rotation when partType or isActive changes
+  // Reset rotation when partType changes
   useEffect(() => {
     if (meshRef.current) {
       meshRef.current.rotation.set(0, 0, 0);
       meshRef.current.position.set(0, 0, 0);
       meshRef.current.scale.setScalar(1);
+      initialStateRef.current = {
+        position: new THREE.Vector3(0, 0, 0),
+        rotation: new THREE.Euler(0, 0, 0),
+        scale: 1
+      };
     }
-  }, [partType, isActive]);
+  }, [partType]);
+
+  // CRITICAL: Reset when entering interactive mode
+  useEffect(() => {
+    if (isActive && meshRef.current) {
+      // Force immediate reset for interactive mode
+      meshRef.current.rotation.set(0, 0, 0);
+      meshRef.current.position.set(0, 0, 0);
+      meshRef.current.scale.setScalar(1);
+    }
+  }, [isActive]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
     
     if (isActive) {
-      // Interactive mode - OrbitControls handles rotation, just center the object
+      // Interactive mode - FORCE centered position, let OrbitControls handle rotation
+      // Critical: Keep resetting position to prevent drift
       meshRef.current.position.set(0, 0, 0);
       meshRef.current.scale.setScalar(1);
-      // Don't auto-rotate in active mode, let user control it
+      // Don't touch rotation - OrbitControls handles it
     } else if (isHovered) {
       // Interactive rotation based on mouse position
       const targetRotX = (mouseY - 0.5) * 0.5;
@@ -76,6 +99,8 @@ function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: S
       geometry={geometry} 
       material={material}
       position={[0, 0, 0]}
+      rotation={[0, 0, 0]}
+      scale={1}
     >
       <meshStandardMaterial
         color={color}
@@ -107,13 +132,22 @@ export default function Shape3DViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [currentPartType, setCurrentPartType] = useState(partType);
+  const [resetKey, setResetKey] = useState(0);
 
   // Track part type changes to force remount
   useEffect(() => {
     if (partType !== currentPartType) {
       setCurrentPartType(partType);
+      setResetKey(prev => prev + 1); // Force complete remount
     }
-  }, [partType, currentPartType]);
+  }, [partType]);
+
+  // CRITICAL: Force remount when entering interactive mode
+  useEffect(() => {
+    if (isActive) {
+      setResetKey(prev => prev + 1);
+    }
+  }, [isActive]);
 
   // Use IntersectionObserver to detect when canvas is visible
   useEffect(() => {
@@ -153,7 +187,7 @@ export default function Shape3DViewer({
     >
       {isVisible && (
         <Canvas
-          key={currentPartType}
+          key={`${currentPartType}-${resetKey}`}
           gl={{ 
             antialias: isActive || isHovered,
             alpha: true,
@@ -163,6 +197,7 @@ export default function Shape3DViewer({
           dpr={isActive ? 2 : isHovered ? 1.5 : 1}
           frameloop={isActive || isHovered ? "always" : "demand"}
           resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
+          camera={{ position: [0, 0, 5], fov: 50 }}
         >
           <Suspense fallback={null}>
             <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
@@ -176,6 +211,7 @@ export default function Shape3DViewer({
                 enableDamping={true}
                 dampingFactor={0.05}
                 target={[0, 0, 0]}
+                makeDefault
               />
             )}
             
