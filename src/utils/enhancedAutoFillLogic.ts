@@ -316,6 +316,103 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     conditions: ["Angle section requires scans along both legs"],
     specialNotes: ["Check corner fillet"],
     diagramReference: "Angle"
+  },
+  // New part types
+  rectangular_tube: {
+    displayName: "Rectangular Tube",
+    scanDirection: ["Perimeter scan", "Indexed coverage"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Check all four faces"],
+    specialNotes: ["Inspect corners and welds if applicable"],
+    diagramReference: "Rectangular Tube"
+  },
+  square_tube: {
+    displayName: "Square Tube",
+    scanDirection: ["Perimeter scan"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Uniform coverage of all faces"],
+    specialNotes: ["Check wall thickness uniformity"],
+    diagramReference: "Square Tube"
+  },
+  cylinder: {
+    displayName: "Machined Cylinder",
+    scanDirection: ["Circumferential", "Axial"],
+    waveMode: ["Longitudinal", "Shear"],
+    conditions: ["Full volume coverage"],
+    specialNotes: ["Check for machining defects"],
+    diagramReference: "Cylinder"
+  },
+  rectangular_forging_stock: {
+    displayName: "Rectangular Forging Stock",
+    scanDirection: ["Axial", "Transverse"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Check forging defects"],
+    specialNotes: ["Verify grain structure"],
+    diagramReference: "Forging Stock"
+  },
+  hub: {
+    displayName: "Hub Forging",
+    scanDirection: ["Radial", "Circumferential"],
+    waveMode: ["Longitudinal", "Shear"],
+    conditions: ["Complex geometry"],
+    specialNotes: ["Multi-angle approach required"],
+    diagramReference: "Hub"
+  },
+  near_net_forging: {
+    displayName: "Near-Net Forging",
+    scanDirection: ["Contour following", "Indexed"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Adaptive scanning required"],
+    specialNotes: ["Follow part contour"],
+    diagramReference: "Near-Net"
+  },
+  z_section: {
+    displayName: "Z-Section Profile",
+    scanDirection: ["Axial along profile"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Coverage of all faces"],
+    specialNotes: ["Check web and flanges"],
+    diagramReference: "Z-Section"
+  },
+  custom_profile: {
+    displayName: "Custom Profile",
+    scanDirection: ["Per drawing"],
+    waveMode: ["Per specification"],
+    conditions: ["Drawing-specific"],
+    specialNotes: ["Refer to engineering requirements"],
+    diagramReference: "Custom"
+  },
+  machined_component: {
+    displayName: "Machined Component",
+    scanDirection: ["Per parent form"],
+    waveMode: ["Per parent form"],
+    conditions: ["Follow parent material inspection"],
+    specialNotes: ["Refer to source material specs"],
+    diagramReference: "Machined"
+  },
+  sphere: {
+    displayName: "Machined Sphere",
+    scanDirection: ["Multi-angle spherical"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Immersion required"],
+    specialNotes: ["Positioning system needed"],
+    diagramReference: "Sphere"
+  },
+  cone: {
+    displayName: "Machined Cone",
+    scanDirection: ["Axial", "Circumferential"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Angle-compensated scanning"],
+    specialNotes: ["Account for taper angle"],
+    diagramReference: "Cone"
+  },
+  custom: {
+    displayName: "Custom Geometry",
+    scanDirection: ["Per drawing"],
+    waveMode: ["Per specification"],
+    conditions: ["Customer-specific"],
+    specialNotes: ["Refer to all applicable specifications"],
+    diagramReference: "Custom"
   }
 };
 

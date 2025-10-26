@@ -276,6 +276,79 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     scanPattern: "Axial along legs, radial from edges",
     transducerType: "contact",
     specialConsiderations: "Angle section requires scans along both legs."
+  },
+  // New part types
+  rectangular_tube: {
+    calibrationBlockType: ["flat_block", "curved_block"],
+    scanPattern: "Full perimeter scan with indexed coverage",
+    transducerType: "contact",
+    specialConsiderations: "Check all four faces and corners."
+  },
+  square_tube: {
+    calibrationBlockType: ["flat_block", "curved_block"],
+    scanPattern: "Full perimeter scan",
+    transducerType: "contact",
+    specialConsiderations: "Check all four faces uniformly."
+  },
+  cylinder: {
+    calibrationBlockType: ["cylinder_notched", "cylinder_fbh"],
+    scanPattern: "Circumferential and axial",
+    transducerType: "immersion",
+    specialConsiderations: "Full volume coverage required."
+  },
+  rectangular_forging_stock: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial and transverse",
+    transducerType: "immersion",
+    specialConsiderations: "Check for forging defects and grain structure."
+  },
+  hub: {
+    calibrationBlockType: ["cylinder_fbh", "flat_block"],
+    scanPattern: "Radial and circumferential",
+    transducerType: "immersion",
+    specialConsiderations: "Complex geometry requires multi-angle approach."
+  },
+  near_net_forging: {
+    calibrationBlockType: ["flat_block", "curved_block"],
+    scanPattern: "Contour following with indexed coverage",
+    transducerType: "immersion",
+    specialConsiderations: "Near-net shape requires adaptive scanning."
+  },
+  z_section: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial along profile",
+    transducerType: "contact",
+    specialConsiderations: "Z-section requires coverage of all faces."
+  },
+  custom_profile: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Drawing-specific",
+    transducerType: "contact",
+    specialConsiderations: "Refer to engineering drawing for specific requirements."
+  },
+  machined_component: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Drawing-specific",
+    transducerType: "contact",
+    specialConsiderations: "Follow parent form inspection method."
+  },
+  sphere: {
+    calibrationBlockType: ["curved_block"],
+    scanPattern: "Multi-angle spherical coverage",
+    transducerType: "immersion",
+    specialConsiderations: "Requires immersion tank with positioning system."
+  },
+  cone: {
+    calibrationBlockType: ["flat_block", "curved_block"],
+    scanPattern: "Axial and circumferential",
+    transducerType: "immersion",
+    specialConsiderations: "Conical shape requires angle-compensated scanning."
+  },
+  custom: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Drawing-specific",
+    transducerType: "contact",
+    specialConsiderations: "Refer to engineering drawing and customer specifications."
   }
 };
 

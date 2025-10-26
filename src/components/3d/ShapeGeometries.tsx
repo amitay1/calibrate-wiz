@@ -227,6 +227,94 @@ export const ShapeGeometries = {
     const geometry = ShapeGeometries.extrusion_l();
     return geometry;
   },
+  
+  // NEW GEOMETRIES
+  rectangular_tube: () => {
+    const outerGeometry = new THREE.BoxGeometry(1, 2, 0.6);
+    return outerGeometry;
+  },
+  
+  square_tube: () => {
+    const geometry = new THREE.BoxGeometry(1, 2, 1);
+    return geometry;
+  },
+  
+  rectangular_forging_stock: () => {
+    const geometry = new THREE.BoxGeometry(1.5, 0.8, 0.8);
+    return geometry;
+  },
+  
+  hub: () => {
+    // Hub with flange
+    const geometry = new THREE.CylinderGeometry(0.8, 0.8, 0.6, 32);
+    return geometry;
+  },
+  
+  near_net_forging: () => {
+    const geometry = new THREE.SphereGeometry(0.8, 16, 16);
+    geometry.scale(1.3, 0.9, 1);
+    return geometry;
+  },
+  
+  z_section: () => {
+    // Z-shaped profile
+    const shape = new THREE.Shape();
+    shape.moveTo(0, 0);
+    shape.lineTo(0.6, 0);
+    shape.lineTo(0.6, 0.2);
+    shape.lineTo(0.3, 0.5);
+    shape.lineTo(0.6, 0.8);
+    shape.lineTo(0.6, 1);
+    shape.lineTo(0, 1);
+    shape.lineTo(0, 0.8);
+    shape.lineTo(0.3, 0.5);
+    shape.lineTo(0, 0.2);
+    shape.lineTo(0, 0);
+    
+    const extrudeSettings = {
+      steps: 1,
+      depth: 2,
+      bevelEnabled: false,
+    };
+    
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.rotateY(Math.PI / 2);
+    geometry.translate(-1, -0.5, -0.3);
+    return geometry;
+  },
+  
+  custom_profile: () => {
+    // Generic custom profile
+    const geometry = new THREE.BoxGeometry(0.8, 2, 0.6);
+    return geometry;
+  },
+  
+  machined_component: () => {
+    // Generic machined part
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    return geometry;
+  },
+  
+  cylinder: () => {
+    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32);
+    return geometry;
+  },
+  
+  sphere: () => {
+    const geometry = new THREE.SphereGeometry(0.7, 32, 32);
+    return geometry;
+  },
+  
+  cone: () => {
+    const geometry = new THREE.ConeGeometry(0.7, 1.5, 32);
+    return geometry;
+  },
+  
+  custom: () => {
+    // Generic custom shape
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    return geometry;
+  },
 };
 
 /**

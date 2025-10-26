@@ -19,6 +19,8 @@ export type PartGeometry =
   // Tubes & Pipes (hollow)
   | "tube"
   | "pipe"
+  | "rectangular_tube"
+  | "square_tube"
   
   // Disks
   | "disk"
@@ -28,28 +30,42 @@ export type PartGeometry =
   | "ring"
   | "ring_forging"
   
-  // Shafts
+  // Shafts & Cylinders
   | "shaft"
+  | "cylinder"
   
   // Forgings
   | "forging"
   | "round_forging_stock"
+  | "rectangular_forging_stock"
+  | "hub"
+  | "near_net_forging"
   
   // Billets & Blocks
   | "billet"
   | "block"
   
-  // Extrusions
+  // Extrusions & Profiles
   | "extrusion_l"
   | "extrusion_t"
   | "extrusion_i"
   | "extrusion_u"
   | "extrusion_channel"
   | "extrusion_angle"
+  | "z_section"
+  | "custom_profile"
+  
+  // Machined Components
+  | "machined_component"
+  | "sphere"
+  | "cone"
   
   // Sleeves & Bushings
   | "sleeve"
-  | "bushing";
+  | "bushing"
+  
+  // Custom
+  | "custom";
 
 export type AcceptanceClass = "AAA" | "AA" | "A" | "B" | "C";
 
