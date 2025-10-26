@@ -45,23 +45,23 @@ export const ShapeGeometries = {
   
   round_bar: () => {
     const geometry = new THREE.CylinderGeometry(0.4, 0.4, 2.5, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
   shaft: () => {
     const geometry = new THREE.CylinderGeometry(0.35, 0.35, 3, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
   // HEX BAR - Centered
   hex_bar: () => {
     const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 6);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
@@ -69,29 +69,29 @@ export const ShapeGeometries = {
   tube: () => {
     const outerRadius = 0.5;
     const geometry = new THREE.CylinderGeometry(outerRadius, outerRadius, 2, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
   pipe: () => {
     const geometry = new THREE.CylinderGeometry(0.45, 0.45, 2.5, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
   sleeve: () => {
     const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
   bushing: () => {
     const geometry = new THREE.CylinderGeometry(0.45, 0.45, 0.8, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
@@ -111,15 +111,15 @@ export const ShapeGeometries = {
   // RINGS - Centered
   ring: () => {
     const geometry = new THREE.TorusGeometry(0.8, 0.25, 16, 32);
-    geometry.rotateX(Math.PI / 2);
     geometry.center();
+    geometry.rotateX(Math.PI / 2);
     return geometry;
   },
   
   ring_forging: () => {
     const geometry = new THREE.TorusGeometry(0.9, 0.35, 16, 32);
-    geometry.rotateX(Math.PI / 2);
     geometry.center();
+    geometry.rotateX(Math.PI / 2);
     return geometry;
   },
   
@@ -133,8 +133,8 @@ export const ShapeGeometries = {
   
   round_forging_stock: () => {
     const geometry = new THREE.CylinderGeometry(0.7, 0.65, 1.5, 32);
-    geometry.rotateZ(Math.PI / 2);
     geometry.center();
+    geometry.rotateZ(Math.PI / 2);
     return geometry;
   },
   
@@ -170,8 +170,8 @@ export const ShapeGeometries = {
     };
     
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
     geometry.center();
+    geometry.rotateY(Math.PI / 2);
     return geometry;
   },
   
@@ -195,8 +195,8 @@ export const ShapeGeometries = {
     };
     
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
     geometry.center();
+    geometry.rotateY(Math.PI / 2);
     return geometry;
   },
   
@@ -227,8 +227,8 @@ export const ShapeGeometries = {
     };
     
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
     geometry.center();
+    geometry.rotateY(Math.PI / 2);
     return geometry;
   },
   
@@ -252,8 +252,8 @@ export const ShapeGeometries = {
     };
     
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
     geometry.center();
+    geometry.rotateY(Math.PI / 2);
     return geometry;
   },
   
@@ -275,8 +275,8 @@ export const ShapeGeometries = {
     };
     
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
     geometry.center();
+    geometry.rotateY(Math.PI / 2);
     return geometry;
   },
   
@@ -335,8 +335,8 @@ export const ShapeGeometries = {
     };
     
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
     geometry.center();
+    geometry.rotateY(Math.PI / 2);
     return geometry;
   },
   
