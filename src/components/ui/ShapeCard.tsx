@@ -42,9 +42,19 @@ export default function ShapeCard({
   const rotX = useTransform(sMy, (v) => (v - 0.5) * 16); // -8..8°
   const rotY = useTransform(sMx, (v) => (0.5 - v) * 16);
 
-  // parallax offsets
-  const px = (depth: number) => useTransform(sMx, (v) => (v - 0.5) * depth);
-  const py = (depth: number) => useTransform(sMy, (v) => (v - 0.5) * depth);
+  // Pre-calculate all parallax offsets (must be unconditional to satisfy hooks rules)
+  const pxNeg10 = useTransform(sMx, (v) => (v - 0.5) * -10);
+  const py8 = useTransform(sMy, (v) => (v - 0.5) * 8);
+  const px0 = useTransform(sMx, (v) => (v - 0.5) * 0);
+  const py0 = useTransform(sMy, (v) => (v - 0.5) * 0);
+  const px6 = useTransform(sMx, (v) => (v - 0.5) * 6);
+  const py6 = useTransform(sMy, (v) => (v - 0.5) * 6);
+  const px10 = useTransform(sMx, (v) => (v - 0.5) * 10);
+  const py10 = useTransform(sMy, (v) => (v - 0.5) * 10);
+  const px14 = useTransform(sMx, (v) => (v - 0.5) * 14);
+  const py14 = useTransform(sMy, (v) => (v - 0.5) * 14);
+  const px18 = useTransform(sMx, (v) => (v - 0.5) * 18);
+  const py18 = useTransform(sMy, (v) => (v - 0.5) * 18);
 
   function onMove(e: React.MouseEvent) {
     if (!ref.current) return;
@@ -77,7 +87,7 @@ export default function ShapeCard({
         {/* ground shadow */}
         <motion.div
           className="layer shadow"
-          style={{ x: px(-10), y: py(8) }}
+          style={{ x: pxNeg10, y: py8 }}
         >
           <div className="shadow-ellip" />
         </motion.div>
@@ -86,8 +96,8 @@ export default function ShapeCard({
         <motion.div
           className="layer z2"
           style={{ 
-            x: px(0), 
-            y: py(0),
+            x: px0, 
+            y: py0,
             opacity: isHovered ? 0 : 1,
             transition: 'opacity 0.3s ease',
           }}
@@ -99,7 +109,7 @@ export default function ShapeCard({
         {isHovered && (
           <motion.div
             className="layer z2 shape-3d-container"
-            style={{ x: px(6), y: py(6) }}
+            style={{ x: px6, y: py6 }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
@@ -119,8 +129,8 @@ export default function ShapeCard({
           <motion.div
             className="layer z3"
             style={{ 
-              x: px(10), 
-              y: py(10), 
+              x: px10, 
+              y: py10, 
               opacity: isHovered ? 0 : 0.92,
             }}
           >
@@ -132,8 +142,8 @@ export default function ShapeCard({
           <motion.div
             className="layer z4 add-glow"
             style={{ 
-              x: px(14), 
-              y: py(14), 
+              x: px14, 
+              y: py14, 
               opacity: isHovered ? 0 : 0.92,
             }}
           >
@@ -145,8 +155,8 @@ export default function ShapeCard({
           <motion.div
             className="layer z5 add-bloom"
             style={{ 
-              x: px(18), 
-              y: py(18), 
+              x: px18, 
+              y: py18, 
               opacity: isHovered ? 0 : 0.92,
             }}
           >
