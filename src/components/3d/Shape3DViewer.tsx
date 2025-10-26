@@ -67,6 +67,7 @@ interface Shape3DViewerProps {
   partType: string;
   color: string;
   isHovered: boolean;
+  isActive: boolean; // New: for interactive mode
   mouseX: number;
   mouseY: number;
 }
@@ -75,6 +76,7 @@ export default function Shape3DViewer({
   partType, 
   color, 
   isHovered,
+  isActive,
   mouseX,
   mouseY 
 }: Shape3DViewerProps) {
@@ -82,20 +84,40 @@ export default function Shape3DViewer({
     <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
       <Canvas
         gl={{ 
-          antialias: isHovered, // Only when hovered for performance
+          antialias: isActive, // High quality when active
           alpha: true,
           powerPreference: 'high-performance',
           preserveDrawingBuffer: false,
         }}
-        dpr={isHovered ? 1.5 : 0.8} // Lower quality when not hovered
-        frameloop={isHovered ? 'always' : 'demand'} // Save resources
+        dpr={isActive ? 2 : 1} // Better quality when interactive
+        frameloop={isActive ? 'always' : isHovered ? 'always' : 'demand'}
       >
         <Suspense fallback={null}>
           <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
           
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[5, 5, 5]} intensity={0.8} />
-          <directionalLight position={[-5, 3, -5]} intensity={0.3} />
+          {/* OrbitControls - only active when isActive */}
+          {isActive && (
+            <OrbitControls 
+              enableZoom={true}
+              enablePan={false}
+              minDistance={3}
+              maxDistance={8}
+              enableDamping={true}
+              dampingFactor={0.05}
+            />
+          )}
+          
+          {/* Enhanced lighting for better 3D effect */}
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
+          <directionalLight position={[-5, 3, -5]} intensity={0.4} />
+          <directionalLight position={[0, -5, 0]} intensity={0.3} color="#4488ff" />
+          
+          {/* Rim light for dramatic effect */}
+          <pointLight position={[0, 0, 10]} intensity={0.8} color={color} />
+          
+          {/* Environment for reflections */}
+          <Environment preset="sunset" />
           
           <Shape3DMesh 
             partType={partType} 
@@ -104,6 +126,14 @@ export default function Shape3DViewer({
             mouseX={mouseX}
             mouseY={mouseY}
           />
+          
+          {/* Dramatic shadow when hovered/active */}
+          {(isHovered || isActive) && (
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
+              <planeGeometry args={[10, 10]} />
+              <shadowMaterial opacity={0.4} />
+            </mesh>
+          )}
         </Suspense>
       </Canvas>
     </div>
