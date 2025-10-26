@@ -82,19 +82,77 @@ export default function ShapeCard({
           <div className="shadow-ellip" />
         </motion.div>
 
-        {/* 3D VIEWER - Always visible! */}
+        {/* Base icon - always visible */}
         <motion.div
-          className="layer z2 shape-3d-container"
-          style={{ x: px(6), y: py(6) }}
+          className="layer z2"
+          style={{ 
+            x: px(0), 
+            y: py(0),
+            opacity: isHovered ? 0 : 1,
+            transition: 'opacity 0.3s ease',
+          }}
         >
-          <Shape3DViewer
-            partType={partType}
-            color={color}
-            isHovered={isHovered}
-            mouseX={sMx.get()}
-            mouseY={sMy.get()}
-          />
+          {baseIcon}
         </motion.div>
+
+        {/* 3D VIEWER - only on hover to prevent WebGL context limit */}
+        {isHovered && (
+          <motion.div
+            className="layer z2 shape-3d-container"
+            style={{ x: px(6), y: py(6) }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Shape3DViewer
+              partType={partType}
+              color={color}
+              isHovered={isHovered}
+              mouseX={sMx.get()}
+              mouseY={sMy.get()}
+            />
+          </motion.div>
+        )}
+
+        {/* Icon layers - visible when not hovered */}
+        {detailsIcon && (
+          <motion.div
+            className="layer z3"
+            style={{ 
+              x: px(10), 
+              y: py(10), 
+              opacity: isHovered ? 0 : 0.92,
+            }}
+          >
+            {detailsIcon}
+          </motion.div>
+        )}
+
+        {edgesIcon && (
+          <motion.div
+            className="layer z4 add-glow"
+            style={{ 
+              x: px(14), 
+              y: py(14), 
+              opacity: isHovered ? 0 : 0.92,
+            }}
+          >
+            {edgesIcon}
+          </motion.div>
+        )}
+
+        {highlightsIcon && (
+          <motion.div
+            className="layer z5 add-bloom"
+            style={{ 
+              x: px(18), 
+              y: py(18), 
+              opacity: isHovered ? 0 : 0.92,
+            }}
+          >
+            {highlightsIcon}
+          </motion.div>
+        )}
       </div>
 
       <div className="card-title">{title}</div>
