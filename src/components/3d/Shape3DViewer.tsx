@@ -9,19 +9,34 @@ interface Shape3DMeshProps {
   partType: string;
   color: string;
   isHovered: boolean;
+  isActive: boolean;
   mouseX: number;
   mouseY: number;
 }
 
-function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMeshProps) {
+function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: Shape3DMeshProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const geometry = getGeometryByType(partType);
   const material = getMaterialByType(partType);
 
+  // Reset rotation when partType or isActive changes
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.rotation.set(0, 0, 0);
+      meshRef.current.position.set(0, 0, 0);
+      meshRef.current.scale.setScalar(1);
+    }
+  }, [partType, isActive]);
+
   useFrame((state) => {
     if (!meshRef.current) return;
     
-    if (isHovered) {
+    if (isActive) {
+      // Interactive mode - OrbitControls handles rotation, just center the object
+      meshRef.current.position.set(0, 0, 0);
+      meshRef.current.scale.setScalar(1);
+      // Don't auto-rotate in active mode, let user control it
+    } else if (isHovered) {
       // Interactive rotation based on mouse position
       const targetRotX = (mouseY - 0.5) * 0.5;
       const targetRotY = (mouseX - 0.5) * 0.5;
@@ -45,8 +60,8 @@ function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMesh
       meshRef.current.rotation.y += 0.002;
       
       // Return to original position - CENTERED at (0,0,0)
-      meshRef.current.position.x = 0;
-      meshRef.current.position.y = 0;
+      meshRef.current.position.x += (0 - meshRef.current.position.x) * 0.1;
+      meshRef.current.position.y += (0 - meshRef.current.position.y) * 0.1;
       meshRef.current.position.z += (0 - meshRef.current.position.z) * 0.1;
       
       // Return to original scale
@@ -60,7 +75,7 @@ function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMesh
       ref={meshRef} 
       geometry={geometry} 
       material={material}
-      position={[0, 0, 0]} // Start centered
+      position={[0, 0, 0]}
     >
       <meshStandardMaterial
         color={color}
@@ -76,7 +91,7 @@ interface Shape3DViewerProps {
   partType: string;
   color: string;
   isHovered: boolean;
-  isActive: boolean; // New: for interactive mode
+  isActive: boolean;
   mouseX: number;
   mouseY: number;
 }
@@ -91,6 +106,14 @@ export default function Shape3DViewer({
 }: Shape3DViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentPartType, setCurrentPartType] = useState(partType);
+
+  // Track part type changes to force remount
+  useEffect(() => {
+    if (partType !== currentPartType) {
+      setCurrentPartType(partType);
+    }
+  }, [partType, currentPartType]);
 
   // Use IntersectionObserver to detect when canvas is visible
   useEffect(() => {
@@ -131,7 +154,8 @@ export default function Shape3DViewer({
     >
       {isVisible && (
         <Canvas
-          gl={{ 
+          key={currentPartType}
+          gl={{
             antialias: isActive || isHovered,
             alpha: true,
             powerPreference: 'high-performance',
@@ -152,6 +176,7 @@ export default function Shape3DViewer({
                 maxDistance={8}
                 enableDamping={true}
                 dampingFactor={0.05}
+                target={[0, 0, 0]}
               />
             )}
             
@@ -175,9 +200,10 @@ export default function Shape3DViewer({
             )}
             
             <Shape3DMesh 
-              partType={partType} 
+              partType={currentPartType} 
               color={color}
               isHovered={isHovered}
+              isActive={isActive}
               mouseX={mouseX}
               mouseY={mouseY}
             />
