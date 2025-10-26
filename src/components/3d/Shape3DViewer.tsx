@@ -82,13 +82,13 @@ export default function Shape3DViewer({
     <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
       <Canvas
         gl={{ 
-          antialias: false,
+          antialias: isHovered, // Only when hovered for performance
           alpha: true,
           powerPreference: 'high-performance',
           preserveDrawingBuffer: false,
         }}
-        dpr={1}
-        frameloop="demand"
+        dpr={isHovered ? 1.5 : 0.8} // Lower quality when not hovered
+        frameloop={isHovered ? 'always' : 'demand'} // Save resources
       >
         <Suspense fallback={null}>
           <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
