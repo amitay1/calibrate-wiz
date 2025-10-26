@@ -122,9 +122,8 @@ export default function Shape3DViewer({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
+          // Only render when actually visible - save GPU resources
+          setIsVisible(entry.isIntersecting);
         });
       },
       { threshold: 0.1 }
@@ -155,14 +154,14 @@ export default function Shape3DViewer({
       {isVisible && (
         <Canvas
           key={currentPartType}
-          gl={{
+          gl={{ 
             antialias: isActive || isHovered,
             alpha: true,
             powerPreference: 'high-performance',
             preserveDrawingBuffer: false,
           }}
           dpr={isActive ? 2 : isHovered ? 1.5 : 1}
-          frameloop="always"
+          frameloop={isActive || isHovered ? "always" : "demand"}
           resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         >
           <Suspense fallback={null}>
