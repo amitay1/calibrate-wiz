@@ -24,6 +24,8 @@ export default function ShapeCard({
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [parallaxX, setParallaxX] = useState(0);
+  const [parallaxY, setParallaxY] = useState(0);
 
   // pointer → motion
   const mx = useMotionValue(0.5);
@@ -35,23 +37,34 @@ export default function ShapeCard({
   const rotX = useTransform(sMy, (v) => (v - 0.5) * 16);
   const rotY = useTransform(sMx, (v) => (0.5 - v) * 16);
 
-  // Parallax offsets - disabled when active
-  const pxNeg10 = useTransform(sMx, (v) => isActive ? 0 : (v - 0.5) * -10);
-  const py8 = useTransform(sMy, (v) => isActive ? 0 : (v - 0.5) * 8);
-  const px6 = useTransform(sMx, (v) => isActive ? 0 : (v - 0.5) * 6);
-  const py6 = useTransform(sMy, (v) => isActive ? 0 : (v - 0.5) * 6);
+  // Update parallax based on mouse position - only when not active
+  const updateParallax = () => {
+    if (!isActive) {
+      const mxVal = sMx.get();
+      const myVal = sMy.get();
+      setParallaxX((mxVal - 0.5) * 6);
+      setParallaxY((myVal - 0.5) * 6);
+    }
+  };
 
   function onMove(e: React.MouseEvent) {
     if (!ref.current || isActive) return;
     const r = ref.current.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width);
-    my.set((e.clientY - r.top) / r.height);
+    const newMx = (e.clientX - r.left) / r.width;
+    const newMy = (e.clientY - r.top) / r.height;
+    mx.set(newMx);
+    my.set(newMy);
+    // Update parallax immediately
+    setParallaxX((newMx - 0.5) * 6);
+    setParallaxY((newMy - 0.5) * 6);
   }
   
   function reset() { 
     if (isActive) return;
     mx.set(0.5); 
     my.set(0.5);
+    setParallaxX(0);
+    setParallaxY(0);
     setIsHovered(false);
   }
   
@@ -61,16 +74,19 @@ export default function ShapeCard({
   
   function handleClick() {
     if (isActive) {
-      // Deactivate - force immediate reset
+      // Deactivate - force immediate reset to CENTER
       setIsActive(false);
       setIsHovered(false);
-      // Force center position immediately
       mx.jump(0.5);
       my.jump(0.5);
+      setParallaxX(0); // Force parallax to 0
+      setParallaxY(0); // Force parallax to 0
       onClick();
     } else {
       // Activate - enter interactive mode
       setIsActive(true);
+      setParallaxX(0); // Lock parallax at center
+      setParallaxY(0); // Lock parallax at center
       onClick();
     }
   }
@@ -95,7 +111,15 @@ export default function ShapeCard({
         {/* ground shadow */}
         <motion.div
           className="layer shadow"
-          style={{ x: pxNeg10, y: py8 }}
+          animate={{ 
+            x: isActive ? 0 : parallaxX * -1.67,
+            y: isActive ? 0 : parallaxY * 1.33
+          }}
+          transition={{ 
+            type: "spring",
+            stiffness: 260,
+            damping: 28,
+          }}
         >
           <div className="shadow-ellip" />
         </motion.div>
@@ -103,20 +127,16 @@ export default function ShapeCard({
         {/* 3D VIEWER - Always visible! */}
         <motion.div
           className="layer z2 shape-3d-container"
-          style={{ 
-            x: isActive ? 0 : px6, 
-            y: isActive ? 0 : py6 
-          }}
           animate={{ 
+            x: isActive ? 0 : parallaxX,
+            y: isActive ? 0 : parallaxY,
             scale: isActive ? 1.3 : isHovered ? 1.15 : 1,
             z: isActive ? 100 : isHovered ? 40 : 0,
-            x: isActive ? 0 : undefined,
-            y: isActive ? 0 : undefined,
           }}
           transition={{ 
             type: "spring",
-            stiffness: 200,
-            damping: 25,
+            stiffness: 260,
+            damping: 28,
           }}
         >
           <Shape3DViewer
