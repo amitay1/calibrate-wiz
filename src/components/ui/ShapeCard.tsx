@@ -126,9 +126,7 @@ export default function ShapeCard({
 
         {/* 3D VIEWER - Always visible! */}
         <motion.div
-          key={`3d-${isActive ? 'active' : 'normal'}`}
           className="layer z2 shape-3d-container"
-          initial={{ x: 0, y: 0 }}
           animate={{ 
             x: isActive ? 0 : parallaxX,
             y: isActive ? 0 : parallaxY,
