@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import * as React from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Shape3DViewer from "@/components/3d/Shape3DViewer";
@@ -33,19 +34,20 @@ export default function ShapeCard({
   const sMx = useSpring(mx, { stiffness: 180, damping: 24 });
   const sMy = useSpring(my, { stiffness: 180, damping: 24 });
 
+  // Force reset position when deactivating
+  React.useEffect(() => {
+    if (!isActive) {
+      // Immediate reset to center when not active
+      setParallaxX(0);
+      setParallaxY(0);
+      mx.jump(0.5);
+      my.jump(0.5);
+    }
+  }, [isActive, mx, my]);
+
   // tilt
   const rotX = useTransform(sMy, (v) => (v - 0.5) * 16);
   const rotY = useTransform(sMx, (v) => (0.5 - v) * 16);
-
-  // Update parallax based on mouse position - only when not active
-  const updateParallax = () => {
-    if (!isActive) {
-      const mxVal = sMx.get();
-      const myVal = sMy.get();
-      setParallaxX((mxVal - 0.5) * 6);
-      setParallaxY((myVal - 0.5) * 6);
-    }
-  };
 
   function onMove(e: React.MouseEvent) {
     if (!ref.current || isActive) return;
@@ -69,24 +71,22 @@ export default function ShapeCard({
   }
   
   function onHover() {
-    setIsHovered(true);
+    if (!isActive) {
+      setIsHovered(true);
+    }
   }
   
   function handleClick() {
     if (isActive) {
-      // Deactivate - force immediate reset to CENTER
+      // Deactivate
       setIsActive(false);
       setIsHovered(false);
-      mx.jump(0.5);
-      my.jump(0.5);
-      setParallaxX(0); // Force parallax to 0
-      setParallaxY(0); // Force parallax to 0
       onClick();
     } else {
-      // Activate - enter interactive mode
+      // Activate
       setIsActive(true);
-      setParallaxX(0); // Lock parallax at center
-      setParallaxY(0); // Lock parallax at center
+      setParallaxX(0);
+      setParallaxY(0);
       onClick();
     }
   }
@@ -126,7 +126,9 @@ export default function ShapeCard({
 
         {/* 3D VIEWER - Always visible! */}
         <motion.div
+          key={`3d-${isActive ? 'active' : 'normal'}`}
           className="layer z2 shape-3d-container"
+          initial={{ x: 0, y: 0 }}
           animate={{ 
             x: isActive ? 0 : parallaxX,
             y: isActive ? 0 : parallaxY,
@@ -135,8 +137,8 @@ export default function ShapeCard({
           }}
           transition={{ 
             type: "spring",
-            stiffness: 260,
-            damping: 28,
+            stiffness: 300,
+            damping: 30,
           }}
         >
           <Shape3DViewer
