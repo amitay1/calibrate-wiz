@@ -78,32 +78,25 @@ export default function Shape3DViewer({
   mouseX,
   mouseY 
 }: Shape3DViewerProps) {
-  // Only render Canvas when hovered to save WebGL contexts
-  if (!isHovered) {
-    return null;
-  }
-
   return (
     <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
       <Canvas
         gl={{ 
-          antialias: false, // Disable for performance
+          antialias: false,
           alpha: true,
           powerPreference: 'high-performance',
           preserveDrawingBuffer: false,
         }}
-        dpr={1} // Fixed low DPR for performance
-        frameloop="demand" // Only render when needed
+        dpr={1}
+        frameloop="demand"
       >
         <Suspense fallback={null}>
           <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
           
-          {/* Simplified lighting */}
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
           <directionalLight position={[-5, 3, -5]} intensity={0.3} />
           
-          {/* The actual 3D shape */}
           <Shape3DMesh 
             partType={partType} 
             color={color}
