@@ -23,7 +23,7 @@ export default function ShapeCard({
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isActive, setIsActive] = useState(false); // New: for click interaction
+  const [isActive, setIsActive] = useState(false);
 
   // pointer → motion
   const mx = useMotionValue(0.5);
@@ -32,37 +32,41 @@ export default function ShapeCard({
   const sMy = useSpring(my, { stiffness: 180, damping: 24 });
 
   // tilt
-  const rotX = useTransform(sMy, (v) => (v - 0.5) * 16); // -8..8°
+  const rotX = useTransform(sMy, (v) => (v - 0.5) * 16);
   const rotY = useTransform(sMx, (v) => (0.5 - v) * 16);
 
-  // Pre-calculate parallax offsets for shadow and 3D viewer
-  const pxNeg10 = useTransform(sMx, (v) => (v - 0.5) * -10);
-  const py8 = useTransform(sMy, (v) => (v - 0.5) * 8);
-  const px6 = useTransform(sMx, (v) => (v - 0.5) * 6);
-  const py6 = useTransform(sMy, (v) => (v - 0.5) * 6);
+  // Parallax offsets - disabled when active
+  const pxNeg10 = useTransform(sMx, (v) => isActive ? 0 : (v - 0.5) * -10);
+  const py8 = useTransform(sMy, (v) => isActive ? 0 : (v - 0.5) * 8);
+  const px6 = useTransform(sMx, (v) => isActive ? 0 : (v - 0.5) * 6);
+  const py6 = useTransform(sMy, (v) => isActive ? 0 : (v - 0.5) * 6);
 
   function onMove(e: React.MouseEvent) {
-    if (!ref.current || isActive) return; // Don't move if active
+    if (!ref.current || isActive) return;
     const r = ref.current.getBoundingClientRect();
     mx.set((e.clientX - r.left) / r.width);
     my.set((e.clientY - r.top) / r.height);
   }
+  
   function reset() { 
-    if (isActive) return; // Don't reset if active
+    if (isActive) return;
     mx.set(0.5); 
     my.set(0.5);
     setIsHovered(false);
   }
+  
   function onHover() {
     setIsHovered(true);
   }
+  
   function handleClick() {
     if (isActive) {
-      // Deactivate - return to normal AND reset position
+      // Deactivate - force immediate reset
       setIsActive(false);
       setIsHovered(false);
-      mx.set(0.5); // Reset to center
-      my.set(0.5); // Reset to center
+      // Force center position immediately
+      mx.jump(0.5);
+      my.jump(0.5);
       onClick();
     } else {
       // Activate - enter interactive mode
@@ -99,10 +103,15 @@ export default function ShapeCard({
         {/* 3D VIEWER - Always visible! */}
         <motion.div
           className="layer z2 shape-3d-container"
-          style={{ x: px6, y: py6 }}
+          style={{ 
+            x: isActive ? 0 : px6, 
+            y: isActive ? 0 : py6 
+          }}
           animate={{ 
             scale: isActive ? 1.3 : isHovered ? 1.15 : 1,
             z: isActive ? 100 : isHovered ? 40 : 0,
+            x: isActive ? 0 : undefined,
+            y: isActive ? 0 : undefined,
           }}
           transition={{ 
             type: "spring",
