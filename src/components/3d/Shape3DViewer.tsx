@@ -29,7 +29,9 @@ function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMesh
       meshRef.current.rotation.x += (targetRotX - meshRef.current.rotation.x) * 0.1;
       meshRef.current.rotation.y += (targetRotY - meshRef.current.rotation.y) * 0.1;
       
-      // Pop out effect
+      // Pop out effect - ONLY Z axis, X and Y stay at 0
+      meshRef.current.position.x = 0;
+      meshRef.current.position.y = 0;
       const targetZ = 0.3;
       meshRef.current.position.z += (targetZ - meshRef.current.position.z) * 0.1;
       
@@ -42,7 +44,9 @@ function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMesh
       meshRef.current.rotation.x += 0.001;
       meshRef.current.rotation.y += 0.002;
       
-      // Return to original position
+      // Return to original position - CENTERED at (0,0,0)
+      meshRef.current.position.x = 0;
+      meshRef.current.position.y = 0;
       meshRef.current.position.z += (0 - meshRef.current.position.z) * 0.1;
       
       // Return to original scale
@@ -52,7 +56,12 @@ function Shape3DMesh({ partType, color, isHovered, mouseX, mouseY }: Shape3DMesh
   });
 
   return (
-    <mesh ref={meshRef} geometry={geometry} material={material}>
+    <mesh 
+      ref={meshRef} 
+      geometry={geometry} 
+      material={material}
+      position={[0, 0, 0]} // Start centered
+    >
       <meshStandardMaterial
         color={color}
         metalness={0.9}
