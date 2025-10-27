@@ -63,11 +63,18 @@ function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: S
     if (!meshRef.current) return;
     
     if (isActive) {
-      // Interactive mode - FORCE centered position, let OrbitControls handle rotation
-      // Critical: Keep resetting position to prevent drift
-      meshRef.current.position.set(0, 0, 0);
-      meshRef.current.scale.setScalar(1);
-      // Don't touch rotation - OrbitControls handles it
+      // Interactive mode - Centered with strong pop-out effect
+      meshRef.current.position.x = 0;
+      meshRef.current.position.y = 0;
+      // Stronger pop-out than hover
+      const targetZ = 0.6;
+      meshRef.current.position.z += (targetZ - meshRef.current.position.z) * 0.1;
+      
+      // Larger scale than hover
+      const targetScale = 1.3;
+      const currentScale = meshRef.current.scale.x;
+      meshRef.current.scale.setScalar(currentScale + (targetScale - currentScale) * 0.1);
+      // OrbitControls handles rotation
     } else if (isHovered) {
       // Interactive rotation based on mouse position
       const targetRotX = (mouseY - 0.5) * 0.5;
