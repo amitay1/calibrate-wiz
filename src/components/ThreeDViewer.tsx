@@ -131,8 +131,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     // ===== ROLLED BILLET OR PLATE =====
     if (normalizedPartType === 'billet') return 'billet';
     if (normalizedPartType === 'plate') return 'plate';
-    if (normalizedPartType === 'sheet') return 'plate';
-    if (normalizedPartType === 'slab') return 'plate';
+    if (normalizedPartType === 'sheet') return 'sheet';
+    if (normalizedPartType === 'slab') return 'slab';
     
     // ===== EXTRUDED OR ROLLED BARS =====
     if (normalizedPartType === 'round bar') return 'round';
@@ -186,10 +186,28 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
 
   switch (geometryType) {
     case "plate":
-      // Wide, flat sheet - emphasize width and length, minimize thickness
+      // Plate - medium thickness, wide and long
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l, t, w]} />
+          <boxGeometry args={[l, t * 0.6, w]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "sheet":
+      // Sheet - very thin, maximum width and length
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l * 1.2, t * 0.2, w * 1.2]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "slab":
+      // Slab - thicker than plate, heavy rectangular block
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l * 0.9, t * 1.5, w * 0.9]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
@@ -296,10 +314,11 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "billet":
-      // Billet/Block - large rectangular solid
+      // Billet - large, thick, nearly cubic block
+      const billetSize = Math.max(w, t, l * 0.5);
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l * 0.8, w * 0.8, t * 0.8]} />
+          <boxGeometry args={[billetSize, billetSize * 0.9, billetSize * 0.85]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
