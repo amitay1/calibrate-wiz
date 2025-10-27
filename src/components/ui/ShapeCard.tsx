@@ -45,12 +45,10 @@ export default function ShapeCard({
   const pxShadow = useTransform(sMx, (v) => isActive ? 0 : (v - 0.5) * -10);
   const pyShadow = useTransform(sMy, (v) => isActive ? 0 : (v - 0.5) * 8);
 
-  // Force reset when becoming inactive
+  // Force reset to center when becoming active OR inactive
   React.useEffect(() => {
-    if (!isActive) {
-      mx.jump(0.5);
-      my.jump(0.5);
-    }
+    mx.jump(0.5);
+    my.jump(0.5);
   }, [isActive, mx, my]);
 
   function onMove(e: React.MouseEvent) {
@@ -80,7 +78,9 @@ export default function ShapeCard({
       setIsHovered(false);
       onClick();
     } else {
-      // Activate
+      // Activate - force center immediately
+      mx.jump(0.5);
+      my.jump(0.5);
       setIsActive(true);
       onClick();
     }
