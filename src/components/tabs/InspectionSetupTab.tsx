@@ -213,10 +213,162 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
           >
             <PartTypeVisualSelector
               value={data.partType}
-              onChange={(value) => updateField("partType", value)}
+              onChange={(value) => {
+                onChange({ 
+                  ...data, 
+                  partType: value,
+                  customShapeDescription: value === "custom" ? data.customShapeDescription : undefined,
+                  customShapeParameters: value === "custom" ? data.customShapeParameters : undefined
+                });
+              }}
             />
           </FieldWithHelp>
         </div>
+
+        {data.partType === "custom" && (
+          <>
+            <div className="md:col-span-2">
+              <FieldWithHelp
+                label="Custom Shape Description"
+                help="Describe the custom shape and its unique features"
+                required
+              >
+                <Input
+                  value={data.customShapeDescription || ""}
+                  onChange={(e) => updateField("customShapeDescription", e.target.value)}
+                  placeholder="e.g., Complex dome with multiple radii and stepped wall thickness..."
+                  className="bg-background"
+                />
+              </FieldWithHelp>
+            </div>
+
+            <div className="md:col-span-2 grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Custom Dimension 1</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={data.customShapeParameters?.dimension1?.label || ""}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension1: { 
+                        label: e.target.value, 
+                        value: data.customShapeParameters?.dimension1?.value || 0 
+                      }
+                    })}
+                    placeholder="Label (e.g., Top Diameter)"
+                    className="bg-background flex-1"
+                  />
+                  <Input
+                    type="number"
+                    value={data.customShapeParameters?.dimension1?.value || 0}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension1: { 
+                        label: data.customShapeParameters?.dimension1?.label || "", 
+                        value: parseFloat(e.target.value) || 0 
+                      }
+                    })}
+                    placeholder="Value (mm)"
+                    className="bg-background w-32"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Custom Dimension 2</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={data.customShapeParameters?.dimension2?.label || ""}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension2: { 
+                        label: e.target.value, 
+                        value: data.customShapeParameters?.dimension2?.value || 0 
+                      }
+                    })}
+                    placeholder="Label (e.g., Bottom Diameter)"
+                    className="bg-background flex-1"
+                  />
+                  <Input
+                    type="number"
+                    value={data.customShapeParameters?.dimension2?.value || 0}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension2: { 
+                        label: data.customShapeParameters?.dimension2?.label || "", 
+                        value: parseFloat(e.target.value) || 0 
+                      }
+                    })}
+                    placeholder="Value (mm)"
+                    className="bg-background w-32"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Custom Dimension 3</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={data.customShapeParameters?.dimension3?.label || ""}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension3: { 
+                        label: e.target.value, 
+                        value: data.customShapeParameters?.dimension3?.value || 0 
+                      }
+                    })}
+                    placeholder="Label (optional)"
+                    className="bg-background flex-1"
+                  />
+                  <Input
+                    type="number"
+                    value={data.customShapeParameters?.dimension3?.value || 0}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension3: { 
+                        label: data.customShapeParameters?.dimension3?.label || "", 
+                        value: parseFloat(e.target.value) || 0 
+                      }
+                    })}
+                    placeholder="Value (mm)"
+                    className="bg-background w-32"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Custom Dimension 4</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={data.customShapeParameters?.dimension4?.label || ""}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension4: { 
+                        label: e.target.value, 
+                        value: data.customShapeParameters?.dimension4?.value || 0 
+                      }
+                    })}
+                    placeholder="Label (optional)"
+                    className="bg-background flex-1"
+                  />
+                  <Input
+                    type="number"
+                    value={data.customShapeParameters?.dimension4?.value || 0}
+                    onChange={(e) => updateField("customShapeParameters", {
+                      ...data.customShapeParameters,
+                      dimension4: { 
+                        label: data.customShapeParameters?.dimension4?.label || "", 
+                        value: parseFloat(e.target.value) || 0 
+                      }
+                    })}
+                    placeholder="Value (mm)"
+                    className="bg-background w-32"
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         <FieldWithHelp
           label="Part Thickness (mm)"

@@ -78,6 +78,13 @@ export interface InspectionSetupData {
   customMaterialName?: string;
   materialSpec: string;
   partType: PartGeometry | "";
+  customShapeDescription?: string;
+  customShapeParameters?: {
+    dimension1?: { label: string; value: number };
+    dimension2?: { label: string; value: number };
+    dimension3?: { label: string; value: number };
+    dimension4?: { label: string; value: number };
+  };
   partThickness: number;
   partLength: number;
   partWidth: number;
