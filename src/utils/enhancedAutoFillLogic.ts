@@ -601,6 +601,7 @@ export function getRecommendedFrequency(thickness: number, material?: MaterialTy
     const attenuationMap: Record<MaterialType, number> = {
       aluminum: 1.5,
       steel: 3.0,
+      stainless_steel: 2.5,
       titanium: 4.5,
       magnesium: 8.0
     };

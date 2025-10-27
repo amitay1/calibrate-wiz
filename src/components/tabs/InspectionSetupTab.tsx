@@ -19,6 +19,7 @@ interface InspectionSetupTabProps {
 const materials: { value: MaterialType; label: string }[] = [
   { value: "aluminum", label: "Aluminum" },
   { value: "steel", label: "Steel" },
+  { value: "stainless_steel", label: "Stainless Steel" },
   { value: "titanium", label: "Titanium" },
   { value: "magnesium", label: "Magnesium" },
 ];
@@ -53,6 +54,7 @@ const partTypes: PartTypeOption[] = [
 const materialSpecs: Record<MaterialType, string[]> = {
   aluminum: ["7075-T6 (QQ-A200/11)", "2024 (QQ-A-200/3)", "6061-T6", "2219-T87"],
   steel: ["4340 annealed (MIL-S-5000)", "4130", "17-4 PH", "15-5 PH"],
+  stainless_steel: ["304 (AMS 5513)", "316 (AMS 5524)", "17-4 PH (AMS 5604)", "15-5 PH (AMS 5659)", "410", "420"],
   titanium: ["Ti-6Al-4V annealed (AMS 4928)", "Ti-6Al-4V STA", "Ti-5Al-2.5Sn", "CP Ti Grade 2"],
   magnesium: ["ZK60A (QQ-M-31)", "AZ31B", "AZ80A", "ZE41A"],
 };

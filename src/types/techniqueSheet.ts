@@ -1,6 +1,6 @@
 export type StandardType = "MIL-STD-2154" | "AMS-STD-2154E" | "ASTM-E-114";
 
-export type MaterialType = "aluminum" | "steel" | "titanium" | "magnesium";
+export type MaterialType = "aluminum" | "steel" | "stainless_steel" | "titanium" | "magnesium";
 
 export type PartGeometry = 
   // Plates & Sheets

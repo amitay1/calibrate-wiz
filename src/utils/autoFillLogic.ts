@@ -30,6 +30,15 @@ export const materialDatabase: Record<MaterialType, MaterialProperties> = {
     surfaceCondition: "Ground or machined, Ra ≤ 3.2 μm",
     typicalSpecs: ["4340 annealed (MIL-S-5000)", "4130", "17-4 PH", "15-5 PH"]
   },
+  stainless_steel: {
+    velocity: 5.79,
+    velocityShear: 3.10,
+    acousticImpedance: 45.4,
+    attenuation: 2.5,
+    density: 7.9,
+    surfaceCondition: "Ground or machined, Ra ≤ 3.2 μm, passivated acceptable",
+    typicalSpecs: ["304 (AMS 5513)", "316 (AMS 5524)", "17-4 PH (AMS 5604)", "15-5 PH (AMS 5659)", "410", "420"]
+  },
   titanium: {
     velocity: 6.10,
     velocityShear: 3.12,
