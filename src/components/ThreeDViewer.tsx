@@ -528,16 +528,133 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     
     // ===== EXTRUSIONS =====
     case "extrusion_angle":
+      // L-profile (angle) - two perpendicular flanges
+      const angleThickness = Math.min(w, t) * 0.15;
+      const angleLength = l * 1.2;
+      const angleWidth = Math.max(w * 0.6, t * 0.6);
+      return (
+        <group>
+          {/* Horizontal flange */}
+          <mesh castShadow receiveShadow position={[0, -angleWidth/2 + angleThickness/2, 0]}>
+            <boxGeometry args={[angleLength, angleThickness, angleWidth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Vertical flange */}
+          <mesh castShadow receiveShadow position={[0, 0, -angleWidth/2 + angleThickness/2]}>
+            <boxGeometry args={[angleLength, angleWidth, angleThickness]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
     case "extrusion_t":
+      // T-profile - vertical web with horizontal flange on top
+      const tWebThickness = Math.min(w, t) * 0.12;
+      const tLength = l * 1.2;
+      const tHeight = Math.max(w * 0.8, t * 0.8);
+      const tFlangeWidth = Math.max(w * 0.7, t * 0.7);
+      return (
+        <group>
+          {/* Vertical web */}
+          <mesh castShadow receiveShadow position={[0, 0, 0]}>
+            <boxGeometry args={[tLength, tHeight, tWebThickness]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Top flange */}
+          <mesh castShadow receiveShadow position={[0, tHeight/2, 0]}>
+            <boxGeometry args={[tLength, tWebThickness, tFlangeWidth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
     case "extrusion_i":
+      // I-beam - two flanges with web connecting them
+      const iWebThickness = Math.min(w, t) * 0.1;
+      const iLength = l * 1.2;
+      const iHeight = Math.max(w * 0.9, t * 0.9);
+      const iFlangeWidth = Math.max(w * 0.6, t * 0.6);
+      const iFlangeThickness = iWebThickness * 1.5;
+      return (
+        <group>
+          {/* Vertical web */}
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[iLength, iHeight, iWebThickness]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Top flange */}
+          <mesh castShadow receiveShadow position={[0, iHeight/2, 0]}>
+            <boxGeometry args={[iLength, iFlangeThickness, iFlangeWidth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Bottom flange */}
+          <mesh castShadow receiveShadow position={[0, -iHeight/2, 0]}>
+            <boxGeometry args={[iLength, iFlangeThickness, iFlangeWidth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
     case "extrusion_u":
     case "extrusion_channel":
-    case "z_section":
-    case "custom_profile":
-      // Complex profiles - show as bar with distinguishing feature
+      // U-channel - two parallel flanges with web connecting them
+      const uWebThickness = Math.min(w, t) * 0.12;
+      const uLength = l * 1.2;
+      const uHeight = Math.max(w * 0.8, t * 0.8);
+      const uFlangeDepth = Math.max(w * 0.4, t * 0.4);
       return (
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[l, w * 0.4, t * 0.4]} />
+        <group>
+          {/* Back web */}
+          <mesh castShadow receiveShadow position={[0, 0, -uFlangeDepth/2]}>
+            <boxGeometry args={[uLength, uHeight, uWebThickness]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Left flange */}
+          <mesh castShadow receiveShadow position={[0, uHeight/2, 0]}>
+            <boxGeometry args={[uLength, uWebThickness, uFlangeDepth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Right flange */}
+          <mesh castShadow receiveShadow position={[0, -uHeight/2, 0]}>
+            <boxGeometry args={[uLength, uWebThickness, uFlangeDepth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
+    case "z_section":
+      // Z-profile - offset flanges like a Z shape
+      const zThickness = Math.min(w, t) * 0.12;
+      const zLength = l * 1.2;
+      const zHeight = Math.max(w * 0.8, t * 0.8);
+      const zFlangeWidth = Math.max(w * 0.5, t * 0.5);
+      return (
+        <group>
+          {/* Vertical web */}
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[zLength, zHeight, zThickness]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Top flange (extends forward) */}
+          <mesh castShadow receiveShadow position={[0, zHeight/2, zFlangeWidth/2]}>
+            <boxGeometry args={[zLength, zThickness, zFlangeWidth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          {/* Bottom flange (extends backward) */}
+          <mesh castShadow receiveShadow position={[0, -zHeight/2, -zFlangeWidth/2]}>
+            <boxGeometry args={[zLength, zThickness, zFlangeWidth]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
+    case "custom_profile":
+      // Custom profile - show as octagonal bar
+      const customLength = l * 1.2;
+      const customSize = Math.max(w * 0.5, t * 0.5);
+      return (
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[customSize, customSize, customLength, 8]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
