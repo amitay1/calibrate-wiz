@@ -50,6 +50,15 @@ function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: S
     }
   }, [isActive]);
 
+  // CRITICAL: Immediate reset when exiting active mode
+  useEffect(() => {
+    if (!isActive && !isHovered && meshRef.current) {
+      // Force immediate center position when closing
+      meshRef.current.position.set(0, 0, 0);
+      meshRef.current.scale.setScalar(1);
+    }
+  }, [isActive, isHovered]);
+
   useFrame((state) => {
     if (!meshRef.current) return;
     
