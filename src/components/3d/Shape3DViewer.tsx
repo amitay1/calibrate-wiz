@@ -149,14 +149,7 @@ export default function Shape3DViewer({
       setCurrentPartType(partType);
       setResetKey(prev => prev + 1); // Force complete remount
     }
-  }, [partType]);
-
-  // CRITICAL: Force remount when entering interactive mode
-  useEffect(() => {
-    if (isActive) {
-      setResetKey(prev => prev + 1);
-    }
-  }, [isActive]);
+  }, [partType, currentPartType]);
 
   // Use IntersectionObserver to detect when canvas is visible
   useEffect(() => {
