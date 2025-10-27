@@ -38,10 +38,10 @@ const ScanArrow = ({
   label: string;
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const arrowLength = 0.9; // Shorter arrow
-  const arrowRadius = 0.06;
-  const coneHeight = 0.25;
-  const coneRadius = 0.12;
+  const arrowLength = 0.4; // Much shorter arrow
+  const arrowRadius = 0.03;
+  const coneHeight = 0.12;
+  const coneRadius = 0.06;
 
   // Gentle pulsing animation
   useFrame(({ clock }) => {
