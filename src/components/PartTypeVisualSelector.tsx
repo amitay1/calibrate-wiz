@@ -294,15 +294,23 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
   value,
   onChange,
 }) => {
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [expandedCategory, setExpandedCategory] = useState<string>("");
   const [mountedCategories, setMountedCategories] = useState<Set<string>>(new Set());
 
   // Track when categories are expanded to force re-render of 3D models
   useEffect(() => {
     const newMounted = new Set(mountedCategories);
-    expandedCategories.forEach(cat => newMounted.add(cat));
+    if (expandedCategory) {
+      newMounted.add(expandedCategory);
+    }
     setMountedCategories(newMounted);
-  }, [expandedCategories]);
+  }, [expandedCategory]);
+
+  const handleShapeSelect = (shape: PartGeometry) => {
+    onChange(shape);
+    // Close the accordion after selection
+    setTimeout(() => setExpandedCategory(""), 300);
+  };
 
   return (
     <div className="w-full space-y-6">
@@ -316,13 +324,14 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
       </div>
 
       <Accordion
-        type="multiple"
-        value={expandedCategories}
-        onValueChange={setExpandedCategories}
+        type="single"
+        value={expandedCategory}
+        onValueChange={setExpandedCategory}
+        collapsible
         className="w-full space-y-4"
       >
         {categoryGroups.map((group) => {
-          const isExpanded = expandedCategories.includes(group.category);
+          const isExpanded = expandedCategory === group.category;
           const renderKey = `${group.category}-${isExpanded ? 'open' : 'closed'}-${mountedCategories.has(group.category) ? 'mounted' : 'initial'}`;
           
           return (
@@ -356,7 +365,7 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
                         partType={option.value}
                         color={option.color}
                         isSelected={value === option.value}
-                        onClick={() => onChange(option.value)}
+                        onClick={() => handleShapeSelect(option.value)}
                       />
                     ))}
                   </div>
