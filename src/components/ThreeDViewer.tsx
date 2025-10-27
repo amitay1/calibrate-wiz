@@ -474,17 +474,30 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "sleeve":
-    case "bushing":
-      // Sleeve/Bushing - short hollow cylinder
+      // Sleeve - longer, thinner walls
       const sleeveOuterRadius = d / 2;
-      const sleeveInnerRadius = Math.max((d / 2) - t, 0.05);
-      const sleeveLength = Math.min(l * 0.5, w);
+      const sleeveInnerRadius = Math.max((d / 2) - t * 0.6, 0.05);
+      const sleeveLength = Math.max(l * 0.7, w * 0.8);
       return (
         <HollowTube 
           color={color} 
           outerRadius={sleeveOuterRadius} 
           innerRadius={sleeveInnerRadius} 
           length={sleeveLength} 
+        />
+      );
+    
+    case "bushing":
+      // Bushing - shorter, thicker walls, more compact
+      const bushingOuterRadius = d / 2 * 0.85;
+      const bushingInnerRadius = Math.max((d / 2) - t * 1.5, 0.05);
+      const bushingLength = Math.min(l * 0.4, w * 0.5);
+      return (
+        <HollowTube 
+          color={color} 
+          outerRadius={bushingOuterRadius} 
+          innerRadius={bushingInnerRadius} 
+          length={bushingLength} 
         />
       );
     
