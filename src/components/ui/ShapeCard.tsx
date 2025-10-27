@@ -51,6 +51,14 @@ export default function ShapeCard({
     my.jump(0.5);
   }, [isActive, mx, my]);
 
+  // Reset isActive when isSelected becomes false
+  React.useEffect(() => {
+    if (!isSelected && isActive) {
+      setIsActive(false);
+      setIsHovered(false);
+    }
+  }, [isSelected, isActive]);
+
   function onMove(e: React.MouseEvent) {
     if (!ref.current || isActive) return;
     const r = ref.current.getBoundingClientRect();
