@@ -94,12 +94,6 @@ export default function ShapeCard({
         rotateX: isActive ? 0 : rotX, 
         rotateY: isActive ? 0 : rotY, 
         ["--halo" as any]: color,
-        position: isActive ? "fixed" : "relative",
-        top: isActive ? "50%" : "auto",
-        left: isActive ? "50%" : "auto",
-        translateX: isActive ? "-50%" : "0",
-        translateY: isActive ? "-50%" : "0",
-        zIndex: isActive ? 9999 : "auto",
       }}
       onMouseMove={onMove}
       onMouseEnter={onHover}
@@ -107,7 +101,7 @@ export default function ShapeCard({
       onClick={handleClick}
       whileHover={{ scale: isActive ? 1 : 1.04 }}
       animate={{ 
-        scale: isActive ? 1.2 : 1,
+        scale: isActive ? 1 : 1,
         rotateX: isActive ? 0 : undefined,
         rotateY: isActive ? 0 : undefined,
       }}
@@ -125,10 +119,15 @@ export default function ShapeCard({
         {/* 3D VIEWER - Always visible! */}
         <motion.div
           className="layer z2 shape-3d-container"
-          style={{ x: px6, y: py6 }}
+          style={{ 
+            x: isActive ? 0 : px6, 
+            y: isActive ? 0 : py6,
+          }}
           animate={{ 
             scale: isActive ? 1.3 : isHovered ? 1.15 : 1,
             z: isActive ? 100 : isHovered ? 40 : 0,
+            x: isActive ? 0 : undefined,
+            y: isActive ? 0 : undefined,
           }}
           transition={{ 
             type: "spring",
