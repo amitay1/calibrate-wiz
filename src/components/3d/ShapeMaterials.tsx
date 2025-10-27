@@ -82,8 +82,20 @@ export const getMaterialByType = (partType: string): THREE.MeshStandardMaterial 
     ring_forging: ShapeMaterials.ringForgingPink,
     forging: ShapeMaterials.forgingRed,
     round_forging_stock: ShapeMaterials.roundForgingRed,
+    rectangular_forging_stock: ShapeMaterials.forgingRed, // Added mapping
     billet: ShapeMaterials.billetYellow,
     block: ShapeMaterials.blockOrange,
+    rectangular_tube: ShapeMaterials.tubeGray, // Added mapping
+    square_tube: ShapeMaterials.tubeGray, // Added mapping
+    hub: ShapeMaterials.diskForgingTeal, // Added mapping
+    near_net_forging: ShapeMaterials.forgingRed, // Added mapping
+    z_section: ShapeMaterials.extrusionCyan, // Added mapping
+    custom_profile: ShapeMaterials.extrusionCyan, // Added mapping
+    machined_component: ShapeMaterials.genericGray, // Added mapping
+    cylinder: ShapeMaterials.roundBarPurple, // Added mapping
+    sphere: ShapeMaterials.forgingRed, // Added mapping
+    cone: ShapeMaterials.blockOrange, // Added mapping
+    custom: ShapeMaterials.genericGray, // Added mapping
     extrusion_l: ShapeMaterials.extrusionCyan,
     extrusion_t: ShapeMaterials.extrusionCyan,
     extrusion_i: ShapeMaterials.extrusionCyan,
