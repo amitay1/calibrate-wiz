@@ -3,12 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { InspectionSetupData, MaterialType, PartGeometry, AcceptanceClass } from "@/types/techniqueSheet";
-import { Info } from "lucide-react";
+import { Info, Upload, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { materialDatabase } from "@/utils/autoFillLogic";
 import { SmartRecommendations } from "@/components/SmartRecommendations";
 import { PartTypeVisualSelector } from "@/components/PartTypeVisualSelector";
+import { Card } from "@/components/ui/card";
 
 interface InspectionSetupTabProps {
   data: InspectionSetupData;
@@ -105,6 +106,16 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
     onChange({ ...data, [field]: value });
   };
 
+  const handleCustomShapeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateField("customShapeImage", reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const showDiameter = data.partType === "tube" || data.partType === "ring";
   
@@ -239,6 +250,62 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
                   placeholder="e.g., Complex dome with multiple radii and stepped wall thickness..."
                   className="bg-background"
                 />
+              </FieldWithHelp>
+            </div>
+
+            <div className="md:col-span-2">
+              <FieldWithHelp
+                label="Custom Shape Image"
+                help="Upload an image or technical drawing of the custom shape"
+              >
+                <Card className="p-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById('custom-shape-image-upload')?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Shape Image
+                      </Button>
+                      <input
+                        id="custom-shape-image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleCustomShapeImageUpload}
+                      />
+                      {data.customShapeImage && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => updateField("customShapeImage", undefined)}
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Remove Image
+                        </Button>
+                      )}
+                    </div>
+
+                    {data.customShapeImage ? (
+                      <div className="border rounded-lg p-4 bg-muted/30">
+                        <img 
+                          src={data.customShapeImage} 
+                          alt="Custom Shape" 
+                          className="w-full h-auto max-h-96 object-contain rounded"
+                        />
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground">
+                        <Upload className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No image uploaded</p>
+                        <p className="text-xs">Upload a technical drawing or photo of the custom shape</p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
               </FieldWithHelp>
             </div>
 

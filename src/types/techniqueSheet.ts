@@ -79,6 +79,7 @@ export interface InspectionSetupData {
   materialSpec: string;
   partType: PartGeometry | "";
   customShapeDescription?: string;
+  customShapeImage?: string; // Image upload for custom shapes
   customShapeParameters?: {
     dimension1?: { label: string; value: number };
     dimension2?: { label: string; value: number };
