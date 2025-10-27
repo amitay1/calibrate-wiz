@@ -118,14 +118,14 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
   // IMPORTANT: Check EXACT and SPECIFIC types BEFORE general types
   const getGeometryType = (): string => {
     // ===== FORGING STOCK =====
-    if (normalizedPartType === 'round forging stock') return 'round';
-    if (normalizedPartType === 'rectangular forging stock') return 'billet';
+    if (normalizedPartType === 'round forging stock') return 'round_forging_stock';
+    if (normalizedPartType === 'rectangular forging stock') return 'rectangular_forging_stock';
     
     // ===== FORGINGS =====
     if (normalizedPartType === 'ring forging') return 'ring';
     if (normalizedPartType === 'disk forging') return 'disk';
-    if (normalizedPartType === 'hub') return 'disk'; // Hub is disk-like
-    if (normalizedPartType === 'shaft') return 'round';
+    if (normalizedPartType === 'hub') return 'hub';
+    if (normalizedPartType === 'shaft') return 'shaft';
     if (normalizedPartType === 'near net forging') return 'forging';
     
     // ===== ROLLED BILLET OR PLATE =====
@@ -135,36 +135,36 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     if (normalizedPartType === 'slab') return 'slab';
     
     // ===== EXTRUDED OR ROLLED BARS =====
-    if (normalizedPartType === 'round bar') return 'round';
-    if (normalizedPartType === 'square bar') return 'square';
-    if (normalizedPartType === 'rectangular bar') return 'bar';
+    if (normalizedPartType === 'round bar') return 'round_bar';
+    if (normalizedPartType === 'square bar') return 'square_bar';
+    if (normalizedPartType === 'rectangular bar') return 'rectangular_bar';
     if (normalizedPartType === 'hex bar') return 'hex';
-    if (normalizedPartType === 'flat bar') return 'bar';
+    if (normalizedPartType === 'flat bar') return 'flat_bar';
     
     // ===== EXTRUDED OR ROLLED SHAPES =====
-    if (normalizedPartType === 'extrusion angle') return 'bar'; // L-profile
-    if (normalizedPartType === 'extrusion t') return 'bar'; // T-profile
-    if (normalizedPartType === 'extrusion i') return 'bar'; // I/H-beam
-    if (normalizedPartType === 'extrusion u') return 'bar'; // U/C-channel
-    if (normalizedPartType === 'extrusion channel') return 'bar';
-    if (normalizedPartType === 'z section') return 'bar';
+    if (normalizedPartType === 'extrusion angle') return 'extrusion_angle';
+    if (normalizedPartType === 'extrusion t') return 'extrusion_t';
+    if (normalizedPartType === 'extrusion i') return 'extrusion_i';
+    if (normalizedPartType === 'extrusion u') return 'extrusion_u';
+    if (normalizedPartType === 'extrusion channel') return 'extrusion_channel';
+    if (normalizedPartType === 'z section') return 'z_section';
     if (normalizedPartType === 'tube') return 'tube';
-    if (normalizedPartType === 'pipe') return 'tube';
-    if (normalizedPartType === 'rectangular tube') return 'tube';
-    if (normalizedPartType === 'square tube') return 'tube';
-    if (normalizedPartType === 'custom profile') return 'bar';
+    if (normalizedPartType === 'pipe') return 'pipe';
+    if (normalizedPartType === 'rectangular tube') return 'rectangular_tube';
+    if (normalizedPartType === 'square tube') return 'square_tube';
+    if (normalizedPartType === 'custom profile') return 'custom_profile';
     
     // ===== MACHINED PARTS =====
-    if (normalizedPartType === 'machined component') return 'billet';
+    if (normalizedPartType === 'machined component') return 'machined_component';
     if (normalizedPartType === 'ring') return 'ring';
     if (normalizedPartType === 'disk') return 'disk';
-    if (normalizedPartType === 'cylinder') return 'round';
-    if (normalizedPartType === 'sphere') return 'disk'; // Use disk geometry for sphere
-    if (normalizedPartType === 'cone') return 'round'; // Use round geometry for cone
+    if (normalizedPartType === 'cylinder') return 'cylinder';
+    if (normalizedPartType === 'sphere') return 'sphere';
+    if (normalizedPartType === 'cone') return 'cone';
     if (normalizedPartType === 'sleeve') return 'sleeve';
-    if (normalizedPartType === 'bushing') return 'sleeve';
-    if (normalizedPartType === 'block') return 'billet';
-    if (normalizedPartType === 'custom') return 'billet';
+    if (normalizedPartType === 'bushing') return 'bushing';
+    if (normalizedPartType === 'block') return 'block';
+    if (normalizedPartType === 'custom') return 'custom';
     
     // ===== FALLBACK CHECKS (for partial matches) =====
     if (normalizedPartType.includes('plate') || normalizedPartType.includes('sheet')) return 'plate';
@@ -185,6 +185,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
   const geometryType = getGeometryType();
 
   switch (geometryType) {
+    // ===== ROLLED BILLET OR PLATE =====
     case "plate":
       // Plate - medium thickness, wide and long
       return (
@@ -212,21 +213,41 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
         </mesh>
       );
     
-    case "bar":
-      // Long, narrow beam - emphasize length, small cross-section
+    case "billet":
+      // Billet - large, thick, nearly cubic block
+      const billetSize = Math.max(w, t, l * 0.5);
       return (
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[l, w * 0.3, t * 0.3]} />
+          <boxGeometry args={[billetSize, billetSize * 0.9, billetSize * 0.85]} />
           <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
+    // ===== FORGING STOCK =====
+    case "round_forging_stock":
+      // Round forging stock - long cylinder, thicker than bar
+      const rfsRadius = Math.max(d / 2, 0.4);
+      const rfsLength = Math.max(l * 1.2, 1);
+      return (
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[rfsRadius, rfsRadius, rfsLength, 32]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "rectangular_forging_stock":
+      // Rectangular forging stock - thick rectangular bar
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l * 1.1, w * 0.7, t * 0.7]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    // ===== FORGINGS =====
     case "forging":
       // Near-net forging - organic, smooth irregular shape
       const forgingRadius = Math.max(d / 2, 0.5);
-      const forgingLength = Math.max(l * 0.8, 0.6);
-      const forgingWidth = Math.max(w * 0.9, 0.5);
-      const forgingHeight = Math.max(t * 0.7, 0.4);
       return (
         <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 6]}>
           <icosahedronGeometry args={[forgingRadius, 3]} />
@@ -239,12 +260,89 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
         </mesh>
       );
     
+    case "hub":
+      // Hub - disk with central boss/protrusion
+      const hubRadius = Math.max(d / 2, 0.5);
+      const hubHeight = Math.max(t * 0.8, 0.2);
+      const bossRadius = hubRadius * 0.4;
+      const bossHeight = hubHeight * 1.5;
+      return (
+        <group>
+          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[hubRadius, hubRadius, hubHeight, 32]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          <mesh castShadow receiveShadow position={[0, bossHeight * 0.35, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[bossRadius, bossRadius * 0.9, bossHeight, 32]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
+    case "shaft":
+      // Shaft - long, slender cylinder with steps
+      const shaftRadius = Math.max(d / 2, 0.25);
+      const shaftLength = Math.max(l * 1.5, 1.5);
+      return (
+        <group>
+          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[shaftRadius, shaftRadius, shaftLength, 32]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          <mesh castShadow receiveShadow position={[shaftLength * 0.3, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[shaftRadius * 1.3, shaftRadius * 1.3, shaftLength * 0.2, 32]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
+    // ===== BARS =====
+    case "round_bar":
+      // Round bar - standard cylinder, medium length
+      const rbRadius = Math.max(d / 2, 0.2);
+      const rbLength = Math.max(l, 0.8);
+      return (
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[rbRadius, rbRadius, rbLength, 32]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "square_bar":
+      // Square bar - square cross-section
+      const sbSize = Math.max(w * 0.5, 0.2);
+      const sbLength = Math.max(l, 0.8);
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[sbLength, sbSize, sbSize]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "rectangular_bar":
+      // Rectangular bar - wider than tall
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l, t * 0.4, w * 0.6]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "flat_bar":
+      // Flat bar - very wide, very thin
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l, t * 0.3, w * 0.9]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    // ===== TUBES =====
     case "tube":
-      // Long hollow cylinder with REAL hole
+      // Standard tube - round hollow
       const tubeOuterRadius = d / 2;
       const tubeInnerRadius = Math.max((d / 2) - t, 0.05);
       const tubeLength = l;
-      
       return (
         <HollowTube 
           color={color} 
@@ -254,12 +352,63 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
         />
       );
     
+    case "pipe":
+      // Pipe - thicker walls than tube
+      const pipeOuterRadius = d / 2;
+      const pipeInnerRadius = Math.max((d / 2) - t * 1.5, 0.05);
+      const pipeLength = l;
+      return (
+        <HollowTube 
+          color={color} 
+          outerRadius={pipeOuterRadius} 
+          innerRadius={pipeInnerRadius} 
+          length={pipeLength} 
+        />
+      );
+    
+    case "rectangular_tube":
+      // Rectangular tube - hollow rectangular
+      const rtWall = 0.05;
+      const rtOuterL = l;
+      const rtOuterW = w * 0.6;
+      const rtOuterT = t * 0.6;
+      return (
+        <group>
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[rtOuterL, rtOuterW, rtOuterT]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[rtOuterL + 0.01, rtOuterW - rtWall * 2, rtOuterT - rtWall * 2]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.1} roughness={0.9} />
+          </mesh>
+        </group>
+      );
+    
+    case "square_tube":
+      // Square tube - hollow square
+      const stSize = Math.max(w * 0.5, 0.3);
+      const stLength = l;
+      const stWall = 0.05;
+      return (
+        <group>
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[stLength, stSize, stSize]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[stLength + 0.01, stSize - stWall * 2, stSize - stWall * 2]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.1} roughness={0.9} />
+          </mesh>
+        </group>
+      );
+    
+    // ===== RINGS & DISKS =====
     case "ring":
-      // Ring Forging - hollow cylinder with REAL hole
+      // Ring - hollow cylinder, short
       const ringOuterRadius = Math.max(d / 2, 0.5);
       const ringInnerRadius = Math.max((d / 2) - t, 0.2);
       const ringHeight = Math.max(w * 0.5, 0.3);
-      
       return (
         <HollowRing 
           color={color} 
@@ -270,7 +419,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "disk":
-      // Disk Forging - flat, solid circular shape
+      // Disk - solid, flat circular
       const diskRadius = Math.max(d / 2, 0.5);
       const diskHeight = Math.max(t, 0.1);
       return (
@@ -280,8 +429,41 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
         </mesh>
       );
     
+    // ===== OTHER SHAPES =====
+    case "cylinder":
+      // Cylinder - medium height cylinder
+      const cylRadius = Math.max(d / 2, 0.3);
+      const cylHeight = Math.max(w, 0.5);
+      return (
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[cylRadius, cylRadius, cylHeight, 32]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "sphere":
+      // Sphere - perfect sphere
+      const sphereRadius = Math.max(d / 2, 0.4);
+      return (
+        <mesh castShadow receiveShadow>
+          <sphereGeometry args={[sphereRadius, 32, 32]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "cone":
+      // Cone - tapered cylinder
+      const coneRadius = Math.max(d / 2, 0.3);
+      const coneHeight = Math.max(w, 0.6);
+      return (
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+          <coneGeometry args={[coneRadius, coneHeight, 32]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
     case "hex":
-      // Hex Bar - hexagonal prism
+      // Hex bar - hexagonal prism
       const hexRadius = Math.max(w * 0.5, 0.2);
       const hexHeight = Math.max(l, 0.5);
       return (
@@ -291,44 +473,12 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
         </mesh>
       );
     
-    case "round":
-      // Round Bar / Cylinder - solid round stock
-      const roundRadius = Math.max(d / 2, 0.2);
-      const roundHeight = Math.max(l, 0.5);
-      return (
-        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[roundRadius, roundRadius, roundHeight, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-        </mesh>
-      );
-    
-    case "square":
-      // Square Bar - square cross-section
-      const squareSize = Math.max(w * 0.5, 0.2);
-      const squareLength = Math.max(l, 0.5);
-      return (
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[squareLength, squareSize, squareSize]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-        </mesh>
-      );
-    
-    case "billet":
-      // Billet - large, thick, nearly cubic block
-      const billetSize = Math.max(w, t, l * 0.5);
-      return (
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[billetSize, billetSize * 0.9, billetSize * 0.85]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-        </mesh>
-      );
-    
     case "sleeve":
+    case "bushing":
       // Sleeve/Bushing - short hollow cylinder
       const sleeveOuterRadius = d / 2;
       const sleeveInnerRadius = Math.max((d / 2) - t, 0.05);
-      const sleeveLength = Math.min(l * 0.5, w); // Short length
-      
+      const sleeveLength = Math.min(l * 0.5, w);
       return (
         <HollowTube 
           color={color} 
@@ -336,6 +486,56 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
           innerRadius={sleeveInnerRadius} 
           length={sleeveLength} 
         />
+      );
+    
+    case "block":
+      // Block - compact rectangular
+      const blockSize = Math.min(l, w, t);
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[blockSize, blockSize * 0.8, blockSize * 0.9]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "machined_component":
+      // Machined component - complex stepped shape
+      return (
+        <group>
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[l * 0.7, w * 0.6, t * 0.6]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+          <mesh castShadow receiveShadow position={[l * 0.2, 0, 0]}>
+            <boxGeometry args={[l * 0.3, w * 0.8, t * 0.8]} />
+            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+          </mesh>
+        </group>
+      );
+    
+    // ===== EXTRUSIONS =====
+    case "extrusion_angle":
+    case "extrusion_t":
+    case "extrusion_i":
+    case "extrusion_u":
+    case "extrusion_channel":
+    case "z_section":
+    case "custom_profile":
+      // Complex profiles - show as bar with distinguishing feature
+      return (
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[l, w * 0.4, t * 0.4]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
+      );
+    
+    case "custom":
+      // Custom - generic irregular shape
+      return (
+        <mesh castShadow receiveShadow>
+          <dodecahedronGeometry args={[Math.max(d / 3, 0.4), 0]} />
+          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
+        </mesh>
       );
     
     default:
