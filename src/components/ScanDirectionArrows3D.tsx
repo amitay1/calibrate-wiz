@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Cone, Html, Billboard } from "@react-three/drei";
+import { Cone, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { ScanDirectionArrow } from "./ThreeDViewer";
 
@@ -52,64 +52,62 @@ const ScanArrow = ({
   });
 
   return (
-    <Billboard position={position} follow={true} lockX={false} lockY={false} lockZ={false}>
-      <group ref={groupRef} rotation={rotation}>
-        {/* Arrow shaft with gradient effect */}
-        <mesh position={[0, arrowLength / 2, 0]} castShadow>
-          <cylinderGeometry args={[arrowRadius, arrowRadius * 1.2, arrowLength, 16]} />
-          <meshStandardMaterial 
-            color={color} 
-            emissive={color} 
-            emissiveIntensity={0.6}
-            metalness={0.8}
-            roughness={0.2}
-          />
-        </mesh>
-        
-        {/* Glowing ring at base - smaller */}
-        <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[arrowRadius * 1.5, arrowRadius * 0.25, 12, 24]} />
-          <meshStandardMaterial 
-            color={color}
-            emissive={color}
-            emissiveIntensity={0.8}
-            metalness={0.9}
-            roughness={0.1}
-          />
-        </mesh>
-        
-        {/* Arrow cone head */}
-        <Cone 
-          args={[coneRadius, coneHeight, 16]} 
-          position={[0, arrowLength + coneHeight / 2, 0]}
-          castShadow
+    <group ref={groupRef} position={position} rotation={rotation}>
+      {/* Arrow shaft with gradient effect */}
+      <mesh position={[0, arrowLength / 2, 0]} castShadow>
+        <cylinderGeometry args={[arrowRadius, arrowRadius * 1.2, arrowLength, 16]} />
+        <meshStandardMaterial 
+          color={color} 
+          emissive={color} 
+          emissiveIntensity={0.6}
+          metalness={0.8}
+          roughness={0.2}
+        />
+      </mesh>
+      
+      {/* Glowing ring at base - smaller */}
+      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[arrowRadius * 1.5, arrowRadius * 0.25, 12, 24]} />
+        <meshStandardMaterial 
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.8}
+          metalness={0.9}
+          roughness={0.1}
+        />
+      </mesh>
+      
+      {/* Arrow cone head */}
+      <Cone 
+        args={[coneRadius, coneHeight, 16]} 
+        position={[0, arrowLength + coneHeight / 2, 0]}
+        castShadow
+      >
+        <meshStandardMaterial 
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.7}
+          metalness={0.9}
+          roughness={0.1}
+        />
+      </Cone>
+      
+      {/* Professional label with shadow - closer */}
+      <Html position={[0, arrowLength + coneHeight + 0.2, 0]} distanceFactor={6}>
+        <div 
+          className="px-2.5 py-1 rounded-full font-bold text-xs shadow-2xl border-2 whitespace-nowrap pointer-events-none"
+          style={{ 
+            backgroundColor: color,
+            color: '#ffffff',
+            borderColor: color,
+            boxShadow: `0 0 30px ${color}99, 0 4px 10px rgba(0,0,0,0.3)`,
+            textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+          }}
         >
-          <meshStandardMaterial 
-            color={color}
-            emissive={color}
-            emissiveIntensity={0.7}
-            metalness={0.9}
-            roughness={0.1}
-          />
-        </Cone>
-        
-        {/* Professional label with shadow - closer */}
-        <Html position={[0, arrowLength + coneHeight + 0.2, 0]} distanceFactor={6}>
-          <div 
-            className="px-2.5 py-1 rounded-full font-bold text-xs shadow-2xl border-2 whitespace-nowrap pointer-events-none"
-            style={{ 
-              backgroundColor: color,
-              color: '#ffffff',
-              borderColor: color,
-              boxShadow: `0 0 30px ${color}99, 0 4px 10px rgba(0,0,0,0.3)`,
-              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-            }}
-          >
-            {label}
-          </div>
-        </Html>
-      </group>
-    </Billboard>
+          {label}
+        </div>
+      </Html>
+    </group>
   );
 };
 
