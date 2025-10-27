@@ -308,8 +308,6 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
 
   const handleShapeSelect = (shape: PartGeometry) => {
     onChange(shape);
-    // Close the accordion after selection
-    setTimeout(() => setExpandedCategory(""), 300);
   };
 
   return (
