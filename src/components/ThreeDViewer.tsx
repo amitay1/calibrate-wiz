@@ -204,22 +204,21 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       );
     
     case "forging":
-      // Near-net forging - complex irregular shape with bulky proportions
+      // Near-net forging - organic, smooth irregular shape
       const forgingRadius = Math.max(d / 2, 0.5);
-      const forgingHeight = Math.max(t * 1.2, 0.4);
+      const forgingLength = Math.max(l * 0.8, 0.6);
+      const forgingWidth = Math.max(w * 0.9, 0.5);
+      const forgingHeight = Math.max(t * 0.7, 0.4);
       return (
-        <group>
-          {/* Main body - irregular cylinder */}
-          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[forgingRadius * 0.9, forgingRadius, forgingHeight, 8]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-          </mesh>
-          {/* Top bulge - characteristic of near-net forgings */}
-          <mesh castShadow receiveShadow position={[0, forgingHeight * 0.3, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[forgingRadius * 1.1, forgingRadius * 0.95, forgingHeight * 0.3, 8]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
-          </mesh>
-        </group>
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 6]}>
+          <icosahedronGeometry args={[forgingRadius, 3]} />
+          <meshStandardMaterial 
+            color={color} 
+            metalness={0.85} 
+            roughness={0.25}
+            flatShading={false}
+          />
+        </mesh>
       );
     
     case "tube":
