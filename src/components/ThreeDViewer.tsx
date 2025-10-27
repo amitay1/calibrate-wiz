@@ -117,44 +117,67 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
   // Determine geometry type from normalized name
   // IMPORTANT: Check EXACT and SPECIFIC types BEFORE general types
   const getGeometryType = (): string => {
-    // PLATES & SHEETS
-    if (normalizedPartType === 'plate' || normalizedPartType === 'sheet' || normalizedPartType === 'slab') return 'plate';
-    if (normalizedPartType.includes('plate') || normalizedPartType.includes('sheet')) return 'plate';
+    // ===== FORGING STOCK =====
+    if (normalizedPartType === 'round forging stock') return 'round';
+    if (normalizedPartType === 'rectangular forging stock') return 'billet';
     
-    // SOLID BARS
-    if (normalizedPartType === 'round bar' || normalizedPartType === 'shaft') return 'round';
+    // ===== FORGINGS =====
+    if (normalizedPartType === 'ring forging') return 'ring';
+    if (normalizedPartType === 'disk forging') return 'disk';
+    if (normalizedPartType === 'hub') return 'disk'; // Hub is disk-like
+    if (normalizedPartType === 'shaft') return 'round';
+    if (normalizedPartType === 'near net forging') return 'forging';
+    
+    // ===== ROLLED BILLET OR PLATE =====
+    if (normalizedPartType === 'billet') return 'billet';
+    if (normalizedPartType === 'plate') return 'plate';
+    if (normalizedPartType === 'sheet') return 'plate';
+    if (normalizedPartType === 'slab') return 'plate';
+    
+    // ===== EXTRUDED OR ROLLED BARS =====
+    if (normalizedPartType === 'round bar') return 'round';
     if (normalizedPartType === 'square bar') return 'square';
+    if (normalizedPartType === 'rectangular bar') return 'bar';
     if (normalizedPartType === 'hex bar') return 'hex';
-    if (normalizedPartType === 'rectangular bar' || normalizedPartType === 'flat bar') return 'bar';
+    if (normalizedPartType === 'flat bar') return 'bar';
     
-    // HOLLOW (TUBES/PIPES)
-    if (normalizedPartType === 'tube' || normalizedPartType === 'pipe') return 'tube';
-    if (normalizedPartType === 'sleeve' || normalizedPartType === 'bushing') return 'sleeve';
+    // ===== EXTRUDED OR ROLLED SHAPES =====
+    if (normalizedPartType === 'extrusion angle') return 'bar'; // L-profile
+    if (normalizedPartType === 'extrusion t') return 'bar'; // T-profile
+    if (normalizedPartType === 'extrusion i') return 'bar'; // I/H-beam
+    if (normalizedPartType === 'extrusion u') return 'bar'; // U/C-channel
+    if (normalizedPartType === 'extrusion channel') return 'bar';
+    if (normalizedPartType === 'z section') return 'bar';
+    if (normalizedPartType === 'tube') return 'tube';
+    if (normalizedPartType === 'pipe') return 'tube';
+    if (normalizedPartType === 'rectangular tube') return 'tube';
+    if (normalizedPartType === 'square tube') return 'tube';
+    if (normalizedPartType === 'custom profile') return 'bar';
+    
+    // ===== MACHINED PARTS =====
+    if (normalizedPartType === 'machined component') return 'billet';
+    if (normalizedPartType === 'ring') return 'ring';
+    if (normalizedPartType === 'disk') return 'disk';
+    if (normalizedPartType === 'cylinder') return 'round';
+    if (normalizedPartType === 'sphere') return 'disk'; // Use disk geometry for sphere
+    if (normalizedPartType === 'cone') return 'round'; // Use round geometry for cone
+    if (normalizedPartType === 'sleeve') return 'sleeve';
+    if (normalizedPartType === 'bushing') return 'sleeve';
+    if (normalizedPartType === 'block') return 'billet';
+    if (normalizedPartType === 'custom') return 'billet';
+    
+    // ===== FALLBACK CHECKS (for partial matches) =====
+    if (normalizedPartType.includes('plate') || normalizedPartType.includes('sheet')) return 'plate';
     if (normalizedPartType.includes('tube') || normalizedPartType.includes('pipe')) return 'tube';
-    
-    // DISKS
-    if (normalizedPartType === 'disk' || normalizedPartType === 'disk forging') return 'disk';
     if (normalizedPartType.includes('disk')) return 'disk';
-    
-    // RINGS
-    if (normalizedPartType === 'ring' || normalizedPartType === 'ring forging') return 'ring';
     if (normalizedPartType.includes('ring')) return 'ring';
-    
-    // FORGINGS
-    if (normalizedPartType === 'forging' || normalizedPartType === 'round forging stock') return 'forging';
     if (normalizedPartType.includes('forging')) return 'forging';
-    
-    // BILLETS/BLOCKS
-    if (normalizedPartType === 'billet' || normalizedPartType === 'block') return 'billet';
     if (normalizedPartType.includes('billet') || normalizedPartType.includes('block')) return 'billet';
-    
-    // EXTRUSIONS (treat as rectangular bars for now)
-    if (normalizedPartType.includes('extrusion')) return 'bar';
-    
-    // Fallback for general terms
+    if (normalizedPartType.includes('sleeve') || normalizedPartType.includes('bushing')) return 'sleeve';
     if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
     if (normalizedPartType.includes('hex')) return 'hex';
-    if (normalizedPartType.includes('bar')) return 'bar';
+    if (normalizedPartType.includes('square')) return 'square';
+    if (normalizedPartType.includes('bar') || normalizedPartType.includes('extrusion')) return 'bar';
     
     return 'plate'; // default
   };
