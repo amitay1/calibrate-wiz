@@ -56,6 +56,15 @@ export const materialDatabase: Record<MaterialType, MaterialProperties> = {
     density: 1.74,
     surfaceCondition: "Machined, protective coating acceptable if <0.05mm",
     typicalSpecs: ["ZK60A (QQ-M-31)", "AZ31B", "AZ80A", "ZE41A"]
+  },
+  custom: {
+    velocity: 5.90,
+    velocityShear: 3.20,
+    acousticImpedance: 30.0,
+    attenuation: 3.0,
+    density: 5.0,
+    surfaceCondition: "Custom material - verify surface condition",
+    typicalSpecs: ["Custom Specification"]
   }
 };
 

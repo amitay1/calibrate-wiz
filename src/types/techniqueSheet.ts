@@ -1,6 +1,6 @@
 export type StandardType = "MIL-STD-2154" | "AMS-STD-2154E" | "ASTM-E-114";
 
-export type MaterialType = "aluminum" | "steel" | "stainless_steel" | "titanium" | "magnesium";
+export type MaterialType = "aluminum" | "steel" | "stainless_steel" | "titanium" | "magnesium" | "custom";
 
 export type PartGeometry = 
   // Plates & Sheets
@@ -75,6 +75,7 @@ export interface InspectionSetupData {
   partNumber: string;
   partName: string;
   material: MaterialType | "";
+  customMaterialName?: string;
   materialSpec: string;
   partType: PartGeometry | "";
   partThickness: number;

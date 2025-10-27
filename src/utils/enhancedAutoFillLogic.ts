@@ -603,7 +603,8 @@ export function getRecommendedFrequency(thickness: number, material?: MaterialTy
       steel: 3.0,
       stainless_steel: 2.5,
       titanium: 4.5,
-      magnesium: 8.0
+      magnesium: 8.0,
+      custom: 3.0
     };
     
     const attenuation = attenuationMap[material];

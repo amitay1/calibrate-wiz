@@ -22,6 +22,7 @@ const materials: { value: MaterialType; label: string }[] = [
   { value: "stainless_steel", label: "Stainless Steel" },
   { value: "titanium", label: "Titanium" },
   { value: "magnesium", label: "Magnesium" },
+  { value: "custom", label: "Custom Material" },
 ];
 
 
@@ -57,6 +58,7 @@ const materialSpecs: Record<MaterialType, string[]> = {
   stainless_steel: ["304 (AMS 5513)", "316 (AMS 5524)", "17-4 PH (AMS 5604)", "15-5 PH (AMS 5659)", "410", "420"],
   titanium: ["Ti-6Al-4V annealed (AMS 4928)", "Ti-6Al-4V STA", "Ti-5Al-2.5Sn", "CP Ti Grade 2"],
   magnesium: ["ZK60A (QQ-M-31)", "AZ31B", "AZ80A", "ZE41A"],
+  custom: ["Custom Specification"],
 };
 
 const FieldWithHelp = ({ 
@@ -150,7 +152,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
           <Select 
             value={data.material} 
             onValueChange={(value: string) => {
-              onChange({ ...data, material: value as MaterialType, materialSpec: "" });
+              onChange({ ...data, material: value as MaterialType, materialSpec: "", customMaterialName: "" });
             }}
           >
             <SelectTrigger className="bg-background">
@@ -164,6 +166,14 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
               ))}
             </SelectContent>
           </Select>
+          {data.material === "custom" && (
+            <Input
+              value={data.customMaterialName || ""}
+              onChange={(e) => updateField("customMaterialName", e.target.value)}
+              placeholder="Enter custom material name..."
+              className="bg-background mt-2"
+            />
+          )}
           {materialProps && (
             <div className="mt-2 p-2 bg-muted/50 rounded text-xs space-y-1">
               <div><strong>Velocity:</strong> {materialProps.velocity} mm/µs (Long.) | {materialProps.velocityShear} mm/µs (Shear)</div>
