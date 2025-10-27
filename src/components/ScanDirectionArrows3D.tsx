@@ -125,29 +125,32 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
     
     // Determine position and rotation based on scan path (MIL-STD-2154)
     const waveMode = scan.waveMode.toLowerCase();
-    const path = waveMode;
     
     let position: [number, number, number] = [0, 0, 0];
     let rotation: [number, number, number] = [0, 0, 0];
     let label = `${scan.direction}: ${scan.waveMode}`;
     
-    if (path.includes('axial') || path.includes('longitudinal') || path.includes('straight')) {
+    // IMPORTANT: Check more specific patterns FIRST before general ones
+    // "Axial shear wave" contains both "axial" and "shear", so check "shear" combinations first
+    
+    if (waveMode.includes('shear') || waveMode.includes('circumferential') || 
+        waveMode.includes('clockwise') || waveMode.includes('counter')) {
+      // Shear/Circumferential - Arrows at angle (Ring Forgings style)
+      // Position on the side, angled
+      position = [Math.cos(angle) * baseRadius * 1.1, 0.3, Math.sin(angle) * baseRadius * 1.1];
+      rotation = [Math.PI / 4, -angle, Math.PI / 2]; // Angled shear direction
+      label = `${scan.direction}: Shear`;
+    } else if (waveMode.includes('radial') || waveMode.includes('od') || waveMode.includes('id')) {
+      // Radial - Horizontal arrows pointing INWARD to center (Ring Forgings style)
+      position = [Math.cos(angle) * baseRadius * 1.2, 0, Math.sin(angle) * baseRadius * 1.2];
+      rotation = [0, -angle, Math.PI / 2]; // Pointing toward center
+      label = `${scan.direction}: Radial`;
+    } else if (waveMode.includes('axial') || waveMode.includes('longitudinal') || waveMode.includes('straight')) {
       // Axial/Longitudinal - Vertical arrows pointing DOWN (as per MIL-STD)
       // Position above the part
       position = [Math.cos(angle) * baseRadius * 0.5, 0.8, Math.sin(angle) * baseRadius * 0.5];
       rotation = [Math.PI, 0, 0]; // Pointing DOWN (180° flip)
       label = `${scan.direction}: Axial`;
-    } else if (path.includes('circumferential') || path.includes('shear') || path.includes('clockwise') || path.includes('counter')) {
-      // Circumferential/Shear - Arrows at angle or tangent (Ring Forgings style)
-      // Position on the side, angled
-      position = [Math.cos(angle) * baseRadius * 1.1, 0.3, Math.sin(angle) * baseRadius * 1.1];
-      rotation = [Math.PI / 4, -angle, Math.PI / 2]; // Angled shear direction
-      label = `${scan.direction}: Shear`;
-    } else if (path.includes('radial') || path.includes('od') || path.includes('id')) {
-      // Radial - Horizontal arrows pointing INWARD to center (Ring Forgings style)
-      position = [Math.cos(angle) * baseRadius * 1.2, 0, Math.sin(angle) * baseRadius * 1.2];
-      rotation = [0, -angle, Math.PI / 2]; // Pointing toward center
-      label = `${scan.direction}: Radial`;
     } else {
       // Default - Axial pointing down
       position = [Math.cos(angle) * baseRadius * 0.5, 0.8, Math.sin(angle) * baseRadius * 0.5];
