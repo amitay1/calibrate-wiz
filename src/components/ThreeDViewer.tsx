@@ -6,6 +6,7 @@ import { RotateCcw, Navigation } from "lucide-react";
 import { useRef, useMemo } from "react";
 import * as THREE from "three";
 import { ScanDirectionArrows3D } from "./ScanDirectionArrows3D";
+import { getMaterialByMaterialType } from "./3d/ShapeMaterials";
 
 export interface ScanDirectionArrow {
   direction: string;
@@ -25,18 +26,9 @@ interface ThreeDViewerProps {
   scanDirections?: ScanDirectionArrow[];
 }
 
-const getMaterialColor = (material: MaterialType | ""): string => {
-  switch (material) {
-    case "aluminum": return "#C0C0C8";
-    case "steel": return "#808088";
-    case "titanium": return "#999999";
-    case "magnesium": return "#B0B0B8";
-    default: return "#A0A0A0";
-  }
-};
 
 // Component for hollow tube with real hole
-const HollowTube = ({ color, outerRadius, innerRadius, length }: { color: string; outerRadius: number; innerRadius: number; length: number }) => {
+const HollowTube = ({ material, outerRadius, innerRadius, length }: { material: THREE.MeshStandardMaterial; outerRadius: number; innerRadius: number; length: number }) => {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
@@ -56,15 +48,20 @@ const HollowTube = ({ color, outerRadius, innerRadius, length }: { color: string
     return geom;
   }, [outerRadius, innerRadius, length]);
   
+  // Clone material and set double-sided
+  const tubeMaterial = useMemo(() => {
+    const mat = material.clone();
+    mat.side = THREE.DoubleSide;
+    return mat;
+  }, [material]);
+  
   return (
-    <mesh castShadow receiveShadow geometry={geometry}>
-      <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} side={THREE.DoubleSide} />
-    </mesh>
+    <mesh castShadow receiveShadow geometry={geometry} material={tubeMaterial} />
   );
 };
 
 // Component for hollow ring with real hole
-const HollowRing = ({ color, outerRadius, innerRadius, height }: { color: string; outerRadius: number; innerRadius: number; height: number }) => {
+const HollowRing = ({ material, outerRadius, innerRadius, height }: { material: THREE.MeshStandardMaterial; outerRadius: number; innerRadius: number; height: number }) => {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
@@ -84,15 +81,21 @@ const HollowRing = ({ color, outerRadius, innerRadius, height }: { color: string
     return geom;
   }, [outerRadius, innerRadius, height]);
   
+  // Clone material and set double-sided
+  const ringMaterial = useMemo(() => {
+    const mat = material.clone();
+    mat.side = THREE.DoubleSide;
+    return mat;
+  }, [material]);
+  
   return (
-    <mesh castShadow receiveShadow geometry={geometry}>
-      <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} side={THREE.DoubleSide} />
-    </mesh>
+    <mesh castShadow receiveShadow geometry={geometry} material={ringMaterial} />
   );
 };
 
 const Part = ({ partType, material, dimensions = { length: 100, width: 50, thickness: 10, diameter: 50 } }: ThreeDViewerProps) => {
-  const color = getMaterialColor(material);
+  // Get metallic material based on material type (aerospace metals)
+  const metalMaterial = useMemo(() => getMaterialByMaterialType(material), [material]);
   const { length, width, thickness, diameter } = dimensions;
 
   // Scale down for better viewing (convert mm to scene units) - with dimension safety
@@ -189,27 +192,24 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     case "plate":
       // Plate - medium thickness, wide and long
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l, t * 0.6, w]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "sheet":
       // Sheet - very thin, maximum width and length
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l * 1.2, t * 0.2, w * 1.2]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "slab":
       // Slab - thicker than plate, heavy rectangular block
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l * 0.9, t * 1.5, w * 0.9]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -217,9 +217,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       // Billet - large, thick, nearly cubic block
       const billetSize = Math.max(w, t, l * 0.5);
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[billetSize, billetSize * 0.9, billetSize * 0.85]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -229,18 +228,16 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const rfsRadius = Math.max(d / 2, 0.4);
       const rfsLength = Math.max(l * 1.2, 1);
       return (
-        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
           <cylinderGeometry args={[rfsRadius, rfsRadius, rfsLength, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "rectangular_forging_stock":
       // Rectangular forging stock - thick rectangular bar
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l * 1.1, w * 0.7, t * 0.7]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -249,14 +246,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       // Near-net forging - organic, smooth irregular shape
       const forgingRadius = Math.max(d / 2, 0.5);
       return (
-        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 6]}>
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 6]} material={metalMaterial}>
           <icosahedronGeometry args={[forgingRadius, 3]} />
-          <meshStandardMaterial 
-            color={color} 
-            metalness={0.85} 
-            roughness={0.25}
-            flatShading={false}
-          />
         </mesh>
       );
     
@@ -268,13 +259,11 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const bossHeight = hubHeight * 1.5;
       return (
         <group>
-          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+          <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]} material={metalMaterial}>
             <cylinderGeometry args={[hubRadius, hubRadius, hubHeight, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
-          <mesh castShadow receiveShadow position={[0, bossHeight * 0.35, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <mesh castShadow receiveShadow position={[0, bossHeight * 0.35, 0]} rotation={[Math.PI / 2, 0, 0]} material={metalMaterial}>
             <cylinderGeometry args={[bossRadius, bossRadius * 0.9, bossHeight, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -285,13 +274,11 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const shaftLength = Math.max(l * 1.5, 1.5);
       return (
         <group>
-          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+          <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
             <cylinderGeometry args={[shaftRadius, shaftRadius, shaftLength, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
-          <mesh castShadow receiveShadow position={[shaftLength * 0.3, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <mesh castShadow receiveShadow position={[shaftLength * 0.3, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
             <cylinderGeometry args={[shaftRadius * 1.3, shaftRadius * 1.3, shaftLength * 0.2, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -302,9 +289,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const rbRadius = Math.max(d / 2, 0.2);
       const rbLength = Math.max(l, 0.8);
       return (
-        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
           <cylinderGeometry args={[rbRadius, rbRadius, rbLength, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -313,27 +299,24 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const sbSize = Math.max(w * 0.5, 0.2);
       const sbLength = Math.max(l, 0.8);
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[sbLength, sbSize, sbSize]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "rectangular_bar":
       // Rectangular bar - wider than tall
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l, t * 0.4, w * 0.6]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "flat_bar":
       // Flat bar - very wide, very thin
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l, t * 0.3, w * 0.9]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -345,7 +328,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const tubeLength = l;
       return (
         <HollowTube 
-          color={color} 
+          material={metalMaterial} 
           outerRadius={tubeOuterRadius} 
           innerRadius={tubeInnerRadius} 
           length={tubeLength} 
@@ -359,7 +342,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const pipeLength = l;
       return (
         <HollowTube 
-          color={color} 
+          material={metalMaterial} 
           outerRadius={pipeOuterRadius} 
           innerRadius={pipeInnerRadius} 
           length={pipeLength} 
@@ -374,9 +357,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const rtOuterT = t * 0.6;
       return (
         <group>
-          <mesh castShadow receiveShadow>
+          <mesh castShadow receiveShadow material={metalMaterial}>
             <boxGeometry args={[rtOuterL, rtOuterW, rtOuterT]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           <mesh castShadow receiveShadow>
             <boxGeometry args={[rtOuterL + 0.01, rtOuterW - rtWall * 2, rtOuterT - rtWall * 2]} />
@@ -392,9 +374,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const stWall = 0.05;
       return (
         <group>
-          <mesh castShadow receiveShadow>
+          <mesh castShadow receiveShadow material={metalMaterial}>
             <boxGeometry args={[stLength, stSize, stSize]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           <mesh castShadow receiveShadow>
             <boxGeometry args={[stLength + 0.01, stSize - stWall * 2, stSize - stWall * 2]} />
@@ -411,7 +392,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const ringHeight = Math.max(w * 0.5, 0.3);
       return (
         <HollowRing 
-          color={color} 
+          material={metalMaterial} 
           outerRadius={ringOuterRadius} 
           innerRadius={ringInnerRadius} 
           height={ringHeight} 
@@ -423,9 +404,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const diskRadius = Math.max(d / 2, 0.5);
       const diskHeight = Math.max(t, 0.1);
       return (
-        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]} material={metalMaterial}>
           <cylinderGeometry args={[diskRadius, diskRadius, diskHeight, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -435,9 +415,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const cylRadius = Math.max(d / 2, 0.3);
       const cylHeight = Math.max(w, 0.5);
       return (
-        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]} material={metalMaterial}>
           <cylinderGeometry args={[cylRadius, cylRadius, cylHeight, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -445,9 +424,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       // Sphere - perfect sphere
       const sphereRadius = Math.max(d / 2, 0.4);
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <sphereGeometry args={[sphereRadius, 32, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -456,9 +434,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const coneRadius = Math.max(d / 2, 0.3);
       const coneHeight = Math.max(w, 0.6);
       return (
-        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]} material={metalMaterial}>
           <coneGeometry args={[coneRadius, coneHeight, 32]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -467,9 +444,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const hexRadius = Math.max(w * 0.5, 0.2);
       const hexHeight = Math.max(l, 0.5);
       return (
-        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
           <cylinderGeometry args={[hexRadius, hexRadius, hexHeight, 6]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -480,7 +456,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const sleeveLength = Math.max(l * 0.7, w * 0.8);
       return (
         <HollowTube 
-          color={color} 
+          material={metalMaterial} 
           outerRadius={sleeveOuterRadius} 
           innerRadius={sleeveInnerRadius} 
           length={sleeveLength} 
@@ -494,7 +470,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const bushingLength = Math.min(l * 0.4, w * 0.5);
       return (
         <HollowTube 
-          color={color} 
+          material={metalMaterial} 
           outerRadius={bushingOuterRadius} 
           innerRadius={bushingInnerRadius} 
           length={bushingLength} 
@@ -505,9 +481,8 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       // Block - compact rectangular
       const blockSize = Math.min(l, w, t);
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[blockSize, blockSize * 0.8, blockSize * 0.9]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
@@ -515,13 +490,11 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       // Machined component - complex stepped shape
       return (
         <group>
-          <mesh castShadow receiveShadow>
+          <mesh castShadow receiveShadow material={metalMaterial}>
             <boxGeometry args={[l * 0.7, w * 0.6, t * 0.6]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
-          <mesh castShadow receiveShadow position={[l * 0.2, 0, 0]}>
+          <mesh castShadow receiveShadow position={[l * 0.2, 0, 0]} material={metalMaterial}>
             <boxGeometry args={[l * 0.3, w * 0.8, t * 0.8]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -535,14 +508,12 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       return (
         <group>
           {/* Horizontal flange */}
-          <mesh castShadow receiveShadow position={[0, -angleWidth/2 + angleThickness/2, 0]}>
+          <mesh castShadow receiveShadow position={[0, -angleWidth/2 + angleThickness/2, 0]} material={metalMaterial}>
             <boxGeometry args={[angleLength, angleThickness, angleWidth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Vertical flange */}
-          <mesh castShadow receiveShadow position={[0, 0, -angleWidth/2 + angleThickness/2]}>
+          <mesh castShadow receiveShadow position={[0, 0, -angleWidth/2 + angleThickness/2]} material={metalMaterial}>
             <boxGeometry args={[angleLength, angleWidth, angleThickness]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -556,14 +527,12 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       return (
         <group>
           {/* Vertical web */}
-          <mesh castShadow receiveShadow position={[0, 0, 0]}>
+          <mesh castShadow receiveShadow position={[0, 0, 0]} material={metalMaterial}>
             <boxGeometry args={[tLength, tHeight, tWebThickness]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Top flange */}
-          <mesh castShadow receiveShadow position={[0, tHeight/2, 0]}>
+          <mesh castShadow receiveShadow position={[0, tHeight/2, 0]} material={metalMaterial}>
             <boxGeometry args={[tLength, tWebThickness, tFlangeWidth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -578,19 +547,16 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       return (
         <group>
           {/* Vertical web */}
-          <mesh castShadow receiveShadow>
+          <mesh castShadow receiveShadow material={metalMaterial}>
             <boxGeometry args={[iLength, iHeight, iWebThickness]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Top flange */}
-          <mesh castShadow receiveShadow position={[0, iHeight/2, 0]}>
+          <mesh castShadow receiveShadow position={[0, iHeight/2, 0]} material={metalMaterial}>
             <boxGeometry args={[iLength, iFlangeThickness, iFlangeWidth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Bottom flange */}
-          <mesh castShadow receiveShadow position={[0, -iHeight/2, 0]}>
+          <mesh castShadow receiveShadow position={[0, -iHeight/2, 0]} material={metalMaterial}>
             <boxGeometry args={[iLength, iFlangeThickness, iFlangeWidth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -605,19 +571,16 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       return (
         <group>
           {/* Back web */}
-          <mesh castShadow receiveShadow position={[0, 0, -uFlangeDepth/2]}>
+          <mesh castShadow receiveShadow position={[0, 0, -uFlangeDepth/2]} material={metalMaterial}>
             <boxGeometry args={[uLength, uHeight, uWebThickness]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Left flange */}
-          <mesh castShadow receiveShadow position={[0, uHeight/2, 0]}>
+          <mesh castShadow receiveShadow position={[0, uHeight/2, 0]} material={metalMaterial}>
             <boxGeometry args={[uLength, uWebThickness, uFlangeDepth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Right flange */}
-          <mesh castShadow receiveShadow position={[0, -uHeight/2, 0]}>
+          <mesh castShadow receiveShadow position={[0, -uHeight/2, 0]} material={metalMaterial}>
             <boxGeometry args={[uLength, uWebThickness, uFlangeDepth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -631,19 +594,16 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       return (
         <group>
           {/* Vertical web */}
-          <mesh castShadow receiveShadow>
+          <mesh castShadow receiveShadow material={metalMaterial}>
             <boxGeometry args={[zLength, zHeight, zThickness]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Top flange (extends forward) */}
-          <mesh castShadow receiveShadow position={[0, zHeight/2, zFlangeWidth/2]}>
+          <mesh castShadow receiveShadow position={[0, zHeight/2, zFlangeWidth/2]} material={metalMaterial}>
             <boxGeometry args={[zLength, zThickness, zFlangeWidth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
           {/* Bottom flange (extends backward) */}
-          <mesh castShadow receiveShadow position={[0, -zHeight/2, -zFlangeWidth/2]}>
+          <mesh castShadow receiveShadow position={[0, -zHeight/2, -zFlangeWidth/2]} material={metalMaterial}>
             <boxGeometry args={[zLength, zThickness, zFlangeWidth]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
           </mesh>
         </group>
       );
@@ -653,26 +613,23 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
       const customLength = l * 1.2;
       const customSize = Math.max(w * 0.5, t * 0.5);
       return (
-        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]}>
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
           <cylinderGeometry args={[customSize, customSize, customLength, 8]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     case "custom":
       // Custom - generic irregular shape
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <dodecahedronGeometry args={[Math.max(d / 3, 0.4), 0]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
     
     default:
       return (
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow material={metalMaterial}>
           <boxGeometry args={[l, t, w]} />
-          <meshStandardMaterial color={color} metalness={0.9} roughness={0.3} />
         </mesh>
       );
   }

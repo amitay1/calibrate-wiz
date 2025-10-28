@@ -59,7 +59,78 @@ export const ShapeMaterials = {
 };
 
 /**
- * Get material by part type
+ * Material colors for different metal types (MIL-STD-2154 compliant)
+ */
+export const MaterialTypeColors = {
+  // Aluminum alloys - Light blue-gray (brushed aluminum)
+  aluminum: '#A8B8C8',
+  aluminium: '#A8B8C8',
+  'aluminum-alloy': '#A8B8C8',
+  '7075-t6': '#A8B8C8',
+  '2024-t3': '#A8B8C8',
+  '6061-t6': '#A8B8C8',
+  
+  // Titanium - Medium gray with slight blue tint (metallic sheen)
+  titanium: '#9CA3AF',
+  'ti-6al-4v': '#9CA3AF',
+  
+  // Steel - Dark gray (polished steel)
+  steel: '#6B7280',
+  'stainless-steel': '#6B7280',
+  'carbon-steel': '#6B7280',
+  '4340-steel': '#6B7280',
+  
+  // Magnesium - Light gray (matte)
+  magnesium: '#D4D4D8',
+  'magnesium-alloy': '#D4D4D8',
+  
+  // Nickel alloys - Warm gray
+  inconel: '#8B8680',
+  'nickel-alloy': '#8B8680',
+  
+  // Copper alloys - Reddish copper
+  copper: '#B87333',
+  bronze: '#CD7F32',
+  brass: '#B5A642',
+  
+  // Default metallic gray
+  default: '#71717a',
+};
+
+/**
+ * Get material by material type (aerospace metals)
+ */
+export const getMaterialByMaterialType = (materialType?: string): THREE.MeshStandardMaterial => {
+  if (!materialType) {
+    return createMetalMaterial(MaterialTypeColors.default, 0.4, 0.7);
+  }
+  
+  const normalizedMaterial = materialType.toLowerCase().replace(/\s+/g, '-');
+  const color = MaterialTypeColors[normalizedMaterial as keyof typeof MaterialTypeColors] || MaterialTypeColors.default;
+  
+  // Adjust roughness and metalness based on material type
+  let roughness = 0.3;
+  let metalness = 0.9;
+  
+  if (normalizedMaterial.includes('aluminum') || normalizedMaterial.includes('aluminium')) {
+    roughness = 0.25; // Brushed aluminum is smoother
+    metalness = 0.95;
+  } else if (normalizedMaterial.includes('titanium')) {
+    roughness = 0.3; // Titanium has slight texture
+    metalness = 0.9;
+  } else if (normalizedMaterial.includes('steel') || normalizedMaterial.includes('stainless')) {
+    roughness = 0.2; // Polished steel is very smooth
+    metalness = 0.95;
+  } else if (normalizedMaterial.includes('magnesium')) {
+    roughness = 0.4; // Magnesium is more matte
+    metalness = 0.85;
+  }
+  
+  return createMetalMaterial(color, roughness, metalness);
+};
+
+/**
+ * Get material by part type (legacy - for fallback)
  */
 export const getMaterialByType = (partType: string): THREE.MeshStandardMaterial => {
   const materialMap: { [key: string]: () => THREE.MeshStandardMaterial } = {
@@ -82,20 +153,20 @@ export const getMaterialByType = (partType: string): THREE.MeshStandardMaterial 
     ring_forging: ShapeMaterials.ringForgingPink,
     forging: ShapeMaterials.forgingRed,
     round_forging_stock: ShapeMaterials.roundForgingRed,
-    rectangular_forging_stock: ShapeMaterials.forgingRed, // Added mapping
+    rectangular_forging_stock: ShapeMaterials.forgingRed,
     billet: ShapeMaterials.billetYellow,
     block: ShapeMaterials.blockOrange,
-    rectangular_tube: ShapeMaterials.tubeGray, // Added mapping
-    square_tube: ShapeMaterials.tubeGray, // Added mapping
-    hub: ShapeMaterials.diskForgingTeal, // Added mapping
-    near_net_forging: ShapeMaterials.forgingRed, // Added mapping
-    z_section: ShapeMaterials.extrusionCyan, // Added mapping
-    custom_profile: ShapeMaterials.extrusionCyan, // Added mapping
-    machined_component: ShapeMaterials.genericGray, // Added mapping
-    cylinder: ShapeMaterials.roundBarPurple, // Added mapping
-    sphere: ShapeMaterials.forgingRed, // Added mapping
-    cone: ShapeMaterials.blockOrange, // Added mapping
-    custom: ShapeMaterials.genericGray, // Added mapping
+    rectangular_tube: ShapeMaterials.tubeGray,
+    square_tube: ShapeMaterials.tubeGray,
+    hub: ShapeMaterials.diskForgingTeal,
+    near_net_forging: ShapeMaterials.forgingRed,
+    z_section: ShapeMaterials.extrusionCyan,
+    custom_profile: ShapeMaterials.extrusionCyan,
+    machined_component: ShapeMaterials.genericGray,
+    cylinder: ShapeMaterials.roundBarPurple,
+    sphere: ShapeMaterials.forgingRed,
+    cone: ShapeMaterials.blockOrange,
+    custom: ShapeMaterials.genericGray,
     extrusion_l: ShapeMaterials.extrusionCyan,
     extrusion_t: ShapeMaterials.extrusionCyan,
     extrusion_i: ShapeMaterials.extrusionCyan,
