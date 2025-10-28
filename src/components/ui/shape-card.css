@@ -63,18 +63,36 @@
 
 /* טקסטים */
 .card-title{
-  position:absolute; left:12px; bottom:12px; padding:8px 14px; border-radius:10px;
-  background:hsl(var(--card)); color:hsl(var(--card-foreground));
+  position:absolute; 
+  left:50%; 
+  bottom:12px; 
+  padding:8px 14px; 
+  border-radius:10px;
+  background:hsl(var(--card)); 
+  color:hsl(var(--card-foreground));
   font:600 13px/1.2 Inter, system-ui;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--halo) 35%, transparent);
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
 }
 .card-description{
-  position:absolute; left:12px; bottom:46px; padding:4px 10px; border-radius:6px;
-  background:hsl(var(--muted)/.8); color:hsl(var(--muted-foreground));
-  font-size:11px; line-height:1.2; opacity:0; transform:translateY(4px);
+  position:absolute; 
+  left:50%; 
+  bottom:46px; 
+  padding:4px 10px; 
+  border-radius:6px;
+  background:hsl(var(--muted)/.8); 
+  color:hsl(var(--muted-foreground));
+  font-size:11px; 
+  line-height:1.2; 
+  opacity:0; 
+  transform:translateX(-50%) translateY(4px);
   transition: opacity .16s ease, transform .16s ease;
+  text-align: center;
+  white-space: nowrap;
 }
-.shape-card:hover .card-description{ opacity:1; transform:translateY(0); }
+.shape-card:hover .card-description{ opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* Selected */
 .shape-card.selected{
