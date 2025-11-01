@@ -125,11 +125,11 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     if (normalizedPartType === 'rectangular forging stock') return 'rectangular_forging_stock';
     
     // ===== FORGINGS =====
-    if (normalizedPartType === 'ring forging') return 'ring';
-    if (normalizedPartType === 'disk forging') return 'disk';
+    if (normalizedPartType === 'ring forging') return 'ring_forging';
+    if (normalizedPartType === 'disk forging') return 'disk_forging';
     if (normalizedPartType === 'hub') return 'hub';
     if (normalizedPartType === 'shaft') return 'shaft';
-    if (normalizedPartType === 'near net forging') return 'forging';
+    if (normalizedPartType === 'near net forging') return 'near_net_forging';
     
     // ===== ROLLED BILLET OR PLATE =====
     if (normalizedPartType === 'billet') return 'billet';
@@ -141,7 +141,7 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     if (normalizedPartType === 'round bar') return 'round_bar';
     if (normalizedPartType === 'square bar') return 'square_bar';
     if (normalizedPartType === 'rectangular bar') return 'rectangular_bar';
-    if (normalizedPartType === 'hex bar') return 'hex';
+    if (normalizedPartType === 'hex bar') return 'hex_bar';
     if (normalizedPartType === 'flat bar') return 'flat_bar';
     
     // ===== EXTRUDED OR ROLLED SHAPES =====
@@ -159,28 +159,38 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
     
     // ===== MACHINED PARTS =====
     if (normalizedPartType === 'machined component') return 'machined_component';
+    if (normalizedPartType === 'machined ring') return 'ring';
+    if (normalizedPartType === 'machined disk') return 'disk';
+    if (normalizedPartType === 'machined cylinder') return 'cylinder';
+    if (normalizedPartType === 'machined sphere') return 'sphere';
+    if (normalizedPartType === 'machined cone') return 'cone';
+    if (normalizedPartType === 'sleeve') return 'sleeve';
+    if (normalizedPartType === 'bushing') return 'bushing';
+    if (normalizedPartType === 'block') return 'block';
+    if (normalizedPartType === 'custom machined') return 'custom';
     if (normalizedPartType === 'ring') return 'ring';
     if (normalizedPartType === 'disk') return 'disk';
     if (normalizedPartType === 'cylinder') return 'cylinder';
     if (normalizedPartType === 'sphere') return 'sphere';
     if (normalizedPartType === 'cone') return 'cone';
-    if (normalizedPartType === 'sleeve') return 'sleeve';
-    if (normalizedPartType === 'bushing') return 'bushing';
-    if (normalizedPartType === 'block') return 'block';
     if (normalizedPartType === 'custom') return 'custom';
     
     // ===== FALLBACK CHECKS (for partial matches) =====
+    if (normalizedPartType.includes('disk forging')) return 'disk_forging';
+    if (normalizedPartType.includes('ring forging')) return 'ring_forging';
+    if (normalizedPartType.includes('near net forging')) return 'near_net_forging';
     if (normalizedPartType.includes('plate') || normalizedPartType.includes('sheet')) return 'plate';
     if (normalizedPartType.includes('tube') || normalizedPartType.includes('pipe')) return 'tube';
     if (normalizedPartType.includes('disk')) return 'disk';
     if (normalizedPartType.includes('ring')) return 'ring';
-    if (normalizedPartType.includes('forging')) return 'forging';
+    if (normalizedPartType.includes('forging')) return 'near_net_forging';
     if (normalizedPartType.includes('billet') || normalizedPartType.includes('block')) return 'billet';
     if (normalizedPartType.includes('sleeve') || normalizedPartType.includes('bushing')) return 'sleeve';
-    if (normalizedPartType.includes('round') || normalizedPartType.includes('cylinder')) return 'round';
-    if (normalizedPartType.includes('hex')) return 'hex';
-    if (normalizedPartType.includes('square')) return 'square';
-    if (normalizedPartType.includes('bar') || normalizedPartType.includes('extrusion')) return 'bar';
+    if (normalizedPartType.includes('round bar') || normalizedPartType.includes('cylinder')) return 'round_bar';
+    if (normalizedPartType.includes('hex')) return 'hex_bar';
+    if (normalizedPartType.includes('square')) return 'square_bar';
+    if (normalizedPartType.includes('bar')) return 'rectangular_bar';
+    if (normalizedPartType.includes('extrusion')) return 'custom_profile';
     
     return 'plate'; // default
   };
@@ -439,13 +449,46 @@ const Part = ({ partType, material, dimensions = { length: 100, width: 50, thick
         </mesh>
       );
     
-    case "hex":
+    case "hex_bar":
       // Hex bar - hexagonal prism
       const hexRadius = Math.max(w * 0.5, 0.2);
       const hexHeight = Math.max(l, 0.5);
       return (
         <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 2]} material={metalMaterial}>
           <cylinderGeometry args={[hexRadius, hexRadius, hexHeight, 6]} />
+        </mesh>
+      );
+    
+    case "disk_forging":
+      // Disk forging - thicker and more robust than regular disk
+      const dfRadius = Math.max(d / 2, 0.5);
+      const dfHeight = Math.max(t * 1.2, 0.15);
+      return (
+        <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]} material={metalMaterial}>
+          <cylinderGeometry args={[dfRadius, dfRadius * 0.95, dfHeight, 32]} />
+        </mesh>
+      );
+    
+    case "ring_forging":
+      // Ring forging - thicker and more substantial than regular ring
+      const rfOuterRadius = Math.max(d / 2, 0.5);
+      const rfInnerRadius = Math.max((d / 2) - t * 1.2, 0.25);
+      const rfHeight = Math.max(w * 0.6, 0.35);
+      return (
+        <HollowRing 
+          material={metalMaterial} 
+          outerRadius={rfOuterRadius} 
+          innerRadius={rfInnerRadius} 
+          height={rfHeight} 
+        />
+      );
+    
+    case "near_net_forging":
+      // Near-net forging - organic irregular shape
+      const nnfRadius = Math.max(d / 2, 0.5);
+      return (
+        <mesh castShadow receiveShadow rotation={[0, 0, Math.PI / 6]} material={metalMaterial}>
+          <icosahedronGeometry args={[nnfRadius * 1.1, 3]} />
         </mesh>
       );
     
