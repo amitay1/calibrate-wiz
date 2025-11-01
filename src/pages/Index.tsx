@@ -39,8 +39,22 @@ const Index = () => {
   const [standard, setStandard] = useState<StandardType>("AMS-STD-2154E");
   const [activeTab, setActiveTab] = useState("setup");
   const [reportMode, setReportMode] = useState<"Technique" | "Report">("Technique");
+  const [isSplitMode, setIsSplitMode] = useState(false);
+  const [activePart, setActivePart] = useState<"A" | "B">("A");
   
   const [inspectionSetup, setInspectionSetup] = useState<InspectionSetupData>({
+    partNumber: "",
+    partName: "",
+    material: "",
+    materialSpec: "",
+    partType: "",
+    partThickness: 25.0,
+    partLength: 100.0,
+    partWidth: 50.0,
+    diameter: 0,
+  });
+
+  const [inspectionSetupB, setInspectionSetupB] = useState<InspectionSetupData>({
     partNumber: "",
     partName: "",
     material: "",
@@ -66,7 +80,31 @@ const Index = () => {
     backSurfaceResolution: 0.05,
   });
 
+  const [equipmentB, setEquipmentB] = useState<EquipmentData>({
+    manufacturer: "",
+    model: "",
+    serialNumber: "",
+    frequency: "5.0",
+    transducerType: "",
+    transducerDiameter: 0.5,
+    couplant: "",
+    verticalLinearity: 95,
+    horizontalLinearity: 85,
+    entrySurfaceResolution: 0.125,
+    backSurfaceResolution: 0.05,
+  });
+
   const [calibration, setCalibration] = useState<CalibrationData>({
+    standardType: "",
+    referenceMaterial: "",
+    fbhSizes: "",
+    metalTravelDistance: 0,
+    blockDimensions: "",
+    blockSerialNumber: "",
+    lastCalibrationDate: "",
+  });
+
+  const [calibrationB, setCalibrationB] = useState<CalibrationData>({
     standardType: "",
     referenceMaterial: "",
     fbhSizes: "",
@@ -89,7 +127,30 @@ const Index = () => {
     alarmGateSettings: "",
   });
 
+  const [scanParametersB, setScanParametersB] = useState<ScanParametersData>({
+    scanMethod: "",
+    scanType: "",
+    scanSpeed: 100,
+    scanIndex: 70,
+    coverage: 100,
+    scanPattern: "",
+    waterPath: 0,
+    pulseRepetitionRate: 1000,
+    gainSettings: "",
+    alarmGateSettings: "",
+  });
+
   const [acceptanceCriteria, setAcceptanceCriteria] = useState<AcceptanceCriteriaData>({
+    acceptanceClass: "",
+    singleDiscontinuity: "",
+    multipleDiscontinuities: "",
+    linearDiscontinuity: "",
+    backReflectionLoss: 50,
+    noiseLevel: "",
+    specialRequirements: "",
+  });
+
+  const [acceptanceCriteriaB, setAcceptanceCriteriaB] = useState<AcceptanceCriteriaData>({
     acceptanceClass: "",
     singleDiscontinuity: "",
     multipleDiscontinuities: "",
@@ -112,7 +173,24 @@ const Index = () => {
     approvalRequired: false,
   });
 
+  const [documentationB, setDocumentationB] = useState<DocumentationData>({
+    inspectorName: "",
+    inspectorCertification: "",
+    inspectorLevel: "",
+    certifyingOrganization: "",
+    inspectionDate: new Date().toISOString().split('T')[0],
+    procedureNumber: "",
+    drawingReference: "",
+    revision: "A",
+    additionalNotes: "",
+    approvalRequired: false,
+  });
+
   const [scanDetails, setScanDetails] = useState<ScanDetailsData>({
+    scanDetails: []
+  });
+
+  const [scanDetailsB, setScanDetailsB] = useState<ScanDetailsData>({
     scanDetails: []
   });
 
@@ -148,18 +226,30 @@ const Index = () => {
   useEffect(() => {
     if (standard && standardRules[standard]) {
       const rules = standardRules[standard];
-      setAcceptanceCriteria(prev => ({
-        ...prev,
-        acceptanceClass: prev.acceptanceClass || rules.defaultAcceptanceClass
-      }));
-      setScanParameters(prev => ({
-        ...prev,
-        coverage: prev.coverage === 100 ? rules.scanCoverageDefault : prev.coverage
-      }));
+      
+      if (!isSplitMode || activePart === "A") {
+        setAcceptanceCriteria(prev => ({
+          ...prev,
+          acceptanceClass: prev.acceptanceClass || rules.defaultAcceptanceClass
+        }));
+        setScanParameters(prev => ({
+          ...prev,
+          coverage: prev.coverage === 100 ? rules.scanCoverageDefault : prev.coverage
+        }));
+      } else {
+        setAcceptanceCriteriaB(prev => ({
+          ...prev,
+          acceptanceClass: prev.acceptanceClass || rules.defaultAcceptanceClass
+        }));
+        setScanParametersB(prev => ({
+          ...prev,
+          coverage: prev.coverage === 100 ? rules.scanCoverageDefault : prev.coverage
+        }));
+      }
     }
-  }, [standard]);
+  }, [standard, isSplitMode, activePart]);
   
-  // Auto-fill logic when material changes
+  // Auto-fill logic when material changes - Part A
   useEffect(() => {
     if (inspectionSetup.material && inspectionSetup.partThickness) {
       const recommendedFreq = getRecommendedFrequency(
@@ -182,7 +272,30 @@ const Index = () => {
     }
   }, [inspectionSetup.material, inspectionSetup.partThickness, equipment.frequency]);
   
-  // Auto-fill couplant when transducer type changes
+  // Auto-fill logic when material changes - Part B
+  useEffect(() => {
+    if (isSplitMode && inspectionSetupB.material && inspectionSetupB.partThickness) {
+      const recommendedFreq = getRecommendedFrequency(
+        inspectionSetupB.partThickness, 
+        inspectionSetupB.material as MaterialType
+      );
+      
+      if (equipmentB.frequency === "5.0" || !equipmentB.frequency) {
+        setEquipmentB(prev => ({
+          ...prev,
+          frequency: recommendedFreq
+        }));
+      }
+      
+      const metalTravel = calculateMetalTravel(inspectionSetupB.partThickness);
+      setCalibrationB(prev => ({
+        ...prev,
+        metalTravelDistance: prev.metalTravelDistance === 0 ? metalTravel : prev.metalTravelDistance
+      }));
+    }
+  }, [isSplitMode, inspectionSetupB.material, inspectionSetupB.partThickness, equipmentB.frequency]);
+  
+  // Auto-fill couplant when transducer type changes - Part A
   useEffect(() => {
     if (equipment.transducerType && inspectionSetup.material) {
       const recommendedCouplant = getCouplantRecommendation(
@@ -196,11 +309,81 @@ const Index = () => {
       }));
     }
   }, [equipment.transducerType, inspectionSetup.material]);
+  
+  // Auto-fill couplant when transducer type changes - Part B
+  useEffect(() => {
+    if (isSplitMode && equipmentB.transducerType && inspectionSetupB.material) {
+      const recommendedCouplant = getCouplantRecommendation(
+        equipmentB.transducerType,
+        inspectionSetupB.material as MaterialType
+      );
+      
+      setEquipmentB(prev => ({
+        ...prev,
+        couplant: prev.couplant || recommendedCouplant
+      }));
+    }
+  }, [isSplitMode, equipmentB.transducerType, inspectionSetupB.material]);
+
+  // Copy Part A data to Part B
+  const copyPartAToB = () => {
+    setInspectionSetupB({ ...inspectionSetup });
+    setEquipmentB({ ...equipment });
+    setCalibrationB({ ...calibration });
+    setScanParametersB({ ...scanParameters });
+    setAcceptanceCriteriaB({ ...acceptanceCriteria });
+    setDocumentationB({ ...documentation });
+    setScanDetailsB({ ...scanDetails });
+    toast.success("חלק A הועתק לחלק B");
+  };
+
+  // Get current data based on active part
+  const getCurrentData = () => {
+    if (!isSplitMode || activePart === "A") {
+      return {
+        inspectionSetup,
+        equipment,
+        calibration,
+        scanParameters,
+        acceptanceCriteria,
+        documentation,
+        scanDetails,
+        setInspectionSetup,
+        setEquipment,
+        setCalibration,
+        setScanParameters,
+        setAcceptanceCriteria,
+        setDocumentation,
+        setScanDetails,
+      };
+    } else {
+      return {
+        inspectionSetup: inspectionSetupB,
+        equipment: equipmentB,
+        calibration: calibrationB,
+        scanParameters: scanParametersB,
+        acceptanceCriteria: acceptanceCriteriaB,
+        documentation: documentationB,
+        scanDetails: scanDetailsB,
+        setInspectionSetup: setInspectionSetupB,
+        setEquipment: setEquipmentB,
+        setCalibration: setCalibrationB,
+        setScanParameters: setScanParametersB,
+        setAcceptanceCriteria: setAcceptanceCriteriaB,
+        setDocumentation: setDocumentationB,
+        setScanDetails: setScanDetailsB,
+      };
+    }
+  };
+
+  const currentData = getCurrentData();
 
   // Auto-save to localStorage
   useEffect(() => {
     const data = {
       standard,
+      isSplitMode,
+      activePart,
       inspectionSetup,
       equipment,
       calibration,
@@ -208,9 +391,16 @@ const Index = () => {
       acceptanceCriteria,
       documentation,
       scanDetails,
+      inspectionSetupB,
+      equipmentB,
+      calibrationB,
+      scanParametersB,
+      acceptanceCriteriaB,
+      documentationB,
+      scanDetailsB,
     };
     localStorage.setItem("techniqueSheet", JSON.stringify(data));
-  }, [standard, inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation, scanDetails]);
+  }, [standard, isSplitMode, activePart, inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation, scanDetails, inspectionSetupB, equipmentB, calibrationB, scanParametersB, acceptanceCriteriaB, documentationB, scanDetailsB]);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -219,6 +409,8 @@ const Index = () => {
       try {
         const data = JSON.parse(saved);
         setStandard(data.standard || "AMS-STD-2154E");
+        setIsSplitMode(data.isSplitMode || false);
+        setActivePart(data.activePart || "A");
         setInspectionSetup(data.inspectionSetup || inspectionSetup);
         setEquipment(data.equipment || equipment);
         setCalibration(data.calibration || calibration);
@@ -226,6 +418,13 @@ const Index = () => {
         setAcceptanceCriteria(data.acceptanceCriteria || acceptanceCriteria);
         setDocumentation(data.documentation || documentation);
         setScanDetails(data.scanDetails || { scanDetails: [] });
+        setInspectionSetupB(data.inspectionSetupB || inspectionSetupB);
+        setEquipmentB(data.equipmentB || equipmentB);
+        setCalibrationB(data.calibrationB || calibrationB);
+        setScanParametersB(data.scanParametersB || scanParametersB);
+        setAcceptanceCriteriaB(data.acceptanceCriteriaB || acceptanceCriteriaB);
+        setDocumentationB(data.documentationB || documentationB);
+        setScanDetailsB(data.scanDetailsB || { scanDetails: [] });
       } catch (error) {
         console.error("Failed to load saved data", error);
       }
@@ -262,43 +461,43 @@ const Index = () => {
     let completed = 0;
     let total = 35;
 
-    if (inspectionSetup.partNumber) completed++;
-    if (inspectionSetup.partName) completed++;
-    if (inspectionSetup.material) completed++;
-    if (inspectionSetup.materialSpec) completed++;
-    if (inspectionSetup.partType) completed++;
-    if (inspectionSetup.partThickness >= 6.35) completed++;
+    if (currentData.inspectionSetup.partNumber) completed++;
+    if (currentData.inspectionSetup.partName) completed++;
+    if (currentData.inspectionSetup.material) completed++;
+    if (currentData.inspectionSetup.materialSpec) completed++;
+    if (currentData.inspectionSetup.partType) completed++;
+    if (currentData.inspectionSetup.partThickness >= 6.35) completed++;
     
-    if (equipment.manufacturer) completed++;
-    if (equipment.model) completed++;
-    if (equipment.frequency) completed++;
-    if (equipment.transducerType) completed++;
-    if (equipment.couplant) completed++;
-    if (equipment.verticalLinearity) completed++;
-    if (equipment.horizontalLinearity) completed++;
-    if (equipment.transducerDiameter) completed++;
+    if (currentData.equipment.manufacturer) completed++;
+    if (currentData.equipment.model) completed++;
+    if (currentData.equipment.frequency) completed++;
+    if (currentData.equipment.transducerType) completed++;
+    if (currentData.equipment.couplant) completed++;
+    if (currentData.equipment.verticalLinearity) completed++;
+    if (currentData.equipment.horizontalLinearity) completed++;
+    if (currentData.equipment.transducerDiameter) completed++;
 
-    if (calibration.standardType) completed++;
-    if (calibration.referenceMaterial) completed++;
-    if (calibration.fbhSizes) completed++;
-    if (calibration.metalTravelDistance) completed++;
+    if (currentData.calibration.standardType) completed++;
+    if (currentData.calibration.referenceMaterial) completed++;
+    if (currentData.calibration.fbhSizes) completed++;
+    if (currentData.calibration.metalTravelDistance) completed++;
 
-    if (scanParameters.scanMethod) completed++;
-    if (scanParameters.scanType) completed++;
-    if (scanParameters.scanSpeed) completed++;
-    if (scanParameters.scanIndex) completed++;
-    if (scanParameters.coverage) completed++;
-    if (scanParameters.scanPattern) completed++;
+    if (currentData.scanParameters.scanMethod) completed++;
+    if (currentData.scanParameters.scanType) completed++;
+    if (currentData.scanParameters.scanSpeed) completed++;
+    if (currentData.scanParameters.scanIndex) completed++;
+    if (currentData.scanParameters.coverage) completed++;
+    if (currentData.scanParameters.scanPattern) completed++;
 
-    if (acceptanceCriteria.acceptanceClass) completed++;
-    if (acceptanceCriteria.singleDiscontinuity) completed++;
-    if (acceptanceCriteria.multipleDiscontinuities) completed++;
-    if (acceptanceCriteria.linearDiscontinuity) completed++;
-    if (acceptanceCriteria.backReflectionLoss) completed++;
-    if (acceptanceCriteria.noiseLevel) completed++;
+    if (currentData.acceptanceCriteria.acceptanceClass) completed++;
+    if (currentData.acceptanceCriteria.singleDiscontinuity) completed++;
+    if (currentData.acceptanceCriteria.multipleDiscontinuities) completed++;
+    if (currentData.acceptanceCriteria.linearDiscontinuity) completed++;
+    if (currentData.acceptanceCriteria.backReflectionLoss) completed++;
+    if (currentData.acceptanceCriteria.noiseLevel) completed++;
 
-    if (documentation.inspectorName) completed++;
-    if (documentation.inspectorCertification) completed++;
+    if (currentData.documentation.inspectorName) completed++;
+    if (currentData.documentation.inspectorCertification) completed++;
     if (documentation.inspectorLevel) completed++;
     if (documentation.inspectionDate) completed++;
     if (documentation.revision) completed++;
@@ -319,16 +518,42 @@ const Index = () => {
   const handleExportPDF = () => {
     try {
       if (reportMode === "Technique") {
-        exportTechniqueSheetToPDF({
-          standard,
-          inspectionSetup,
-          equipment,
-          calibration,
-          scanParameters,
-          acceptanceCriteria,
-          documentation,
-        });
-        toast.success("Technique Sheet PDF exported successfully!");
+        if (isSplitMode) {
+          // Export Part A
+          exportTechniqueSheetToPDF({
+            standard,
+            inspectionSetup,
+            equipment,
+            calibration,
+            scanParameters,
+            acceptanceCriteria,
+            documentation,
+          }, "Part_A");
+          
+          // Export Part B
+          exportTechniqueSheetToPDF({
+            standard,
+            inspectionSetup: inspectionSetupB,
+            equipment: equipmentB,
+            calibration: calibrationB,
+            scanParameters: scanParametersB,
+            acceptanceCriteria: acceptanceCriteriaB,
+            documentation: documentationB,
+          }, "Part_B");
+          
+          toast.success("שני חלקי הטכניקה שיט יוצאו בהצלחה!");
+        } else {
+          exportTechniqueSheetToPDF({
+            standard,
+            inspectionSetup,
+            equipment,
+            calibration,
+            scanParameters,
+            acceptanceCriteria,
+            documentation,
+          });
+          toast.success("Technique Sheet PDF exported successfully!");
+        }
       } else {
         exportInspectionReportToPDF(
           inspectionReport,
@@ -380,6 +605,11 @@ const Index = () => {
         onValidate={handleValidate}
         reportMode={reportMode}
         onReportModeChange={setReportMode}
+        isSplitMode={isSplitMode}
+        onSplitModeChange={setIsSplitMode}
+        activePart={activePart}
+        onActivePartChange={setActivePart}
+        onCopyAToB={copyPartAToB}
       />
 
       {/* Main Content Area - Responsive Layout */}
@@ -458,58 +688,58 @@ const Index = () => {
                     <div className="mt-4 app-panel rounded-md">
                       <TabsContent value="setup" className="m-0">
                         <InspectionSetupTab 
-                          data={inspectionSetup} 
-                          onChange={setInspectionSetup}
-                          acceptanceClass={acceptanceCriteria.acceptanceClass}
+                          data={currentData.inspectionSetup} 
+                          onChange={currentData.setInspectionSetup}
+                          acceptanceClass={currentData.acceptanceCriteria.acceptanceClass}
                         />
                       </TabsContent>
 
                       <TabsContent value="equipment" className="m-0">
                         <EquipmentTab 
-                          data={equipment} 
-                          onChange={setEquipment}
-                          partThickness={inspectionSetup.partThickness}
+                          data={currentData.equipment}
+                          onChange={currentData.setEquipment}
+                          partThickness={currentData.inspectionSetup.partThickness}
                         />
                       </TabsContent>
 
                       <TabsContent value="calibration" className="m-0">
                         <CalibrationTab
-                          data={calibration}
-                          onChange={setCalibration}
-                          inspectionSetup={inspectionSetup}
-                          acceptanceClass={acceptanceCriteria.acceptanceClass}
+                          data={currentData.calibration}
+                          onChange={currentData.setCalibration}
+                          inspectionSetup={currentData.inspectionSetup}
+                          acceptanceClass={currentData.acceptanceCriteria.acceptanceClass}
                         />
                       </TabsContent>
 
                       <TabsContent value="scan" className="m-0">
                         <ScanParametersTab
-                          data={scanParameters}
-                          onChange={setScanParameters}
+                          data={currentData.scanParameters}
+                          onChange={currentData.setScanParameters}
                           standard={standard}
                         />
                       </TabsContent>
 
                       <TabsContent value="scandetails" className="m-0">
                         <ScanDetailsTab
-                          data={scanDetails}
-                          onChange={setScanDetails}
-                          partType={inspectionSetup.partType}
+                          data={currentData.scanDetails}
+                          onChange={currentData.setScanDetails}
+                          partType={currentData.inspectionSetup.partType}
                         />
                       </TabsContent>
 
                       <TabsContent value="acceptance" className="m-0">
                         <AcceptanceCriteriaTab
-                          data={acceptanceCriteria}
-                          onChange={setAcceptanceCriteria}
-                          material={inspectionSetup.materialSpec || inspectionSetup.material}
+                          data={currentData.acceptanceCriteria}
+                          onChange={currentData.setAcceptanceCriteria}
+                          material={currentData.inspectionSetup.materialSpec || currentData.inspectionSetup.material}
                           standard={standard}
                         />
                       </TabsContent>
 
                       <TabsContent value="docs" className="m-0">
                         <DocumentationTab
-                          data={documentation}
-                          onChange={setDocumentation}
+                          data={currentData.documentation}
+                          onChange={currentData.setDocumentation}
                         />
                       </TabsContent>
                     </div>
@@ -581,15 +811,15 @@ const Index = () => {
                   <h3 className="font-semibold text-sm">3D Part Viewer</h3>
                 </div>
                 <ThreeDViewer
-                  partType={inspectionSetup.partType || ""}
-                  material={inspectionSetup.material as MaterialType || ""}
+                  partType={currentData.inspectionSetup.partType || ""}
+                  material={currentData.inspectionSetup.material as MaterialType || ""}
                   dimensions={{
-                    length: inspectionSetup.partLength || 100,
-                    width: inspectionSetup.partWidth || 50,
-                    thickness: inspectionSetup.partThickness || 10,
-                    diameter: inspectionSetup.diameter || 50
+                    length: currentData.inspectionSetup.partLength || 100,
+                    width: currentData.inspectionSetup.partWidth || 50,
+                    thickness: currentData.inspectionSetup.partThickness || 10,
+                    diameter: currentData.inspectionSetup.diameter || 50
                   }}
-                  scanDirections={scanDetails.scanDetails.map(detail => ({
+                  scanDirections={currentData.scanDetails.scanDetails.map(detail => ({
                     direction: detail.scanningDirection,
                     waveMode: detail.waveMode,
                     isVisible: detail.isVisible || false

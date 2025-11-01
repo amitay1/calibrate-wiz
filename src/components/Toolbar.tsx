@@ -18,6 +18,11 @@ interface ToolbarProps {
   onValidate: () => void;
   reportMode: "Technique" | "Report";
   onReportModeChange: (mode: "Technique" | "Report") => void;
+  isSplitMode?: boolean;
+  onSplitModeChange?: (value: boolean) => void;
+  activePart?: "A" | "B";
+  onActivePartChange?: (value: "A" | "B") => void;
+  onCopyAToB?: () => void;
 }
 
 export const Toolbar = ({ 
@@ -25,7 +30,12 @@ export const Toolbar = ({
   onExport, 
   onValidate,
   reportMode,
-  onReportModeChange 
+  onReportModeChange,
+  isSplitMode = false,
+  onSplitModeChange,
+  activePart = "A",
+  onActivePartChange,
+  onCopyAToB
 }: ToolbarProps) => {
   return (
     <div className="h-12 border-b border-border bg-card flex items-center px-2 md:px-3 gap-1 md:gap-2 overflow-x-auto">
@@ -43,6 +53,55 @@ export const Toolbar = ({
       </Button>
 
       <Separator orientation="vertical" className="h-6 md:h-8 mx-0.5 md:mx-1" />
+
+      {/* Split Mode Toggle */}
+      {reportMode === "Technique" && onSplitModeChange && (
+        <>
+          <Button
+            variant={isSplitMode ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => onSplitModeChange(!isSplitMode)}
+            className="h-7 md:h-8 text-[10px] md:text-xs font-medium px-2"
+            title="Split to Part A & B"
+          >
+            <RefreshCw className="h-3 w-3 md:mr-1" />
+            <span className="hidden sm:inline">{isSplitMode ? "חלק A+B" : "חלק יחיד"}</span>
+          </Button>
+          
+          {isSplitMode && onActivePartChange && (
+            <>
+              <Button
+                variant={activePart === "A" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => onActivePartChange("A")}
+                className="h-7 md:h-8 text-[10px] md:text-xs font-medium px-2"
+              >
+                A
+              </Button>
+              <Button
+                variant={activePart === "B" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => onActivePartChange("B")}
+                className="h-7 md:h-8 text-[10px] md:text-xs font-medium px-2"
+              >
+                B
+              </Button>
+              {onCopyAToB && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onCopyAToB}
+                  className="h-7 md:h-8 text-[10px] md:text-xs font-medium px-2"
+                  title="Copy Part A to Part B"
+                >
+                  A→B
+                </Button>
+              )}
+            </>
+          )}
+          <Separator orientation="vertical" className="h-6 md:h-8 mx-0.5 md:mx-1" />
+        </>
+      )}
 
       {/* Mode Selection - Compact on mobile */}
       <div className="flex gap-0.5 md:gap-1 bg-muted p-0.5 md:p-1 rounded-md">

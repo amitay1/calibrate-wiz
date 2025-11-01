@@ -20,7 +20,7 @@ interface TechniqueSheetExportData {
   documentation: DocumentationData;
 }
 
-export function exportTechniqueSheetToPDF(data: TechniqueSheetExportData): void {
+export function exportTechniqueSheetToPDF(data: TechniqueSheetExportData, filenameSuffix?: string): void {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -240,7 +240,8 @@ export function exportTechniqueSheetToPDF(data: TechniqueSheetExportData): void 
   }
 
   // Save the PDF
-  const filename = `TS_${data.inspectionSetup.partNumber || "Unknown"}_${new Date().toISOString().split("T")[0]}.pdf`;
+  const baseName = `TS_${data.inspectionSetup.partNumber || "Unknown"}_${new Date().toISOString().split("T")[0]}`;
+  const filename = filenameSuffix ? `${baseName}_${filenameSuffix}.pdf` : `${baseName}.pdf`;
   doc.save(filename);
 }
 
