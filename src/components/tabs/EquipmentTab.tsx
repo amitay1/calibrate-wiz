@@ -59,13 +59,14 @@ const getRecommendedFrequency = (thickness: number): string => {
   return "1.0";
 };
 
+// MIL-STD-2154 Table II - Resolution values based on frequency
 const getResolutionValues = (frequency: string) => {
   const resolutions: Record<string, { entry: number; back: number }> = {
-    "1.0": { entry: 0.5, back: 0.2 },
-    "2.25": { entry: 0.25, back: 0.1 },
-    "5.0": { entry: 0.125, back: 0.05 },
-    "10.0": { entry: 0.05, back: 0.025 },
-    "15.0": { entry: 0.05, back: 0.025 },
+    "1.0": { entry: 0.500, back: 0.200 },   // 1 MHz
+    "2.25": { entry: 0.250, back: 0.100 },  // 2.25 MHz
+    "5.0": { entry: 0.125, back: 0.050 },   // 5 MHz
+    "10.0": { entry: 0.050, back: 0.025 },  // 10 MHz
+    "15.0": { entry: 0.035, back: 0.020 },  // 15 MHz (improved resolution)
   };
   return resolutions[frequency] || { entry: 0.125, back: 0.05 };
 };

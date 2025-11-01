@@ -133,7 +133,15 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
     // IMPORTANT: Check more specific patterns FIRST before general ones
     // "Axial shear wave" contains both "axial" and "shear", so check "shear" combinations first
     
-    if (waveMode.includes('shear') || waveMode.includes('circumferential') || 
+    // Check for pure Axial FIRST (before checking shear combinations)
+    if ((waveMode.includes('axial') || waveMode.includes('longitudinal') || waveMode.includes('straight')) 
+        && !waveMode.includes('shear') && !waveMode.includes('circumferential')) {
+      // Pure Axial/Longitudinal - Vertical arrows pointing DOWN from above
+      // Position well above the part for clear visibility
+      position = [Math.cos(angle) * baseRadius * 0.6, 1.0, Math.sin(angle) * baseRadius * 0.6];
+      rotation = [Math.PI, 0, 0]; // Pointing DOWN (180° flip)
+      label = `${scan.direction}: Axial`;
+    } else if (waveMode.includes('shear') || waveMode.includes('circumferential') || 
         waveMode.includes('clockwise') || waveMode.includes('counter')) {
       // Shear/Circumferential - Arrows at angle (Ring Forgings style)
       // Position on the side, angled
@@ -145,16 +153,11 @@ export const ScanDirectionArrows3D = ({ scanDirections, partScale }: ScanDirecti
       position = [Math.cos(angle) * baseRadius * 1.2, 0, Math.sin(angle) * baseRadius * 1.2];
       rotation = [0, -angle, Math.PI / 2]; // Pointing toward center
       label = `${scan.direction}: Radial`;
-    } else if (waveMode.includes('axial') || waveMode.includes('longitudinal') || waveMode.includes('straight')) {
-      // Axial/Longitudinal - Vertical arrows pointing DOWN (as per MIL-STD)
-      // Position above the part
-      position = [Math.cos(angle) * baseRadius * 0.5, 0.8, Math.sin(angle) * baseRadius * 0.5];
-      rotation = [Math.PI, 0, 0]; // Pointing DOWN (180° flip)
-      label = `${scan.direction}: Axial`;
     } else {
       // Default - Axial pointing down
-      position = [Math.cos(angle) * baseRadius * 0.5, 0.8, Math.sin(angle) * baseRadius * 0.5];
+      position = [Math.cos(angle) * baseRadius * 0.6, 1.0, Math.sin(angle) * baseRadius * 0.6];
       rotation = [Math.PI, 0, 0]; // Pointing DOWN
+      label = `${scan.direction}: Default`;
     }
     
     return { position, rotation, color, label };

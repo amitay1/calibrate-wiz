@@ -678,7 +678,7 @@ const Index = () => {
                     <TabsList className="inline-flex flex-wrap md:flex-nowrap h-auto md:h-10 items-center justify-start md:justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
                       <TabsTrigger value="setup" className="flex-1 md:flex-initial min-w-[100px]">Setup</TabsTrigger>
                       <TabsTrigger value="equipment" className="flex-1 md:flex-initial min-w-[100px]">Equipment</TabsTrigger>
-                      <TabsTrigger value="calibration" className="flex-1 md:flex-initial min-w-[100px]">Calibration</TabsTrigger>
+                      <TabsTrigger value="calibration" className="flex-1 md:flex-initial min-w-[100px]">Reference Standard</TabsTrigger>
                       <TabsTrigger value="scan" className="flex-1 md:flex-initial min-w-[100px]">Scan Params</TabsTrigger>
                       <TabsTrigger value="scandetails" className="flex-1 md:flex-initial min-w-[100px]">Scan Details</TabsTrigger>
                       <TabsTrigger value="acceptance" className="flex-1 md:flex-initial min-w-[100px]">Acceptance</TabsTrigger>
