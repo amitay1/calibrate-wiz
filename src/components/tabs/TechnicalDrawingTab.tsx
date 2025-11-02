@@ -12,6 +12,11 @@ interface TechnicalDrawingTabProps {
     width: number;
     thickness: number;
     diameter?: number;
+    isHollow?: boolean;
+    innerDiameter?: number;
+    innerLength?: number;
+    innerWidth?: number;
+    wallThickness?: number;
   };
   material?: MaterialType;
 }
@@ -107,7 +112,19 @@ export const TechnicalDrawingTab = ({
             <p>Length: {dimensions.length}mm</p>
             <p>Width: {dimensions.width}mm</p>
             <p>Thickness: {dimensions.thickness}mm</p>
-            {dimensions.diameter && <p>Diameter: Ø{dimensions.diameter}mm</p>}
+            {dimensions.diameter && <p>Outer Diameter: Ø{dimensions.diameter}mm</p>}
+            {dimensions.innerDiameter && (
+              <>
+                <p>Inner Diameter: Ø{dimensions.innerDiameter}mm</p>
+                <p>Wall Thickness: {dimensions.wallThickness?.toFixed(2)}mm</p>
+              </>
+            )}
+            {dimensions.innerLength && dimensions.innerWidth && (
+              <>
+                <p>Inner Length: {dimensions.innerLength}mm</p>
+                <p>Inner Width: {dimensions.innerWidth}mm</p>
+              </>
+            )}
           </div>
         </Card>
 

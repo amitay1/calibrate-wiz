@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CSG } from 'three-csg-ts';
 
 /**
  * Helper function to perfectly center any geometry at origin
@@ -17,52 +18,142 @@ function perfectCenter(geometry: THREE.BufferGeometry): THREE.BufferGeometry {
 }
 
 /**
+ * Create hollow geometry by subtracting inner geometry from outer
+ */
+function createHollowGeometry(
+  outerGeometry: THREE.BufferGeometry,
+  innerGeometry: THREE.BufferGeometry
+): THREE.BufferGeometry {
+  try {
+    const outerMesh = new THREE.Mesh(outerGeometry);
+    const innerMesh = new THREE.Mesh(innerGeometry);
+    
+    const resultMesh = CSG.subtract(outerMesh, innerMesh);
+    return resultMesh.geometry;
+  } catch (error) {
+    console.error('CSG operation failed, returning outer geometry:', error);
+    return outerGeometry;
+  }
+}
+
+export interface ShapeParameters {
+  isHollow?: boolean;
+  outerDiameter?: number;
+  innerDiameter?: number;
+  length?: number;
+  width?: number;
+  thickness?: number;
+  innerLength?: number;
+  innerWidth?: number;
+}
+
+/**
  * Create 3D geometries for all part types
  * All geometries are perfectly centered at origin (0,0,0)
  */
 
 export const ShapeGeometries = {
   // ============= BASE GEOMETRIES =============
-  box: () => {
-    const geometry = new THREE.BoxGeometry(2, 1, 1.5);
-    return perfectCenter(geometry);
+  box: (params?: ShapeParameters) => {
+    const outer = new THREE.BoxGeometry(2, 1, 1.5);
+    
+    if (params?.isHollow && params.innerLength && params.innerWidth) {
+      const inner = new THREE.BoxGeometry(
+        params.innerLength / 100 * 2,
+        params.thickness ? params.thickness / 50 : 0.8,
+        params.innerWidth / 75 * 1.5
+      );
+      return perfectCenter(createHollowGeometry(outer, inner));
+    }
+    
+    return perfectCenter(outer);
   },
   
-  cylinder: () => {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
+  cylinder: (params?: ShapeParameters) => {
+    const outerRadius = 0.5;
+    const height = 2;
+    const outer = new THREE.CylinderGeometry(outerRadius, outerRadius, height, 32);
+    outer.rotateZ(Math.PI / 2);
+    
+    if (params?.isHollow && params.innerDiameter && params.outerDiameter) {
+      const innerRadius = (params.innerDiameter / params.outerDiameter) * outerRadius;
+      const inner = new THREE.CylinderGeometry(innerRadius, innerRadius, height + 0.1, 32);
+      inner.rotateZ(Math.PI / 2);
+      return perfectCenter(createHollowGeometry(outer, inner));
+    }
+    
+    return perfectCenter(outer);
   },
   
-  tube: () => {
-    const geometry = new THREE.TorusGeometry(0.8, 0.25, 16, 32);
+  tube: (params?: ShapeParameters) => {
+    // Tube is always hollow
+    const outerRadius = 0.8;
+    const innerRadius = params?.innerDiameter && params?.outerDiameter
+      ? outerRadius * (params.innerDiameter / params.outerDiameter)
+      : outerRadius * 0.6;
+    
+    const tubeRadius = (outerRadius - innerRadius) / 2;
+    const geometry = new THREE.TorusGeometry(
+      (outerRadius + innerRadius) / 2,
+      tubeRadius,
+      16,
+      32
+    );
     geometry.rotateX(Math.PI / 2);
     return perfectCenter(geometry);
   },
   
-  rectangular_tube: () => {
-    const geometry = new THREE.BoxGeometry(1, 2, 0.6);
-    return perfectCenter(geometry);
+  rectangular_tube: (params?: ShapeParameters) => {
+    const outer = new THREE.BoxGeometry(1, 2, 0.6);
+    
+    if (params?.innerLength && params.innerWidth) {
+      const inner = new THREE.BoxGeometry(
+        0.7,
+        params.innerLength / 100 * 2,
+        params.innerWidth / 100 * 0.6
+      );
+      return perfectCenter(createHollowGeometry(outer, inner));
+    }
+    
+    return perfectCenter(outer);
   },
   
-  hexagon: () => {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 6);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
+  hexagon: (params?: ShapeParameters) => {
+    const outerRadius = 0.5;
+    const height = 2;
+    const outer = new THREE.CylinderGeometry(outerRadius, outerRadius, height, 6);
+    outer.rotateZ(Math.PI / 2);
+    
+    if (params?.isHollow && params.innerDiameter && params.outerDiameter) {
+      const innerRadius = (params.innerDiameter / params.outerDiameter) * outerRadius;
+      const inner = new THREE.CylinderGeometry(innerRadius, innerRadius, height + 0.1, 6);
+      inner.rotateZ(Math.PI / 2);
+      return perfectCenter(createHollowGeometry(outer, inner));
+    }
+    
+    return perfectCenter(outer);
   },
   
-  sphere: () => {
-    const geometry = new THREE.SphereGeometry(0.7, 32, 32);
-    return perfectCenter(geometry);
+  sphere: (params?: ShapeParameters) => {
+    const outerRadius = 0.7;
+    const outer = new THREE.SphereGeometry(outerRadius, 32, 32);
+    
+    if (params?.isHollow && params.innerDiameter && params.outerDiameter) {
+      const innerRadius = (params.innerDiameter / params.outerDiameter) * outerRadius;
+      const inner = new THREE.SphereGeometry(innerRadius, 32, 32);
+      return perfectCenter(createHollowGeometry(outer, inner));
+    }
+    
+    return perfectCenter(outer);
   },
   
-  cone: () => {
+  cone: (params?: ShapeParameters) => {
     const geometry = new THREE.ConeGeometry(0.7, 1.5, 32);
     return perfectCenter(geometry);
   },
   
   // ============= STRUCTURAL PROFILES =============
-  l_profile: () => {
+  l_profile: (params?: ShapeParameters) => {
     const shape = new THREE.Shape();
     shape.moveTo(-0.4, -0.4);
     shape.lineTo(0.4, -0.4);
@@ -78,7 +169,7 @@ export const ShapeGeometries = {
     return perfectCenter(geometry);
   },
   
-  t_profile: () => {
+  t_profile: (params?: ShapeParameters) => {
     const shape = new THREE.Shape();
     shape.moveTo(-0.4, -0.4);
     shape.lineTo(0.4, -0.4);
@@ -96,12 +187,12 @@ export const ShapeGeometries = {
     return perfectCenter(geometry);
   },
   
-  i_profile: () => {
+  i_profile: (params?: ShapeParameters) => {
     const geometry = new THREE.BoxGeometry(0.6, 2, 0.15);
     return perfectCenter(geometry);
   },
   
-  u_profile: () => {
+  u_profile: (params?: ShapeParameters) => {
     const shape = new THREE.Shape();
     shape.moveTo(-0.3, -0.4);
     shape.lineTo(-0.3, 0.4);
@@ -119,7 +210,7 @@ export const ShapeGeometries = {
     return perfectCenter(geometry);
   },
   
-  z_profile: () => {
+  z_profile: (params?: ShapeParameters) => {
     const shape = new THREE.Shape();
     shape.moveTo(-0.3, -0.5);
     shape.lineTo(0.3, -0.5);
@@ -140,56 +231,59 @@ export const ShapeGeometries = {
   },
   
   // ============= LEGACY MAPPINGS (for backward compatibility) =============
-  plate: () => ShapeGeometries.box(),
-  sheet: () => ShapeGeometries.box(),
-  slab: () => ShapeGeometries.box(),
-  flat_bar: () => ShapeGeometries.box(),
-  rectangular_bar: () => ShapeGeometries.box(),
-  square_bar: () => ShapeGeometries.box(),
-  billet: () => ShapeGeometries.box(),
-  block: () => ShapeGeometries.box(),
+  plate: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  sheet: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  slab: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  flat_bar: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  rectangular_bar: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  square_bar: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  billet: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  block: (params?: ShapeParameters) => ShapeGeometries.box(params),
   
-  round_bar: () => ShapeGeometries.cylinder(),
-  shaft: () => ShapeGeometries.cylinder(),
-  disk: () => ShapeGeometries.cylinder(),
-  disk_forging: () => ShapeGeometries.cylinder(),
-  hub: () => ShapeGeometries.cylinder(),
+  round_bar: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  shaft: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  disk: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  disk_forging: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  hub: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
   
-  pipe: () => ShapeGeometries.tube(),
-  ring: () => ShapeGeometries.tube(),
-  ring_forging: () => ShapeGeometries.tube(),
-  sleeve: () => ShapeGeometries.tube(),
-  bushing: () => ShapeGeometries.tube(),
+  pipe: (params?: ShapeParameters) => ShapeGeometries.tube(params),
+  ring: (params?: ShapeParameters) => ShapeGeometries.tube(params),
+  ring_forging: (params?: ShapeParameters) => ShapeGeometries.tube(params),
+  sleeve: (params?: ShapeParameters) => ShapeGeometries.tube(params),
+  bushing: (params?: ShapeParameters) => ShapeGeometries.tube(params),
   
-  square_tube: () => ShapeGeometries.rectangular_tube(),
+  square_tube: (params?: ShapeParameters) => ShapeGeometries.rectangular_tube(params),
   
-  hex_bar: () => ShapeGeometries.hexagon(),
+  hex_bar: (params?: ShapeParameters) => ShapeGeometries.hexagon(params),
   
-  extrusion_l: () => ShapeGeometries.l_profile(),
-  extrusion_angle: () => ShapeGeometries.l_profile(),
-  extrusion_t: () => ShapeGeometries.t_profile(),
-  extrusion_i: () => ShapeGeometries.i_profile(),
-  extrusion_u: () => ShapeGeometries.u_profile(),
-  extrusion_channel: () => ShapeGeometries.u_profile(),
+  extrusion_l: (params?: ShapeParameters) => ShapeGeometries.l_profile(params),
+  extrusion_angle: (params?: ShapeParameters) => ShapeGeometries.l_profile(params),
+  extrusion_t: (params?: ShapeParameters) => ShapeGeometries.t_profile(params),
+  extrusion_i: (params?: ShapeParameters) => ShapeGeometries.i_profile(params),
+  extrusion_u: (params?: ShapeParameters) => ShapeGeometries.u_profile(params),
+  extrusion_channel: (params?: ShapeParameters) => ShapeGeometries.u_profile(params),
   
   // Generic fallbacks
-  bar: () => ShapeGeometries.box(),
-  forging: () => ShapeGeometries.cylinder(),
-  round_forging_stock: () => ShapeGeometries.cylinder(),
-  rectangular_forging_stock: () => ShapeGeometries.box(),
-  near_net_forging: () => ShapeGeometries.cylinder(),
-  machined_component: () => ShapeGeometries.box(),
-  custom_profile: () => ShapeGeometries.box(),
-  custom: () => ShapeGeometries.box(),
+  bar: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  forging: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  round_forging_stock: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  rectangular_forging_stock: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  near_net_forging: (params?: ShapeParameters) => ShapeGeometries.cylinder(params),
+  machined_component: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  custom_profile: (params?: ShapeParameters) => ShapeGeometries.box(params),
+  custom: (params?: ShapeParameters) => ShapeGeometries.box(params),
 };
 
 /**
- * Get geometry by part type
+ * Get geometry by part type with optional hollow parameters
  */
-export const getGeometryByType = (partType: string): THREE.BufferGeometry => {
+export const getGeometryByType = (
+  partType: string,
+  params?: ShapeParameters
+): THREE.BufferGeometry => {
   const geometryFunc = (ShapeGeometries as any)[partType];
   if (geometryFunc) {
-    return geometryFunc();
+    return geometryFunc(params);
   }
   // Fallback to generic box
   const fallback = new THREE.BoxGeometry(1, 1, 1);

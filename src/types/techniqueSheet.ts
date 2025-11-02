@@ -52,6 +52,13 @@ export interface InspectionSetupData {
   partLength: number;
   partWidth: number;
   diameter?: number;
+  
+  // Hollow/Hole parameters (for tubes, hollow cylinders, etc.)
+  isHollow?: boolean;
+  innerDiameter?: number;
+  innerLength?: number;
+  innerWidth?: number;
+  wallThickness?: number;
 }
 
 export interface EquipmentData {

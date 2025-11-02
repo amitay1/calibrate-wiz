@@ -705,6 +705,11 @@ const Index = () => {
                               width: currentData.inspectionSetup.partWidth || 50,
                               thickness: currentData.inspectionSetup.partThickness || 10,
                               diameter: currentData.inspectionSetup.diameter || undefined,
+                              isHollow: currentData.inspectionSetup.isHollow,
+                              innerDiameter: currentData.inspectionSetup.innerDiameter,
+                              innerLength: currentData.inspectionSetup.innerLength,
+                              innerWidth: currentData.inspectionSetup.innerWidth,
+                              wallThickness: currentData.inspectionSetup.wallThickness,
                             }}
                             material={currentData.inspectionSetup.material as MaterialType}
                           />
@@ -840,7 +845,12 @@ const Index = () => {
                     length: currentData.inspectionSetup.partLength || 100,
                     width: currentData.inspectionSetup.partWidth || 50,
                     thickness: currentData.inspectionSetup.partThickness || 10,
-                    diameter: currentData.inspectionSetup.diameter || 50
+                    diameter: currentData.inspectionSetup.diameter || 50,
+                    isHollow: currentData.inspectionSetup.isHollow,
+                    innerDiameter: currentData.inspectionSetup.innerDiameter,
+                    innerLength: currentData.inspectionSetup.innerLength,
+                    innerWidth: currentData.inspectionSetup.innerWidth,
+                    wallThickness: currentData.inspectionSetup.wallThickness,
                   }}
                   scanDirections={currentData.scanDetails.scanDetails.map(detail => ({
                     direction: detail.scanningDirection,

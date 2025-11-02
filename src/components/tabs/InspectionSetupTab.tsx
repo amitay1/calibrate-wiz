@@ -117,7 +117,54 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
     reader.readAsDataURL(file);
   };
 
-  const showDiameter = data.partType === "tube" || data.partType === "ring";
+  const showDiameter = data.partType === "tube" || 
+                        data.partType === "ring" || 
+                        data.partType === "cylinder" ||
+                        data.partType === "sphere" ||
+                        data.partType === "cone" ||
+                        data.partType === "hexagon" ||
+                        data.partType === "round_bar" ||
+                        data.partType === "shaft" ||
+                        data.partType === "disk" ||
+                        data.partType === "disk_forging" ||
+                        data.partType === "ring_forging" ||
+                        data.partType === "round_forging_stock" ||
+                        data.partType === "pipe" ||
+                        data.partType === "sleeve" ||
+                        data.partType === "bushing";
+  
+  // Check if shape can be hollow
+  const canBeHollow = data.partType === "cylinder" ||
+                      data.partType === "box" ||
+                      data.partType === "rectangular_tube" ||
+                      data.partType === "hexagon" ||
+                      data.partType === "sphere" ||
+                      data.partType === "round_bar" ||
+                      data.partType === "shaft" ||
+                      data.partType === "disk" ||
+                      data.partType === "square_bar" ||
+                      data.partType === "rectangular_bar" ||
+                      data.partType === "plate" ||
+                      data.partType === "billet" ||
+                      data.partType === "block";
+  
+  // Tube is always hollow
+  const isAlwaysHollow = data.partType === "tube" || 
+                         data.partType === "pipe" || 
+                         data.partType === "ring" ||
+                         data.partType === "ring_forging" ||
+                         data.partType === "sleeve" ||
+                         data.partType === "bushing";
+  
+  // Auto-calculate wall thickness if inner and outer dimensions are set
+  React.useEffect(() => {
+    if (data.isHollow && data.diameter && data.innerDiameter) {
+      const calculatedWallThickness = (data.diameter - data.innerDiameter) / 2;
+      if (Math.abs((data.wallThickness || 0) - calculatedWallThickness) > 0.01) {
+        updateField("wallThickness", calculatedWallThickness);
+      }
+    }
+  }, [data.diameter, data.innerDiameter]);
   
   // Get material properties for info
   const materialProps = data.material ? materialDatabase[data.material as MaterialType] : null;
@@ -488,7 +535,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         {showDiameter && (
           <FieldWithHelp
-            label="Diameter (mm)"
+            label="Outer Diameter (mm)"
             help="Outer diameter for cylindrical parts"
             required={showDiameter}
           >
@@ -501,6 +548,152 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
               className="bg-background"
             />
           </FieldWithHelp>
+        )}
+
+        {/* Hollow/Solid Toggle */}
+        {(canBeHollow || isAlwaysHollow) && (
+          <div className="md:col-span-2">
+            <Card className="p-4 bg-muted/30">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isHollow"
+                    checked={data.isHollow || isAlwaysHollow}
+                    disabled={isAlwaysHollow}
+                    onChange={(e) => {
+                      updateField("isHollow", e.target.checked);
+                      if (!e.target.checked) {
+                        // Clear hollow-related fields
+                        updateField("innerDiameter", undefined);
+                        updateField("innerLength", undefined);
+                        updateField("innerWidth", undefined);
+                        updateField("wallThickness", undefined);
+                      }
+                    }}
+                    className="w-4 h-4"
+                  />
+                  <Label htmlFor="isHollow" className="font-semibold cursor-pointer">
+                    Hollow Part (Has Internal Cavity/Hole)
+                  </Label>
+                </div>
+                {isAlwaysHollow && (
+                  <Badge variant="secondary" className="text-xs">
+                    Always Hollow
+                  </Badge>
+                )}
+                <div className="ml-auto text-xs text-muted-foreground">
+                  Enable if part has internal holes, cavities, or hollow sections
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Hollow Dimensions - Only show if hollow is enabled */}
+        {(data.isHollow || isAlwaysHollow) && (
+          <>
+            {showDiameter && (
+              <>
+                <FieldWithHelp
+                  label="Inner Diameter (mm)"
+                  help="Inner diameter of the hollow section"
+                  required
+                >
+                  <Input
+                    type="number"
+                    value={data.innerDiameter || 0}
+                    onChange={(e) => {
+                      const innerDiam = parseFloat(e.target.value) || 0;
+                      updateField("innerDiameter", innerDiam);
+                      // Auto-calculate wall thickness
+                      if (data.diameter && innerDiam > 0) {
+                        updateField("wallThickness", (data.diameter - innerDiam) / 2);
+                      }
+                    }}
+                    min={0}
+                    max={data.diameter ? data.diameter - 1 : undefined}
+                    step={0.1}
+                    className="bg-background"
+                  />
+                  {data.innerDiameter && data.diameter && data.innerDiameter >= data.diameter && (
+                    <p className="text-xs text-destructive mt-1">
+                      Inner diameter must be less than outer diameter
+                    </p>
+                  )}
+                </FieldWithHelp>
+
+                <FieldWithHelp
+                  label="Wall Thickness (mm)"
+                  help="Thickness of the wall (auto-calculated)"
+                >
+                  <Input
+                    type="number"
+                    value={data.wallThickness?.toFixed(2) || 0}
+                    onChange={(e) => updateField("wallThickness", parseFloat(e.target.value) || 0)}
+                    min={0}
+                    step={0.1}
+                    className="bg-background"
+                    disabled
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Calculated: (OD - ID) / 2 = {data.wallThickness?.toFixed(2) || 0}mm
+                  </p>
+                </FieldWithHelp>
+              </>
+            )}
+
+            {!showDiameter && (data.partType === "box" || data.partType === "rectangular_tube" || data.partType === "square_bar" || data.partType === "rectangular_bar" || data.partType === "plate" || data.partType === "billet" || data.partType === "block") && (
+              <>
+                <FieldWithHelp
+                  label="Inner Length (mm)"
+                  help="Internal cavity length"
+                  required
+                >
+                  <Input
+                    type="number"
+                    value={data.innerLength || 0}
+                    onChange={(e) => updateField("innerLength", parseFloat(e.target.value) || 0)}
+                    min={0}
+                    max={data.partLength ? data.partLength - 1 : undefined}
+                    step={0.1}
+                    className="bg-background"
+                  />
+                </FieldWithHelp>
+
+                <FieldWithHelp
+                  label="Inner Width (mm)"
+                  help="Internal cavity width"
+                  required
+                >
+                  <Input
+                    type="number"
+                    value={data.innerWidth || 0}
+                    onChange={(e) => updateField("innerWidth", parseFloat(e.target.value) || 0)}
+                    min={0}
+                    max={data.partWidth ? data.partWidth - 1 : undefined}
+                    step={0.1}
+                    className="bg-background"
+                  />
+                </FieldWithHelp>
+
+                <FieldWithHelp
+                  label="Wall Thickness (mm)"
+                  help="Minimum wall thickness"
+                  required
+                >
+                  <Input
+                    type="number"
+                    value={data.wallThickness || 0}
+                    onChange={(e) => updateField("wallThickness", parseFloat(e.target.value) || 0)}
+                    min={0}
+                    step={0.1}
+                    className="bg-background"
+                  />
+                </FieldWithHelp>
+              </>
+            )}
+          </>
         )}
       </div>
 

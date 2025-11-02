@@ -23,6 +23,11 @@ interface ThreeDViewerProps {
     width: number;
     thickness: number;
     diameter?: number;
+    isHollow?: boolean;
+    innerDiameter?: number;
+    innerLength?: number;
+    innerWidth?: number;
+    wallThickness?: number;
   };
   scanDirections?: ScanDirectionArrow[];
 }
@@ -120,7 +125,19 @@ const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
   }
 
   // Use the same geometry as Shape3DViewer for consistency
-  const geometry = useMemo(() => getGeometryByType(partType), [partType]);
+  const geometry = useMemo(() => {
+    const params = {
+      isHollow: dimensions?.isHollow,
+      outerDiameter: dimensions?.diameter,
+      innerDiameter: dimensions?.innerDiameter,
+      length: dimensions?.length,
+      width: dimensions?.width,
+      thickness: dimensions?.thickness,
+      innerLength: dimensions?.innerLength,
+      innerWidth: dimensions?.innerWidth,
+    };
+    return getGeometryByType(partType, params);
+  }, [partType, dimensions]);
   
   return (
     <mesh castShadow receiveShadow geometry={geometry} material={metalMaterial} scale={scale} />

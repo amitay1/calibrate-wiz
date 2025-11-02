@@ -21,6 +21,11 @@ interface RealTimeTechnicalDrawingProps {
     width: number;
     thickness: number;
     diameter?: number;
+    isHollow?: boolean;
+    innerDiameter?: number;
+    innerLength?: number;
+    innerWidth?: number;
+    wallThickness?: number;
   };
   showGrid?: boolean;
   showDimensions?: boolean;
@@ -49,6 +54,10 @@ export const RealTimeTechnicalDrawing = ({
     width: dimensions.width || 50,
     thickness: dimensions.thickness || 10,
     diameter: dimensions.diameter,
+    innerDiameter: dimensions.innerDiameter,
+    innerLength: dimensions.innerLength,
+    innerWidth: dimensions.innerWidth,
+    wallThickness: dimensions.wallThickness,
   }), [dimensions]);
 
   useEffect(() => {
