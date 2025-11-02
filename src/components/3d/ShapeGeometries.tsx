@@ -148,8 +148,8 @@ export const ShapeGeometries = {
   },
   
   // EXTRUSIONS - All centered properly
-  extrusion_l: () => {
-    // L-shape
+  extrusion_angle: () => {
+    // L-shape (Angle)
     const shape = new THREE.Shape();
     shape.moveTo(-0.4, -0.4);
     shape.lineTo(0.4, -0.4);
@@ -248,27 +248,6 @@ export const ShapeGeometries = {
     return perfectCenter(geometry);
   },
   
-  extrusion_angle: () => {
-    // Angle - centered
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.4, -0.4);
-    shape.lineTo(0.4, -0.4);
-    shape.lineTo(0.4, -0.2);
-    shape.lineTo(-0.2, -0.2);
-    shape.lineTo(-0.2, 0.4);
-    shape.lineTo(-0.4, 0.4);
-    shape.lineTo(-0.4, -0.4);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: 2,
-      bevelEnabled: false,
-    };
-    
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
   
   // NEW GEOMETRIES - All centered
   rectangular_tube: () => {
