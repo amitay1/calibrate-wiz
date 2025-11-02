@@ -26,6 +26,17 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
+// Deep comparison for objects
+function useDeepMemo<T>(value: T): T {
+  const ref = useRef<T>(value);
+  
+  if (JSON.stringify(value) !== JSON.stringify(ref.current)) {
+    ref.current = value;
+  }
+  
+  return ref.current;
+}
+
 export interface ScanDirectionArrow {
   direction: string;
   waveMode: string;
@@ -117,8 +128,8 @@ const HollowRing = ({ material, outerRadius, innerRadius, height }: { material: 
 };
 
 const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
-  // Debounce dimensions to prevent flickering during typing
-  const debouncedDimensions = useDebounce(dimensions, 300);
+  // Shorter debounce for more responsive updates (150ms)
+  const debouncedDimensions = useDebounce(dimensions, 150);
   
   // Get metallic material based on material type (aerospace metals)
   const metalMaterial = useMemo(() => getMaterialByMaterialType(material), [material]);
@@ -135,26 +146,18 @@ const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
     return [scaleX, scaleY, scaleZ];
   }, [debouncedDimensions]);
 
-  // Memoize geometry parameters to prevent unnecessary recalculation
-  const geometryParams = useMemo(() => ({
-    isHollow: debouncedDimensions?.isHollow,
-    outerDiameter: debouncedDimensions?.diameter,
-    innerDiameter: debouncedDimensions?.innerDiameter,
-    length: debouncedDimensions?.length,
-    width: debouncedDimensions?.width,
-    thickness: debouncedDimensions?.thickness,
-    innerLength: debouncedDimensions?.innerLength,
-    innerWidth: debouncedDimensions?.innerWidth,
-  }), [
-    debouncedDimensions?.isHollow,
-    debouncedDimensions?.diameter,
-    debouncedDimensions?.innerDiameter,
-    debouncedDimensions?.length,
-    debouncedDimensions?.width,
-    debouncedDimensions?.thickness,
-    debouncedDimensions?.innerLength,
-    debouncedDimensions?.innerWidth,
-  ]);
+  // Use deep comparison for geometry parameters to ensure updates
+  const geometryParams = useDeepMemo({
+    isHollow: debouncedDimensions?.isHollow || false,
+    outerDiameter: debouncedDimensions?.diameter || 0,
+    innerDiameter: debouncedDimensions?.innerDiameter || 0,
+    length: debouncedDimensions?.length || 0,
+    width: debouncedDimensions?.width || 0,
+    thickness: debouncedDimensions?.thickness || 0,
+    innerLength: debouncedDimensions?.innerLength || 0,
+    innerWidth: debouncedDimensions?.innerWidth || 0,
+    wallThickness: debouncedDimensions?.wallThickness || 0,
+  });
 
   if (!partType) {
     return (
@@ -166,8 +169,12 @@ const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
   }
 
   // Use the same geometry as Shape3DViewer for consistency
+  // Force recreation when any hollow parameter changes
   const geometry = useMemo(() => {
-    return getGeometryByType(partType, geometryParams);
+    const geom = getGeometryByType(partType, geometryParams);
+    geom.computeBoundingBox();
+    geom.computeVertexNormals();
+    return geom;
   }, [partType, geometryParams]);
   
   return (

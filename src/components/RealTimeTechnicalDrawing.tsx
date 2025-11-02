@@ -57,8 +57,8 @@ export const RealTimeTechnicalDrawing = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const generatorRef = useRef<TechnicalDrawingGenerator | null>(null);
 
-  // Debounce dimensions to prevent flickering while typing
-  const debouncedDimensions = useDebounce(dimensions, 400);
+  // Shorter debounce for more responsive updates (200ms)
+  const debouncedDimensions = useDebounce(dimensions, 200);
 
   // Standard layout configuration
   const layout: LayoutConfig = useMemo(() => ({
