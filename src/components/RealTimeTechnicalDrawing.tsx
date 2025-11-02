@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { PartGeometry, MaterialType } from '@/types/techniqueSheet';
 import { TechnicalDrawingGenerator, LayoutConfig, Dimensions } from '@/utils/technicalDrawings/TechnicalDrawingGenerator';
 import { drawBoxTechnicalDrawing } from '@/utils/technicalDrawings/boxDrawing';
@@ -12,6 +12,23 @@ import {
   drawUProfileTechnicalDrawing,
   drawZProfileTechnicalDrawing,
 } from '@/utils/technicalDrawings/profileDrawings';
+
+// Debounce hook to prevent flickering during input
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 interface RealTimeTechnicalDrawingProps {
   partType: PartGeometry;
@@ -40,6 +57,9 @@ export const RealTimeTechnicalDrawing = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const generatorRef = useRef<TechnicalDrawingGenerator | null>(null);
 
+  // Debounce dimensions to prevent flickering while typing
+  const debouncedDimensions = useDebounce(dimensions, 400);
+
   // Standard layout configuration
   const layout: LayoutConfig = useMemo(() => ({
     frontView: { x: 50, y: 50, width: 350, height: 250 },
@@ -50,15 +70,15 @@ export const RealTimeTechnicalDrawing = ({
 
   // Prepare dimensions
   const drawingDimensions: Dimensions = useMemo(() => ({
-    length: dimensions.length || 100,
-    width: dimensions.width || 50,
-    thickness: dimensions.thickness || 10,
-    diameter: dimensions.diameter,
-    innerDiameter: dimensions.innerDiameter,
-    innerLength: dimensions.innerLength,
-    innerWidth: dimensions.innerWidth,
-    wallThickness: dimensions.wallThickness,
-  }), [dimensions]);
+    length: debouncedDimensions.length || 100,
+    width: debouncedDimensions.width || 50,
+    thickness: debouncedDimensions.thickness || 10,
+    diameter: debouncedDimensions.diameter,
+    innerDiameter: debouncedDimensions.innerDiameter,
+    innerLength: debouncedDimensions.innerLength,
+    innerWidth: debouncedDimensions.innerWidth,
+    wallThickness: debouncedDimensions.wallThickness,
+  }), [debouncedDimensions]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -3,11 +3,28 @@ import { OrbitControls, PerspectiveCamera, Environment } from "@react-three/drei
 import { PartGeometry, MaterialType } from "@/types/techniqueSheet";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Navigation } from "lucide-react";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import * as THREE from "three";
 import { ScanDirectionArrows3D } from "./ScanDirectionArrows3D";
 import { getMaterialByMaterialType } from "./3d/ShapeMaterials";
 import { getGeometryByType } from "./3d/ShapeGeometries";
+
+// Debounce hook for smooth updates without flickering
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export interface ScanDirectionArrow {
   direction: string;
@@ -100,20 +117,44 @@ const HollowRing = ({ material, outerRadius, innerRadius, height }: { material: 
 };
 
 const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
+  // Debounce dimensions to prevent flickering during typing
+  const debouncedDimensions = useDebounce(dimensions, 300);
+  
   // Get metallic material based on material type (aerospace metals)
   const metalMaterial = useMemo(() => getMaterialByMaterialType(material), [material]);
 
-  // Calculate scale based on dimensions
+  // Calculate scale based on debounced dimensions
   const scale = useMemo((): [number, number, number] => {
-    if (!dimensions) return [1, 1, 1];
+    if (!debouncedDimensions) return [1, 1, 1];
     
     const baseSize = 1;
-    const scaleX = dimensions.length ? dimensions.length / 100 : baseSize;
-    const scaleY = dimensions.thickness ? dimensions.thickness / 50 : baseSize;
-    const scaleZ = dimensions.width ? dimensions.width / 75 : baseSize;
+    const scaleX = debouncedDimensions.length ? debouncedDimensions.length / 100 : baseSize;
+    const scaleY = debouncedDimensions.thickness ? debouncedDimensions.thickness / 50 : baseSize;
+    const scaleZ = debouncedDimensions.width ? debouncedDimensions.width / 75 : baseSize;
     
     return [scaleX, scaleY, scaleZ];
-  }, [dimensions]);
+  }, [debouncedDimensions]);
+
+  // Memoize geometry parameters to prevent unnecessary recalculation
+  const geometryParams = useMemo(() => ({
+    isHollow: debouncedDimensions?.isHollow,
+    outerDiameter: debouncedDimensions?.diameter,
+    innerDiameter: debouncedDimensions?.innerDiameter,
+    length: debouncedDimensions?.length,
+    width: debouncedDimensions?.width,
+    thickness: debouncedDimensions?.thickness,
+    innerLength: debouncedDimensions?.innerLength,
+    innerWidth: debouncedDimensions?.innerWidth,
+  }), [
+    debouncedDimensions?.isHollow,
+    debouncedDimensions?.diameter,
+    debouncedDimensions?.innerDiameter,
+    debouncedDimensions?.length,
+    debouncedDimensions?.width,
+    debouncedDimensions?.thickness,
+    debouncedDimensions?.innerLength,
+    debouncedDimensions?.innerWidth,
+  ]);
 
   if (!partType) {
     return (
@@ -126,18 +167,8 @@ const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
 
   // Use the same geometry as Shape3DViewer for consistency
   const geometry = useMemo(() => {
-    const params = {
-      isHollow: dimensions?.isHollow,
-      outerDiameter: dimensions?.diameter,
-      innerDiameter: dimensions?.innerDiameter,
-      length: dimensions?.length,
-      width: dimensions?.width,
-      thickness: dimensions?.thickness,
-      innerLength: dimensions?.innerLength,
-      innerWidth: dimensions?.innerWidth,
-    };
-    return getGeometryByType(partType, params);
-  }, [partType, dimensions]);
+    return getGeometryByType(partType, geometryParams);
+  }, [partType, geometryParams]);
   
   return (
     <mesh castShadow receiveShadow geometry={geometry} material={metalMaterial} scale={scale} />
@@ -154,13 +185,10 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
     }
   };
 
-  // Re-render when part type, material, or dimensions change
+  // Only re-render Canvas when part type or material changes (not dimensions - handled by Part component)
   const viewerKey = useMemo(() => {
-    const dimKey = props.dimensions 
-      ? `${props.dimensions.length}-${props.dimensions.width}-${props.dimensions.thickness}-${props.dimensions.diameter}`
-      : 'no-dims';
-    return `${props.partType}-${props.material}-${dimKey}`;
-  }, [props.partType, props.material, props.dimensions]);
+    return `${props.partType}-${props.material}`;
+  }, [props.partType, props.material]);
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border border-border overflow-hidden">
