@@ -20,7 +20,8 @@ import { ProbeDetailsTab } from "@/components/tabs/ProbeDetailsTab";
 import { ScansTab } from "@/components/tabs/ScansTab";
 import { RemarksTab } from "@/components/tabs/RemarksTab";
 import { ScanDetailsTab, ScanDetailsData } from "@/components/tabs/ScanDetailsTab";
-import { 
+import { TechnicalDrawingTab } from "@/components/tabs/TechnicalDrawingTab";
+import {
   StandardType, 
   InspectionSetupData, 
   EquipmentData, 
@@ -677,6 +678,7 @@ const Index = () => {
                   <>
                     <TabsList className="inline-flex flex-wrap md:flex-nowrap h-auto md:h-10 items-center justify-start md:justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
                       <TabsTrigger value="setup" className="flex-1 md:flex-initial min-w-[100px]">Setup</TabsTrigger>
+                      <TabsTrigger value="drawing" className="flex-1 md:flex-initial min-w-[100px]">Technical Drawing</TabsTrigger>
                       <TabsTrigger value="equipment" className="flex-1 md:flex-initial min-w-[100px]">Equipment</TabsTrigger>
                       <TabsTrigger value="calibration" className="flex-1 md:flex-initial min-w-[100px]">Reference Standard</TabsTrigger>
                       <TabsTrigger value="scan" className="flex-1 md:flex-initial min-w-[100px]">Scan Params</TabsTrigger>
@@ -692,6 +694,27 @@ const Index = () => {
                           onChange={currentData.setInspectionSetup}
                           acceptanceClass={currentData.acceptanceCriteria.acceptanceClass}
                         />
+                      </TabsContent>
+
+                      <TabsContent value="drawing" className="m-0">
+                        {currentData.inspectionSetup.partType ? (
+                          <TechnicalDrawingTab
+                            partType={currentData.inspectionSetup.partType}
+                            dimensions={{
+                              length: currentData.inspectionSetup.partLength || 100,
+                              width: currentData.inspectionSetup.partWidth || 50,
+                              thickness: currentData.inspectionSetup.partThickness || 10,
+                              diameter: currentData.inspectionSetup.diameter || undefined,
+                            }}
+                            material={currentData.inspectionSetup.material as MaterialType}
+                          />
+                        ) : (
+                          <div className="p-6 text-center">
+                            <p className="text-muted-foreground">
+                              Please select a part type in the Setup tab to view the technical drawing.
+                            </p>
+                          </div>
+                        )}
                       </TabsContent>
 
                       <TabsContent value="equipment" className="m-0">
