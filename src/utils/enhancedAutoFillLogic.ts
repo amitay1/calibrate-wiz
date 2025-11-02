@@ -64,6 +64,107 @@ export interface GeometryInspectionRules {
 }
 
 export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionRules> = {
+  // ============= BASE GEOMETRIES =============
+  box: {
+    displayName: "Box (Plates, Bars, Blocks)",
+    scanDirection: ["Straight beam perpendicular to surface", "Multi-axis raster"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Adjust scan pattern based on W/T ratio", "Consider surface resolution requirements"],
+    specialNotes: ["Versatile geometry - use dimensional parameters to adapt inspection"],
+    diagramReference: "Base Geometry - Box"
+  },
+  cylinder: {
+    displayName: "Cylinder (Bars, Shafts, Disks)",
+    scanDirection: ["Radial scan from circumference", "Axial scan", "Circumferential scan"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Full coverage required", "Use appropriate calibration block"],
+    specialNotes: ["Adapt to length/diameter ratio"],
+    diagramReference: "Base Geometry - Cylinder"
+  },
+  tube: {
+    displayName: "Tube (Hollow Cylinders, Rings)",
+    scanDirection: ["Helical scan", "Circumferential scan", "Radial through wall"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Check both ID and OD surfaces", "Monitor wall thickness variation"],
+    specialNotes: ["Immersion technique preferred"],
+    diagramReference: "Base Geometry - Tube"
+  },
+  rectangular_tube: {
+    displayName: "Rectangular Tube",
+    scanDirection: ["Perimeter scan", "Indexed coverage"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Check all four faces"],
+    specialNotes: ["Inspect corners and welds if applicable"],
+    diagramReference: "Base Geometry - Rectangular Tube"
+  },
+  hexagon: {
+    displayName: "Hexagon Bar",
+    scanDirection: ["From three adjacent faces minimum"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Scan with straight beam from three adjacent faces"],
+    specialNotes: ["May require scanning from opposite sides for thick sections"],
+    diagramReference: "Base Geometry - Hexagon"
+  },
+  sphere: {
+    displayName: "Sphere",
+    scanDirection: ["Multi-angle spherical"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Immersion required"],
+    specialNotes: ["Positioning system needed"],
+    diagramReference: "Base Geometry - Sphere"
+  },
+  cone: {
+    displayName: "Cone",
+    scanDirection: ["Axial", "Circumferential"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Angle-compensated scanning"],
+    specialNotes: ["Account for taper angle"],
+    diagramReference: "Base Geometry - Cone"
+  },
+  
+  // ============= STRUCTURAL PROFILES =============
+  l_profile: {
+    displayName: "L-Profile (Angle)",
+    scanDirection: ["Axial along legs", "Radial from edges"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Scan flanges and web separately"],
+    specialNotes: ["Check corner fillet"],
+    diagramReference: "Structural - L-Profile"
+  },
+  t_profile: {
+    displayName: "T-Profile",
+    scanDirection: ["Axial", "Indexed transverse per feature"],
+    waveMode: ["Longitudinal"],
+    conditions: ["T-section requires multi-orientation scans"],
+    specialNotes: ["Scan from multiple surfaces"],
+    diagramReference: "Structural - T-Profile"
+  },
+  i_profile: {
+    displayName: "I-Profile (I-Beam)",
+    scanDirection: ["Axial", "Indexed scans on flanges and web"],
+    waveMode: ["Longitudinal"],
+    conditions: ["I-beam geometry"],
+    specialNotes: ["Scan from multiple surfaces"],
+    diagramReference: "Structural - I-Profile"
+  },
+  u_profile: {
+    displayName: "U-Profile (Channel)",
+    scanDirection: ["Axial", "Transverse indexed scans"],
+    waveMode: ["Longitudinal"],
+    conditions: ["U-channel requires coverage of all faces"],
+    specialNotes: ["Check web and flanges"],
+    diagramReference: "Structural - U-Profile"
+  },
+  z_profile: {
+    displayName: "Z-Profile",
+    scanDirection: ["Axial along profile"],
+    waveMode: ["Longitudinal"],
+    conditions: ["Coverage of all faces"],
+    specialNotes: ["Check web and flanges"],
+    diagramReference: "Structural - Z-Profile"
+  },
+  
+  // ============= LEGACY MAPPINGS =============
   plate: {
     displayName: "Plate and Flat Bar",
     scanDirection: ["Straight beam perpendicular to surface"],
@@ -172,14 +273,6 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     specialNotes: ["Check grain structure effects", "Use specific forging type if known"],
     diagramReference: "Generic Forging"
   },
-  tube: {
-    displayName: "Tube",
-    scanDirection: ["Helical scan", "Circumferential scan"],
-    waveMode: ["Longitudinal"],
-    conditions: ["Check both ID and OD surfaces", "Monitor wall thickness variation"],
-    specialNotes: ["Immersion technique preferred"],
-    diagramReference: "Tube"
-  },
   ring: {
     displayName: "Ring (Generic)",
     scanDirection: ["Circumferential", "Axial", "Radial"],
@@ -196,7 +289,6 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     specialNotes: ["Rim inspection critical", "Use disk_forging type if applicable"],
     diagramReference: "Generic Disk"
   },
-  // NEW SHAPES
   sheet: {
     displayName: "Sheet",
     scanDirection: ["Two-axis raster"],
@@ -317,15 +409,6 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     specialNotes: ["Check corner fillet"],
     diagramReference: "Angle"
   },
-  // New part types
-  rectangular_tube: {
-    displayName: "Rectangular Tube",
-    scanDirection: ["Perimeter scan", "Indexed coverage"],
-    waveMode: ["Longitudinal"],
-    conditions: ["Check all four faces"],
-    specialNotes: ["Inspect corners and welds if applicable"],
-    diagramReference: "Rectangular Tube"
-  },
   square_tube: {
     displayName: "Square Tube",
     scanDirection: ["Perimeter scan"],
@@ -333,14 +416,6 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     conditions: ["Uniform coverage of all faces"],
     specialNotes: ["Check wall thickness uniformity"],
     diagramReference: "Square Tube"
-  },
-  cylinder: {
-    displayName: "Machined Cylinder",
-    scanDirection: ["Circumferential", "Axial"],
-    waveMode: ["Longitudinal", "Shear"],
-    conditions: ["Full volume coverage"],
-    specialNotes: ["Check for machining defects"],
-    diagramReference: "Cylinder"
   },
   rectangular_forging_stock: {
     displayName: "Rectangular Forging Stock",
@@ -389,22 +464,6 @@ export const GEOMETRY_INSPECTION_RULES: Record<PartGeometry, GeometryInspectionR
     conditions: ["Follow parent material inspection"],
     specialNotes: ["Refer to source material specs"],
     diagramReference: "Machined"
-  },
-  sphere: {
-    displayName: "Machined Sphere",
-    scanDirection: ["Multi-angle spherical"],
-    waveMode: ["Longitudinal"],
-    conditions: ["Immersion required"],
-    specialNotes: ["Positioning system needed"],
-    diagramReference: "Sphere"
-  },
-  cone: {
-    displayName: "Machined Cone",
-    scanDirection: ["Axial", "Circumferential"],
-    waveMode: ["Longitudinal"],
-    conditions: ["Angle-compensated scanning"],
-    specialNotes: ["Account for taper angle"],
-    diagramReference: "Cone"
   },
   custom: {
     displayName: "Custom Geometry",

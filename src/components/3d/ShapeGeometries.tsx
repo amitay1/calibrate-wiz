@@ -22,299 +22,32 @@ function perfectCenter(geometry: THREE.BufferGeometry): THREE.BufferGeometry {
  */
 
 export const ShapeGeometries = {
-  // PLATES & SHEETS - All centered at origin
-  plate: () => {
-    const geometry = new THREE.BoxGeometry(2.5, 0.3, 1.5);
+  // ============= BASE GEOMETRIES =============
+  box: () => {
+    const geometry = new THREE.BoxGeometry(2, 1, 1.5);
     return perfectCenter(geometry);
   },
   
-  sheet: () => {
-    const geometry = new THREE.BoxGeometry(2.5, 0.08, 1.5);
-    return perfectCenter(geometry);
-  },
-  
-  slab: () => {
-    const geometry = new THREE.BoxGeometry(2, 0.8, 1.4);
-    return perfectCenter(geometry);
-  },
-  
-  // BARS - All centered
-  flat_bar: () => {
-    const geometry = new THREE.BoxGeometry(2.5, 0.5, 0.8);
-    return perfectCenter(geometry);
-  },
-  
-  rectangular_bar: () => {
-    const geometry = new THREE.BoxGeometry(2, 0.6, 0.8);
-    return perfectCenter(geometry);
-  },
-  
-  square_bar: () => {
-    const geometry = new THREE.BoxGeometry(0.8, 2, 0.8);
-    return perfectCenter(geometry);
-  },
-  
-  round_bar: () => {
-    const geometry = new THREE.CylinderGeometry(0.4, 0.4, 2.5, 32);
+  cylinder: () => {
+    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
     geometry.rotateZ(Math.PI / 2);
     return perfectCenter(geometry);
   },
   
-  shaft: () => {
-    const geometry = new THREE.CylinderGeometry(0.35, 0.35, 3, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  // HEX BAR - Centered
-  hex_bar: () => {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 6);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  // TUBES & PIPES - All centered
   tube: () => {
-    const outerRadius = 0.5;
-    const geometry = new THREE.CylinderGeometry(outerRadius, outerRadius, 2, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  pipe: () => {
-    const geometry = new THREE.CylinderGeometry(0.45, 0.45, 2.5, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  sleeve: () => {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  bushing: () => {
-    const geometry = new THREE.CylinderGeometry(0.45, 0.45, 0.8, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  // DISKS - Centered
-  disk: () => {
-    const geometry = new THREE.CylinderGeometry(1, 1, 0.25, 32);
-    return perfectCenter(geometry);
-  },
-  
-  disk_forging: () => {
-    const geometry = new THREE.CylinderGeometry(1.1, 1.1, 0.4, 32);
-    return perfectCenter(geometry);
-  },
-  
-  // RINGS - Centered
-  ring: () => {
     const geometry = new THREE.TorusGeometry(0.8, 0.25, 16, 32);
     geometry.rotateX(Math.PI / 2);
     return perfectCenter(geometry);
   },
   
-  ring_forging: () => {
-    const geometry = new THREE.TorusGeometry(0.9, 0.35, 16, 32);
-    geometry.rotateX(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  // FORGINGS - Centered
-  forging: () => {
-    const geometry = new THREE.SphereGeometry(0.7, 16, 16);
-    geometry.scale(1.2, 0.8, 1);
-    return perfectCenter(geometry);
-  },
-  
-  round_forging_stock: () => {
-    const geometry = new THREE.CylinderGeometry(0.7, 0.65, 1.5, 32);
-    geometry.rotateZ(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  // BILLETS & BLOCKS - Centered
-  billet: () => {
-    const geometry = new THREE.BoxGeometry(1.8, 0.8, 0.8);
-    return perfectCenter(geometry);
-  },
-  
-  block: () => {
-    const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-    return perfectCenter(geometry);
-  },
-  
-  // EXTRUSIONS - All centered properly
-  extrusion_angle: () => {
-    // L-shape (Angle)
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.4, -0.4);
-    shape.lineTo(0.4, -0.4);
-    shape.lineTo(0.4, -0.2);
-    shape.lineTo(-0.2, -0.2);
-    shape.lineTo(-0.2, 0.4);
-    shape.lineTo(-0.4, 0.4);
-    shape.lineTo(-0.4, -0.4);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: 2,
-      bevelEnabled: false,
-    };
-    
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  extrusion_t: () => {
-    // T-shape
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.4, -0.4);
-    shape.lineTo(0.4, -0.4);
-    shape.lineTo(0.4, -0.2);
-    shape.lineTo(0.1, -0.2);
-    shape.lineTo(0.1, 0.4);
-    shape.lineTo(-0.1, 0.4);
-    shape.lineTo(-0.1, -0.2);
-    shape.lineTo(-0.4, -0.2);
-    shape.lineTo(-0.4, -0.4);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: 2,
-      bevelEnabled: false,
-    };
-    
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  extrusion_i: () => {
-    // I-beam
-    const geometry = new THREE.BoxGeometry(0.6, 2, 0.15);
-    return perfectCenter(geometry);
-  },
-  
-  extrusion_u: () => {
-    // U-channel
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.3, -0.4);
-    shape.lineTo(-0.3, 0.4);
-    shape.lineTo(0.3, 0.4);
-    shape.lineTo(0.3, -0.4);
-    shape.lineTo(0.2, -0.4);
-    shape.lineTo(0.2, 0.3);
-    shape.lineTo(-0.2, 0.3);
-    shape.lineTo(-0.2, -0.4);
-    shape.lineTo(-0.3, -0.4);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: 2,
-      bevelEnabled: false,
-    };
-    
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  extrusion_channel: () => {
-    // Channel - with shorter flanges
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.35, -0.4);
-    shape.lineTo(-0.35, 0.4);
-    shape.lineTo(0.35, 0.4);
-    shape.lineTo(0.35, -0.4);
-    shape.lineTo(0.25, -0.4);
-    shape.lineTo(0.25, 0.2);
-    shape.lineTo(-0.25, 0.2);
-    shape.lineTo(-0.25, -0.4);
-    shape.lineTo(-0.35, -0.4);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: 2,
-      bevelEnabled: false,
-    };
-    
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  
-  // NEW GEOMETRIES - All centered
   rectangular_tube: () => {
     const geometry = new THREE.BoxGeometry(1, 2, 0.6);
     return perfectCenter(geometry);
   },
   
-  square_tube: () => {
-    const geometry = new THREE.BoxGeometry(1, 2, 1);
-    return perfectCenter(geometry);
-  },
-  
-  rectangular_forging_stock: () => {
-    const geometry = new THREE.BoxGeometry(1.5, 0.8, 0.8);
-    return perfectCenter(geometry);
-  },
-  
-  hub: () => {
-    // Hub with flange
-    const geometry = new THREE.CylinderGeometry(0.8, 0.8, 0.6, 32);
-    return perfectCenter(geometry);
-  },
-  
-  near_net_forging: () => {
-    const geometry = new THREE.SphereGeometry(0.8, 16, 16);
-    geometry.scale(1.3, 0.9, 1);
-    return perfectCenter(geometry);
-  },
-  
-  z_section: () => {
-    // Z-shaped profile centered
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.3, -0.5);
-    shape.lineTo(0.3, -0.5);
-    shape.lineTo(0.3, -0.3);
-    shape.lineTo(0, 0);
-    shape.lineTo(0.3, 0.3);
-    shape.lineTo(0.3, 0.5);
-    shape.lineTo(-0.3, 0.5);
-    shape.lineTo(-0.3, 0.3);
-    shape.lineTo(0, 0);
-    shape.lineTo(-0.3, -0.3);
-    shape.lineTo(-0.3, -0.5);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: 2,
-      bevelEnabled: false,
-    };
-    
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(Math.PI / 2);
-    return perfectCenter(geometry);
-  },
-  
-  custom_profile: () => {
-    const geometry = new THREE.BoxGeometry(0.8, 2, 0.6);
-    return perfectCenter(geometry);
-  },
-  
-  machined_component: () => {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    return perfectCenter(geometry);
-  },
-  
-  cylinder: () => {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32);
+  hexagon: () => {
+    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 6);
+    geometry.rotateZ(Math.PI / 2);
     return perfectCenter(geometry);
   },
   
@@ -328,10 +61,126 @@ export const ShapeGeometries = {
     return perfectCenter(geometry);
   },
   
-  custom: () => {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+  // ============= STRUCTURAL PROFILES =============
+  l_profile: () => {
+    const shape = new THREE.Shape();
+    shape.moveTo(-0.4, -0.4);
+    shape.lineTo(0.4, -0.4);
+    shape.lineTo(0.4, -0.2);
+    shape.lineTo(-0.2, -0.2);
+    shape.lineTo(-0.2, 0.4);
+    shape.lineTo(-0.4, 0.4);
+    shape.lineTo(-0.4, -0.4);
+    
+    const extrudeSettings = { steps: 1, depth: 2, bevelEnabled: false };
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.rotateY(Math.PI / 2);
     return perfectCenter(geometry);
   },
+  
+  t_profile: () => {
+    const shape = new THREE.Shape();
+    shape.moveTo(-0.4, -0.4);
+    shape.lineTo(0.4, -0.4);
+    shape.lineTo(0.4, -0.2);
+    shape.lineTo(0.1, -0.2);
+    shape.lineTo(0.1, 0.4);
+    shape.lineTo(-0.1, 0.4);
+    shape.lineTo(-0.1, -0.2);
+    shape.lineTo(-0.4, -0.2);
+    shape.lineTo(-0.4, -0.4);
+    
+    const extrudeSettings = { steps: 1, depth: 2, bevelEnabled: false };
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.rotateY(Math.PI / 2);
+    return perfectCenter(geometry);
+  },
+  
+  i_profile: () => {
+    const geometry = new THREE.BoxGeometry(0.6, 2, 0.15);
+    return perfectCenter(geometry);
+  },
+  
+  u_profile: () => {
+    const shape = new THREE.Shape();
+    shape.moveTo(-0.3, -0.4);
+    shape.lineTo(-0.3, 0.4);
+    shape.lineTo(0.3, 0.4);
+    shape.lineTo(0.3, -0.4);
+    shape.lineTo(0.2, -0.4);
+    shape.lineTo(0.2, 0.3);
+    shape.lineTo(-0.2, 0.3);
+    shape.lineTo(-0.2, -0.4);
+    shape.lineTo(-0.3, -0.4);
+    
+    const extrudeSettings = { steps: 1, depth: 2, bevelEnabled: false };
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.rotateY(Math.PI / 2);
+    return perfectCenter(geometry);
+  },
+  
+  z_profile: () => {
+    const shape = new THREE.Shape();
+    shape.moveTo(-0.3, -0.5);
+    shape.lineTo(0.3, -0.5);
+    shape.lineTo(0.3, -0.3);
+    shape.lineTo(0, 0);
+    shape.lineTo(0.3, 0.3);
+    shape.lineTo(0.3, 0.5);
+    shape.lineTo(-0.3, 0.5);
+    shape.lineTo(-0.3, 0.3);
+    shape.lineTo(0, 0);
+    shape.lineTo(-0.3, -0.3);
+    shape.lineTo(-0.3, -0.5);
+    
+    const extrudeSettings = { steps: 1, depth: 2, bevelEnabled: false };
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.rotateY(Math.PI / 2);
+    return perfectCenter(geometry);
+  },
+  
+  // ============= LEGACY MAPPINGS (for backward compatibility) =============
+  plate: () => ShapeGeometries.box(),
+  sheet: () => ShapeGeometries.box(),
+  slab: () => ShapeGeometries.box(),
+  flat_bar: () => ShapeGeometries.box(),
+  rectangular_bar: () => ShapeGeometries.box(),
+  square_bar: () => ShapeGeometries.box(),
+  billet: () => ShapeGeometries.box(),
+  block: () => ShapeGeometries.box(),
+  
+  round_bar: () => ShapeGeometries.cylinder(),
+  shaft: () => ShapeGeometries.cylinder(),
+  disk: () => ShapeGeometries.cylinder(),
+  disk_forging: () => ShapeGeometries.cylinder(),
+  hub: () => ShapeGeometries.cylinder(),
+  
+  pipe: () => ShapeGeometries.tube(),
+  ring: () => ShapeGeometries.tube(),
+  ring_forging: () => ShapeGeometries.tube(),
+  sleeve: () => ShapeGeometries.tube(),
+  bushing: () => ShapeGeometries.tube(),
+  
+  square_tube: () => ShapeGeometries.rectangular_tube(),
+  
+  hex_bar: () => ShapeGeometries.hexagon(),
+  
+  extrusion_l: () => ShapeGeometries.l_profile(),
+  extrusion_angle: () => ShapeGeometries.l_profile(),
+  extrusion_t: () => ShapeGeometries.t_profile(),
+  extrusion_i: () => ShapeGeometries.i_profile(),
+  extrusion_u: () => ShapeGeometries.u_profile(),
+  extrusion_channel: () => ShapeGeometries.u_profile(),
+  
+  // Generic fallbacks
+  bar: () => ShapeGeometries.box(),
+  forging: () => ShapeGeometries.cylinder(),
+  round_forging_stock: () => ShapeGeometries.cylinder(),
+  rectangular_forging_stock: () => ShapeGeometries.box(),
+  near_net_forging: () => ShapeGeometries.cylinder(),
+  machined_component: () => ShapeGeometries.box(),
+  custom_profile: () => ShapeGeometries.box(),
+  custom: () => ShapeGeometries.box(),
 };
 
 /**

@@ -26,269 +26,91 @@ interface CategoryGroup {
 
 const categoryGroups: CategoryGroup[] = [
   {
-    category: "Forging Stock",
-    description: "Wrought feed material intended to be forged",
-    icon: "🔨",
+    category: "Basic Geometries",
+    description: "Fundamental geometric shapes for all part types",
+    icon: "🔷",
     options: [
       {
-        value: "round_forging_stock",
-        label: "Round Section",
-        description: "Round forging stock for forging operations",
-        color: "#E74C3C",
+        value: "box",
+        label: "Box",
+        description: "Plates, bars, blocks, billets (adjustable dimensions)",
+        color: "#4A90E2"
       },
       {
-        value: "rectangular_forging_stock",
-        label: "Rectangular/Billet Section",
-        description: "Rectangular billet section for forging",
-        color: "#E67E22",
-      },
-    ],
-  },
-  {
-    category: "Forgings",
-    description: "Parts produced by forging operations",
-    icon: "⚒️",
-    options: [
-      {
-        value: "ring_forging",
-        label: "Ring Forging",
-        description: "Forged ring component",
-        color: "#9B59B6",
-      },
-      {
-        value: "disk_forging",
-        label: "Disk Forging",
-        description: "Forged disk component",
-        color: "#8E44AD",
-      },
-      {
-        value: "hub",
-        label: "Hub",
-        description: "Forged hub component",
-        color: "#3498DB",
-      },
-      {
-        value: "shaft",
-        label: "Shaft",
-        description: "Forged shaft component",
-        color: "#2980B9",
-      },
-      {
-        value: "near_net_forging",
-        label: "Near-Net Forging",
-        description: "Near-net shape forging",
-        color: "#1ABC9C",
-      },
-    ],
-  },
-  {
-    category: "Rolled Billet or Plate",
-    description: "Flat-rolled rectangular products",
-    icon: "📐",
-    options: [
-      {
-        value: "billet",
-        label: "Billet",
-        description: "Thick rectangular section for further processing",
-        color: "#16A085",
-      },
-      {
-        value: "plate",
-        label: "Plate",
-        description: "Flat product of specified thickness",
-        color: "#4A90E2",
-      },
-      {
-        value: "sheet",
-        label: "Sheet",
-        description: "Thin flat sheet metal",
-        color: "#27AE60",
-      },
-      {
-        value: "slab",
-        label: "Slab",
-        description: "Very thick flat product",
-        color: "#2563eb",
-      },
-    ],
-  },
-  {
-    category: "Extruded or Rolled Bars",
-    description: "Long, solid, constant cross-section products",
-    icon: "📏",
-    options: [
-      {
-        value: "round_bar",
-        label: "Round Bar",
-        description: "Solid round bar",
-        color: "#F39C12",
-      },
-      {
-        value: "square_bar",
-        label: "Square Bar",
-        description: "Solid square bar",
-        color: "#E67E22",
-      },
-      {
-        value: "rectangular_bar",
-        label: "Rectangular/Flat Bar",
-        description: "Solid rectangular or flat bar",
-        color: "#D35400",
-      },
-      {
-        value: "hex_bar",
-        label: "Hex Bar",
-        description: "Solid hexagonal bar",
-        color: "#C0392B",
-      },
-      {
-        value: "flat_bar",
-        label: "Flat Bar",
-        description: "Thin rectangular bar",
-        color: "#059669",
-      },
-    ],
-  },
-  {
-    category: "Extruded or Rolled Shapes",
-    description: "Structural or custom profiles",
-    icon: "🏗️",
-    options: [
-      {
-        value: "extrusion_angle",
-        label: "L (Angle)",
-        description: "Angle section profile",
-        color: "#E74C3C",
-      },
-      {
-        value: "extrusion_t",
-        label: "T Section",
-        description: "T-shaped structural profile",
-        color: "#C0392B",
-      },
-      {
-        value: "extrusion_i",
-        label: "I/H-Beam",
-        description: "I or H beam structural profile",
-        color: "#E67E22",
-      },
-      {
-        value: "extrusion_u",
-        label: "U/C-Channel",
-        description: "U or C channel profile",
-        color: "#D35400",
-      },
-      {
-        value: "extrusion_channel",
-        label: "Channel Section",
-        description: "Channel structural profile",
-        color: "#0c4a6e",
-      },
-      {
-        value: "z_section",
-        label: "Z Section",
-        description: "Z-shaped profile",
-        color: "#F39C12",
+        value: "cylinder",
+        label: "Cylinder",
+        description: "Round bars, shafts, disks (adjustable diameter & length)",
+        color: "#50C878"
       },
       {
         value: "tube",
         label: "Tube",
-        description: "Hollow cylindrical tube profile",
-        color: "#95A5A6",
-      },
-      {
-        value: "pipe",
-        label: "Pipe",
-        description: "Hollow pipe profile",
-        color: "#7F8C8D",
+        description: "Hollow cylinders - tubes, pipes, rings, sleeves",
+        color: "#FFB84D"
       },
       {
         value: "rectangular_tube",
         label: "Rectangular Tube",
-        description: "Hollow rectangular profile",
-        color: "#34495E",
+        description: "Hollow rectangular sections",
+        color: "#E74C3C"
       },
       {
-        value: "square_tube",
-        label: "Square Tube",
-        description: "Hollow square profile",
-        color: "#2C3E50",
-      },
-      {
-        value: "custom_profile",
-        label: "Other Profiles",
-        description: "Custom open or closed profiles",
-        color: "#BDC3C7",
-      },
-    ],
-  },
-  {
-    category: "Machined Parts",
-    description: "Components machined from any of the above forms",
-    icon: "⚙️",
-    options: [
-      {
-        value: "machined_component",
-        label: "Machined Component",
-        description: "Any machined part from parent forms",
-        color: "#34495E",
-      },
-      {
-        value: "ring",
-        label: "Machined Ring",
-        description: "Machined ring component",
-        color: "#2C3E50",
-      },
-      {
-        value: "disk",
-        label: "Machined Disk",
-        description: "Machined disk component",
-        color: "#7F8C8D",
-      },
-      {
-        value: "cylinder",
-        label: "Machined Cylinder",
-        description: "Machined cylindrical component",
-        color: "#95A5A6",
+        value: "hexagon",
+        label: "Hexagon",
+        description: "Hexagonal bars and profiles",
+        color: "#9B59B6"
       },
       {
         value: "sphere",
-        label: "Machined Sphere",
-        description: "Machined spherical component",
-        color: "#BDC3C7",
+        label: "Sphere",
+        description: "Spherical parts",
+        color: "#3498DB"
       },
       {
         value: "cone",
-        label: "Machined Cone",
-        description: "Machined conical component",
-        color: "#ECF0F1",
-      },
-      {
-        value: "sleeve",
-        label: "Sleeve",
-        description: "Short hollow component",
-        color: "#94a3b8",
-      },
-      {
-        value: "bushing",
-        label: "Bushing",
-        description: "Bearing sleeve component",
-        color: "#64748b",
-      },
-      {
-        value: "block",
-        label: "Block",
-        description: "Solid machined block",
-        color: "#f59e0b",
-      },
-      {
-        value: "custom",
-        label: "Custom Machined",
-        description: "Custom machined geometry",
-        color: "#95A5A6",
-      },
-    ],
+        label: "Cone",
+        description: "Conical parts",
+        color: "#1ABC9C"
+      }
+    ]
   },
+  {
+    category: "Structural Profiles",
+    description: "Standard structural cross-sections",
+    icon: "🏗️",
+    options: [
+      {
+        value: "l_profile",
+        label: "L-Profile",
+        description: "Angle extrusions (90° L-shape)",
+        color: "#E67E22"
+      },
+      {
+        value: "t_profile",
+        label: "T-Profile",
+        description: "T-shaped beams and extrusions",
+        color: "#95A5A6"
+      },
+      {
+        value: "i_profile",
+        label: "I-Profile",
+        description: "I-beams (H-beams)",
+        color: "#34495E"
+      },
+      {
+        value: "u_profile",
+        label: "U-Profile",
+        description: "U-channels",
+        color: "#16A085"
+      },
+      {
+        value: "z_profile",
+        label: "Z-Profile",
+        description: "Z-sections",
+        color: "#D35400"
+      }
+    ]
+  }
 ];
 
 export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({

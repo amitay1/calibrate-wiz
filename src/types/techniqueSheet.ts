@@ -3,69 +3,31 @@ export type StandardType = "MIL-STD-2154" | "AMS-STD-2154E" | "ASTM-E-114";
 export type MaterialType = "aluminum" | "steel" | "stainless_steel" | "titanium" | "magnesium" | "custom";
 
 export type PartGeometry = 
-  // Plates & Sheets
-  | "plate" 
-  | "sheet"
-  | "slab"
+  // Basic Geometries
+  | "box"           // Plates, sheets, bars, blocks, billets
+  | "cylinder"      // Round bars, shafts, disks
+  | "tube"          // Tubes, pipes, rings, sleeves, bushings
+  | "rectangular_tube"  // Rectangular & square tubes
+  | "hexagon"       // Hex bars
+  | "sphere"        // Spheres
+  | "cone"          // Cones
   
-  // Bars (solid prismatic)
-  | "round_bar"
-  | "square_bar"
+  // Structural Profiles
+  | "l_profile"     // L-shaped extrusions (angle)
+  | "t_profile"     // T-shaped extrusions
+  | "i_profile"     // I-beams
+  | "u_profile"     // U-channels
+  | "z_profile"     // Z-sections
+  
+  // Legacy support (will be mapped to base shapes)
+  | "plate" | "sheet" | "slab" | "flat_bar" | "rectangular_bar" | "square_bar" | "billet" | "block"
+  | "round_bar" | "shaft" | "disk" | "disk_forging" | "hub"
+  | "pipe" | "ring" | "ring_forging" | "sleeve" | "bushing" | "square_tube"
   | "hex_bar"
-  | "rectangular_bar"
-  | "flat_bar"
-  | "bar" // Generic fallback
-  
-  // Tubes & Pipes (hollow)
-  | "tube"
-  | "pipe"
-  | "rectangular_tube"
-  | "square_tube"
-  
-  // Disks
-  | "disk"
-  | "disk_forging"
-  
-  // Rings
-  | "ring"
-  | "ring_forging"
-  
-  // Shafts & Cylinders
-  | "shaft"
-  | "cylinder"
-  
-  // Forgings
-  | "forging"
-  | "round_forging_stock"
-  | "rectangular_forging_stock"
-  | "hub"
-  | "near_net_forging"
-  
-  // Billets & Blocks
-  | "billet"
-  | "block"
-  
-  // Extrusions & Profiles
-  | "extrusion_l"
-  | "extrusion_t"
-  | "extrusion_i"
-  | "extrusion_u"
-  | "extrusion_channel"
-  | "extrusion_angle"
-  | "z_section"
-  | "custom_profile"
-  
-  // Machined Components
-  | "machined_component"
-  | "sphere"
-  | "cone"
-  
-  // Sleeves & Bushings
-  | "sleeve"
-  | "bushing"
-  
-  // Custom
-  | "custom";
+  | "extrusion_l" | "extrusion_angle" | "extrusion_t" | "extrusion_i" 
+  | "extrusion_u" | "extrusion_channel" | "z_section"
+  | "forging" | "round_forging_stock" | "rectangular_forging_stock" | "near_net_forging"
+  | "machined_component" | "custom_profile" | "bar" | "custom";
 
 export type AcceptanceClass = "AAA" | "AA" | "A" | "B" | "C";
 

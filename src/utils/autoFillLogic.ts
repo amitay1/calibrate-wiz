@@ -126,6 +126,83 @@ interface GeometryRecommendations {
 }
 
 export const geometryRecommendations: Record<PartGeometry, GeometryRecommendations> = {
+  // ============= BASE GEOMETRIES =============
+  box: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Raster scan or straight beam perpendicular to surface",
+    transducerType: "immersion",
+    specialConsiderations: "Versatile geometry - adjust scan pattern based on W/T ratio"
+  },
+  cylinder: {
+    calibrationBlockType: ["flat_block", "cylinder_fbh"],
+    scanPattern: "Radial scan from circumference and/or axial scan",
+    transducerType: "immersion",
+    specialConsiderations: "Full circumferential coverage - use curved block if diameter permits"
+  },
+  tube: {
+    calibrationBlockType: ["cylinder_fbh", "cylinder_notched", "curved_block"],
+    scanPattern: "Helical or circumferential scan",
+    transducerType: "immersion",
+    specialConsiderations: "Check both ID and OD surfaces, wall thickness variation"
+  },
+  rectangular_tube: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Full perimeter scan with indexed coverage",
+    transducerType: "contact",
+    specialConsiderations: "Check all four faces and corners"
+  },
+  hexagon: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Scan from three adjacent faces minimum",
+    transducerType: "contact",
+    specialConsiderations: "When T exceeds attenuation limit, scan from opposite sides"
+  },
+  sphere: {
+    calibrationBlockType: ["curved_block"],
+    scanPattern: "Multi-angle spherical coverage",
+    transducerType: "immersion",
+    specialConsiderations: "Requires immersion tank with positioning system"
+  },
+  cone: {
+    calibrationBlockType: ["flat_block", "curved_block"],
+    scanPattern: "Axial and circumferential",
+    transducerType: "immersion",
+    specialConsiderations: "Conical shape requires angle-compensated scanning"
+  },
+  
+  // ============= STRUCTURAL PROFILES =============
+  l_profile: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial along legs, radial from edges",
+    transducerType: "contact",
+    specialConsiderations: "Scan flanges and web separately. Check corners/fillets"
+  },
+  t_profile: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial and indexed transverse scans per feature",
+    transducerType: "contact",
+    specialConsiderations: "T-section requires multi-orientation scans"
+  },
+  i_profile: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial with indexed scans on flanges and web",
+    transducerType: "contact",
+    specialConsiderations: "I-beam geometry, scan from multiple surfaces"
+  },
+  u_profile: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial and transverse indexed scans",
+    transducerType: "contact",
+    specialConsiderations: "U-channel requires coverage of all faces"
+  },
+  z_profile: {
+    calibrationBlockType: ["flat_block"],
+    scanPattern: "Axial along profile",
+    transducerType: "contact",
+    specialConsiderations: "Z-section requires coverage of all faces"
+  },
+  
+  // ============= LEGACY MAPPINGS =============
   plate: {
     calibrationBlockType: ["flat_block"],
     scanPattern: "Raster scan, 0° and 90° directions",
@@ -186,12 +263,6 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     transducerType: "contact",
     specialConsiderations: "Generic forging - use specific type (ring_forging, disk_forging, etc.) if known. Match calibration block to part curvature."
   },
-  tube: {
-    calibrationBlockType: ["cylinder_fbh", "cylinder_notched"],
-    scanPattern: "Helical or circumferential scan",
-    transducerType: "immersion",
-    specialConsiderations: "Check both ID and OD surfaces, wall thickness variation"
-  },
   ring: {
     calibrationBlockType: ["curved_block", "cylinder_fbh"],
     scanPattern: "Circumferential scan, axial and radial",
@@ -204,7 +275,6 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     transducerType: "immersion",
     specialConsiderations: "Generic disk - use disk_forging if applicable. Center bore and rim inspection critical."
   },
-  // NEW SHAPES
   sheet: {
     calibrationBlockType: ["flat_block"],
     scanPattern: "Two-axis raster scan",
@@ -295,24 +365,11 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     transducerType: "contact",
     specialConsiderations: "Angle section requires scans along both legs."
   },
-  // New part types
-  rectangular_tube: {
-    calibrationBlockType: ["flat_block", "curved_block"],
-    scanPattern: "Full perimeter scan with indexed coverage",
-    transducerType: "contact",
-    specialConsiderations: "Check all four faces and corners."
-  },
   square_tube: {
     calibrationBlockType: ["flat_block", "curved_block"],
     scanPattern: "Full perimeter scan",
     transducerType: "contact",
     specialConsiderations: "Check all four faces uniformly."
-  },
-  cylinder: {
-    calibrationBlockType: ["cylinder_notched", "cylinder_fbh"],
-    scanPattern: "Circumferential and axial",
-    transducerType: "immersion",
-    specialConsiderations: "Full volume coverage required."
   },
   rectangular_forging_stock: {
     calibrationBlockType: ["flat_block"],
@@ -349,18 +406,6 @@ export const geometryRecommendations: Record<PartGeometry, GeometryRecommendatio
     scanPattern: "Drawing-specific",
     transducerType: "contact",
     specialConsiderations: "Follow parent form inspection method."
-  },
-  sphere: {
-    calibrationBlockType: ["curved_block"],
-    scanPattern: "Multi-angle spherical coverage",
-    transducerType: "immersion",
-    specialConsiderations: "Requires immersion tank with positioning system."
-  },
-  cone: {
-    calibrationBlockType: ["flat_block", "curved_block"],
-    scanPattern: "Axial and circumferential",
-    transducerType: "immersion",
-    specialConsiderations: "Conical shape requires angle-compensated scanning."
   },
   custom: {
     calibrationBlockType: ["flat_block"],
