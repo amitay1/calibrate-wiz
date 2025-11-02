@@ -225,17 +225,17 @@ export const ShapeGeometries = {
   },
   
   extrusion_channel: () => {
-    // Channel - centered
+    // Channel - with shorter flanges
     const shape = new THREE.Shape();
-    shape.moveTo(-0.3, -0.4);
-    shape.lineTo(-0.3, 0.4);
-    shape.lineTo(0.3, 0.4);
-    shape.lineTo(0.3, -0.4);
-    shape.lineTo(0.2, -0.4);
-    shape.lineTo(0.2, 0.3);
-    shape.lineTo(-0.2, 0.3);
-    shape.lineTo(-0.2, -0.4);
-    shape.lineTo(-0.3, -0.4);
+    shape.moveTo(-0.35, -0.4);
+    shape.lineTo(-0.35, 0.4);
+    shape.lineTo(0.35, 0.4);
+    shape.lineTo(0.35, -0.4);
+    shape.lineTo(0.25, -0.4);
+    shape.lineTo(0.25, 0.2);
+    shape.lineTo(-0.25, 0.2);
+    shape.lineTo(-0.25, -0.4);
+    shape.lineTo(-0.35, -0.4);
     
     const extrudeSettings = {
       steps: 1,
