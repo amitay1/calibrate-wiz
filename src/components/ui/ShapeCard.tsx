@@ -10,6 +10,7 @@ type Props = {
   description?: string;
   partType: string;
   color: string;
+  material?: string;
   isSelected: boolean;
   onClick: () => void;
 };
@@ -19,6 +20,7 @@ export default function ShapeCard({
   description,
   partType,
   color,
+  material,
   isSelected,
   onClick,
 }: Props) {
@@ -151,6 +153,7 @@ export default function ShapeCard({
           <Shape3DViewer
             partType={partType}
             color={color}
+            material={material}
             isHovered={isHovered}
             isActive={isActive}
             mouseX={sMx.get()}

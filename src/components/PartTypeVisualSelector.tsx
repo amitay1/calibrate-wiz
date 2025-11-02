@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 
 interface PartTypeVisualSelectorProps {
   value: string;
+  material?: string;
   onChange: (value: PartGeometry) => void;
 }
 
@@ -292,6 +293,7 @@ const categoryGroups: CategoryGroup[] = [
 
 export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
   value,
+  material,
   onChange,
 }) => {
   const [expandedCategory, setExpandedCategory] = useState<string>("");
@@ -362,6 +364,7 @@ export const PartTypeVisualSelector: React.FC<PartTypeVisualSelectorProps> = ({
                         description={option.description}
                         partType={option.value}
                         color={option.color}
+                        material={material}
                         isSelected={value === option.value}
                         onClick={() => handleShapeSelect(option.value)}
                       />

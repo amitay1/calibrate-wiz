@@ -3,21 +3,22 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 import { getGeometryByType } from './ShapeGeometries';
-import { getMaterialByType } from './ShapeMaterials';
+import { getMaterialByMaterialType } from './ShapeMaterials';
 
 interface Shape3DMeshProps {
   partType: string;
   color: string;
+  material?: string;
   isHovered: boolean;
   isActive: boolean;
   mouseX: number;
   mouseY: number;
 }
 
-function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: Shape3DMeshProps) {
+function Shape3DMesh({ partType, color, material, isHovered, isActive, mouseX, mouseY }: Shape3DMeshProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const geometry = getGeometryByType(partType);
-  const material = getMaterialByType(partType);
+  const metalMaterial = getMaterialByMaterialType(material);
   
   // Store initial state to reset to
   const initialStateRef = useRef({
@@ -113,24 +114,18 @@ function Shape3DMesh({ partType, color, isHovered, isActive, mouseX, mouseY }: S
     <mesh 
       ref={meshRef} 
       geometry={geometry} 
-      material={material}
+      material={metalMaterial}
       position={[0, 0, 0]}
       rotation={[0, 0, 0]}
       scale={1}
-    >
-      <meshStandardMaterial
-        color={color}
-        metalness={0.9}
-        roughness={0.3}
-        envMapIntensity={1.5}
-      />
-    </mesh>
+    />
   );
 }
 
 interface Shape3DViewerProps {
   partType: string;
   color: string;
+  material?: string;
   isHovered: boolean;
   isActive: boolean;
   mouseX: number;
@@ -140,6 +135,7 @@ interface Shape3DViewerProps {
 export default function Shape3DViewer({ 
   partType, 
   color, 
+  material,
   isHovered,
   isActive,
   mouseX,
@@ -246,6 +242,7 @@ export default function Shape3DViewer({
             <Shape3DMesh 
               partType={currentPartType} 
               color={color}
+              material={material}
               isHovered={isHovered}
               isActive={isActive}
               mouseX={mouseX}

@@ -224,6 +224,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
           >
             <PartTypeVisualSelector
               value={data.partType}
+              material={data.material}
               onChange={(value) => {
                 onChange({ 
                   ...data, 
