@@ -94,13 +94,25 @@ const HollowRing = ({ material, outerRadius, innerRadius, height }: { material: 
   );
 };
 
-const Part = ({ partType, material }: ThreeDViewerProps) => {
+const Part = ({ partType, material, dimensions }: ThreeDViewerProps) => {
   // Get metallic material based on material type (aerospace metals)
   const metalMaterial = useMemo(() => getMaterialByMaterialType(material), [material]);
 
+  // Calculate scale based on dimensions
+  const scale = useMemo((): [number, number, number] => {
+    if (!dimensions) return [1, 1, 1];
+    
+    const baseSize = 1;
+    const scaleX = dimensions.length ? dimensions.length / 100 : baseSize;
+    const scaleY = dimensions.thickness ? dimensions.thickness / 50 : baseSize;
+    const scaleZ = dimensions.width ? dimensions.width / 75 : baseSize;
+    
+    return [scaleX, scaleY, scaleZ];
+  }, [dimensions]);
+
   if (!partType) {
     return (
-      <mesh>
+      <mesh scale={scale}>
         <boxGeometry args={[1, 0.5, 0.5]} />
         <meshStandardMaterial color="#A0A0A0" metalness={0.8} roughness={0.3} />
       </mesh>
@@ -111,7 +123,7 @@ const Part = ({ partType, material }: ThreeDViewerProps) => {
   const geometry = useMemo(() => getGeometryByType(partType), [partType]);
   
   return (
-    <mesh castShadow receiveShadow geometry={geometry} material={metalMaterial} />
+    <mesh castShadow receiveShadow geometry={geometry} material={metalMaterial} scale={scale} />
   );
 };
 
@@ -125,10 +137,13 @@ export const ThreeDViewer = (props: ThreeDViewerProps) => {
     }
   };
 
-  // Only re-render when part type or material changes, NOT dimensions
+  // Re-render when part type, material, or dimensions change
   const viewerKey = useMemo(() => {
-    return `${props.partType}-${props.material}`;
-  }, [props.partType, props.material]);
+    const dimKey = props.dimensions 
+      ? `${props.dimensions.length}-${props.dimensions.width}-${props.dimensions.thickness}-${props.dimensions.diameter}`
+      : 'no-dims';
+    return `${props.partType}-${props.material}-${dimKey}`;
+  }, [props.partType, props.material, props.dimensions]);
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border border-border overflow-hidden">
