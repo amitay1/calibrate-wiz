@@ -92,6 +92,17 @@ export const standardRules: Record<StandardType, StandardRules> = {
       vertical: { min: 5, max: 98 },
       horizontal: { min: 90 }
     }
+  },
+  "ASTM-A388": {
+    defaultAcceptanceClass: "B",
+    minThickness: 25.4,
+    typicalFrequencies: ["1.0", "2.25", "5.0"],
+    couplantRecommendations: ["SAE No. 20 Motor Oil", "SAE No. 30 Motor Oil", "Glycerin", "Pine Oil", "Water"],
+    scanCoverageDefault: 100,
+    linearityRequirements: {
+      vertical: { min: 10, max: 95 },
+      horizontal: { min: 85 }
+    }
   }
 };
 

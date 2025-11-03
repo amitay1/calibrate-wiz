@@ -1,4 +1,6 @@
-export type StandardType = "AMS-STD-2154E";
+export type StandardType = 
+  | "AMS-STD-2154E"
+  | "ASTM-A388";
 
 export type MaterialType = "aluminum" | "steel" | "stainless_steel" | "titanium" | "magnesium" | "custom";
 

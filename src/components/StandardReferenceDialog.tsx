@@ -3,6 +3,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Dr
 import { Button } from "@/components/ui/button";
 import { FileText, ExternalLink } from "lucide-react";
 import { StandardReference } from "@/data/standardReferences";
+import { StandardType } from "@/types/techniqueSheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,20 +13,25 @@ interface StandardReferenceDialogProps {
   onOpenChange: (open: boolean) => void;
   reference: StandardReference | undefined;
   fieldLabel: string;
+  standardType?: StandardType;
 }
 
 export const StandardReferenceDialog = ({
   open,
   onOpenChange,
   reference,
-  fieldLabel
+  fieldLabel,
+  standardType = "AMS-STD-2154E"
 }: StandardReferenceDialogProps) => {
   const isMobile = useIsMobile();
   
   if (!reference) return null;
 
   const handleOpenPDF = () => {
-    window.open('/standards/MIL-STD-2154.pdf', '_blank');
+    const pdfPath = standardType === "ASTM-A388" 
+      ? '/standards/ASTM_A388.pdf' 
+      : '/standards/MIL-STD-2154.pdf';
+    window.open(pdfPath, '_blank');
   };
 
   const content = (
