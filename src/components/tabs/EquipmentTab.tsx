@@ -1,53 +1,13 @@
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EquipmentData } from "@/types/techniqueSheet";
-import { Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { FieldWithHelp } from "@/components/FieldWithHelp";
 
 interface EquipmentTabProps {
   data: EquipmentData;
   onChange: (data: EquipmentData) => void;
   partThickness: number;
 }
-
-const FieldWithHelp = ({ 
-  label, 
-  help, 
-  required, 
-  autoFilled,
-  children 
-}: { 
-  label: string; 
-  help: string; 
-  required?: boolean;
-  autoFilled?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center gap-2">
-      <Label className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {autoFilled && (
-        <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent">
-          Auto-filled
-        </Badge>
-      )}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-8 w-8"
-        title="Auto-fill will populate equipment details from your equipment database and previous reports."
-      >
-        <Info className="h-4 w-4" />
-      </Button>
-    </div>
-    {children}
-  </div>
-);
 
 const frequencies = ["1.0", "2.25", "5.0", "10.0", "15.0"];
 const transducerTypes = ["immersion", "contact", "dual_element"];
@@ -98,6 +58,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
           label="Equipment Manufacturer"
           help="UT equipment manufacturer name"
           required
+          fieldKey="manufacturer"
         >
           <Input
             value={data.manufacturer}
@@ -137,6 +98,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
           help={`Operating frequency - ${recommendedFreq} MHz recommended for ${partThickness}mm thickness`}
           required
           autoFilled={data.frequency === recommendedFreq}
+          fieldKey="frequency"
         >
           <Select
             value={data.frequency}

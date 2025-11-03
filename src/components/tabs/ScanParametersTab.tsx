@@ -1,46 +1,14 @@
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ScanParametersData } from "@/types/techniqueSheet";
-import { Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FieldWithHelp } from "@/components/FieldWithHelp";
 
 interface ScanParametersTabProps {
   data: ScanParametersData;
   onChange: (data: ScanParametersData) => void;
   standard: string;
 }
-
-const FieldWithHelp = ({ 
-  label, 
-  help, 
-  required, 
-  children 
-}: { 
-  label: string; 
-  help: string; 
-  required?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center gap-2">
-      <Label className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-8 w-8" 
-        title="Auto-fill will populate scan parameters based on the selected standard and part geometry."
-      >
-        <Info className="h-4 w-4" />
-      </Button>
-    </div>
-    {children}
-  </div>
-);
 
 export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTabProps) => {
   const updateField = (field: keyof ScanParametersData, value: any) => {
@@ -57,6 +25,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           label="Scan Method"
           help="Method of ultrasonic coupling per Section 5.4"
           required
+          fieldKey="scanMethod"
         >
           <Select
             value={data.scanMethod}
@@ -77,6 +46,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           label="Scan Type"
           help="Level of automation"
           required
+          fieldKey="scanType"
         >
           <Select
             value={data.scanType}
@@ -97,6 +67,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           label="Scan Speed (mm/s)"
           help={`Maximum ${maxScanSpeed}mm/s per standard`}
           required
+          fieldKey="scanSpeed"
         >
           <Input
             type="number"
@@ -117,6 +88,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           label="Scan Index (% of beam width)"
           help="Spacing between scan lines - maximum 70% per Section 5.4.12"
           required
+          fieldKey="scanIndex"
         >
           <Input
             type="number"
@@ -132,6 +104,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           label="Coverage (%)"
           help="Must be 100% per Section 5.4.2"
           required
+          fieldKey="coverage"
         >
           <Input
             type="number"
@@ -148,6 +121,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           label="Scan Pattern"
           help="Path pattern for coverage"
           required
+          fieldKey="scanPattern"
         >
           <Select
             value={data.scanPattern}
@@ -168,6 +142,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
           <FieldWithHelp
             label="Water Path (mm)"
             help="Distance between transducer and part surface"
+            fieldKey="waterPath"
           >
             <Input
               type="number"
@@ -182,6 +157,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
         <FieldWithHelp
           label="Pulse Repetition Rate (Hz)"
           help="PRF setting"
+          fieldKey="pulseRepetitionRate"
         >
           <Input
             type="number"
@@ -196,6 +172,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
         <FieldWithHelp
           label="Gain Settings (dB)"
           help="Gain used during inspection"
+          fieldKey="gainSettings"
         >
           <Input
             value={data.gainSettings}
@@ -209,6 +186,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
       <FieldWithHelp
         label="Alarm/Gate Settings"
         help="Description of gate positions and alarm levels per Section 5.2.3"
+        fieldKey="alarmGateSettings"
       >
         <Textarea
           value={data.alarmGateSettings}
