@@ -125,6 +125,10 @@ serve(async (req) => {
     }
 
     // Create Lemon Squeezy checkout
+    const storeId = Deno.env.get('LEMON_SQUEEZY_STORE_ID');
+    console.log('Store ID:', storeId);
+    console.log('Variant ID:', variantId);
+    
     const lemonSqueezyResponse = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
       method: 'POST',
       headers: {
@@ -149,7 +153,7 @@ serve(async (req) => {
             store: {
               data: {
                 type: 'stores',
-                id: Deno.env.get('LEMON_SQUEEZY_STORE_ID'),
+                id: storeId,
               },
             },
             variant: {
