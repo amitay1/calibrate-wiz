@@ -92,28 +92,6 @@ export const standardRules: Record<StandardType, StandardRules> = {
       vertical: { min: 5, max: 98 },
       horizontal: { min: 90 }
     }
-  },
-  "ASTM-E-114": {
-    defaultAcceptanceClass: "B",
-    minThickness: 6.35,
-    typicalFrequencies: ["1.0", "2.25", "5.0"],
-    couplantRecommendations: ["Water", "Oil-based gel", "Glycerin"],
-    scanCoverageDefault: 100,
-    linearityRequirements: {
-      vertical: { min: 10, max: 95 },
-      horizontal: { min: 85 }
-    }
-  },
-  "MIL-STD-2154": {
-    defaultAcceptanceClass: "A",
-    minThickness: 6.35,
-    typicalFrequencies: ["2.25", "5.0", "10.0"],
-    couplantRecommendations: ["Water", "Glycerin", "Couplant gel"],
-    scanCoverageDefault: 100,
-    linearityRequirements: {
-      vertical: { min: 10, max: 95 },
-      horizontal: { min: 85 }
-    }
   }
 };
 

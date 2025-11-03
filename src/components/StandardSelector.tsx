@@ -11,9 +11,7 @@ interface StandardSelectorProps {
 }
 
 const standards = [
-  { value: "MIL-STD-2154", label: "MIL-STD-2154 (Original, 1982)", description: "Military Standard - Ultrasonic" },
-  { value: "AMS-STD-2154E", label: "AMS-STD-2154E (Revision E, 2019)", description: "Aerospace Materials" },
-  { value: "ASTM-E-114", label: "ASTM E-114", description: "General Industrial" },
+  { value: "AMS-STD-2154E", label: "AMS-STD-2154E (Revision E)", description: "Aerospace Materials Specification - Ultrasonic Inspection" },
 ] as const;
 
 export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => {

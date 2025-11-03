@@ -1,4 +1,4 @@
-export type StandardType = "MIL-STD-2154" | "AMS-STD-2154E" | "ASTM-E-114";
+export type StandardType = "AMS-STD-2154E";
 
 export type MaterialType = "aluminum" | "steel" | "stainless_steel" | "titanium" | "magnesium" | "custom";
 
