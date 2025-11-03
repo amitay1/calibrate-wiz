@@ -23,9 +23,8 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Scan Method"
-          help="Method of ultrasonic coupling per Section 5.4"
+          fieldKey="scan_params.scan_method"
           required
-          fieldKey="scanMethod"
         >
           <Select
             value={data.scanMethod}
@@ -44,9 +43,8 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Type"
-          help="Level of automation"
+          fieldKey="scan_params.scan_type"
           required
-          fieldKey="scanType"
         >
           <Select
             value={data.scanType}
@@ -65,9 +63,8 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Speed (mm/s)"
-          help={`Maximum ${maxScanSpeed}mm/s per standard`}
+          fieldKey="scan_params.scan_speed"
           required
-          fieldKey="scanSpeed"
         >
           <Input
             type="number"
@@ -86,9 +83,8 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Index (% of beam width)"
-          help="Spacing between scan lines - maximum 70% per Section 5.4.12"
+          fieldKey="scan_params.scan_index"
           required
-          fieldKey="scanIndex"
         >
           <Input
             type="number"
@@ -102,9 +98,8 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Coverage (%)"
-          help="Must be 100% per Section 5.4.2"
+          fieldKey="scan_params.coverage"
           required
-          fieldKey="coverage"
         >
           <Input
             type="number"
@@ -119,9 +114,8 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Pattern"
-          help="Path pattern for coverage"
+          fieldKey="scan_params.scan_pattern"
           required
-          fieldKey="scanPattern"
         >
           <Select
             value={data.scanPattern}
@@ -141,8 +135,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
         {showWaterPath && (
           <FieldWithHelp
             label="Water Path (mm)"
-            help="Distance between transducer and part surface"
-            fieldKey="waterPath"
+            fieldKey="scan_params.water_path"
           >
             <Input
               type="number"
@@ -156,8 +149,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Pulse Repetition Rate (Hz)"
-          help="PRF setting"
-          fieldKey="pulseRepetitionRate"
+          fieldKey="scan_params.pulse_repetition_rate"
         >
           <Input
             type="number"
@@ -171,8 +163,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Gain Settings (dB)"
-          help="Gain used during inspection"
-          fieldKey="gainSettings"
+          fieldKey="scan_params.gain_settings"
         >
           <Input
             value={data.gainSettings}
@@ -185,8 +176,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
       <FieldWithHelp
         label="Alarm/Gate Settings"
-        help="Description of gate positions and alarm levels per Section 5.2.3"
-        fieldKey="alarmGateSettings"
+        fieldKey="scan_params.alarm_gate_settings"
       >
         <Textarea
           value={data.alarmGateSettings}

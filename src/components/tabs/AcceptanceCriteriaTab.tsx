@@ -189,7 +189,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
       <FieldWithHelp
         label="Special Requirements"
-        help="Any additional accept/reject criteria specific to this inspection"
+        fieldKey="acceptance.special_requirements"
       >
         <Textarea
           value={data.specialRequirements}

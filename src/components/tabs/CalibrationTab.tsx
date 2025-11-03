@@ -163,7 +163,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Block Dimensions (L×W×H mm)"
-          help="Physical dimensions of calibration block"
+          fieldKey="calibration.block_dimensions"
         >
           <Input
             value={data.blockDimensions}
@@ -175,7 +175,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Block Serial Number"
-          help="Serial number for traceability"
+          fieldKey="calibration.block_serial"
         >
           <Input
             value={data.blockSerialNumber}
@@ -187,7 +187,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Block Last Calibrated"
-          help="Date of last calibration verification"
+          fieldKey="calibration.last_calibration_date"
         >
           <Input
             type="date"

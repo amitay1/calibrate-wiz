@@ -253,7 +253,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
             <div className="md:col-span-2">
               <FieldWithHelp
                 label="Custom Shape Description"
-                help="Describe the custom shape and its unique features"
+                fieldKey="inspection_setup.custom_shape_description"
                 required
               >
                 <Input
@@ -268,7 +268,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
             <div className="md:col-span-2">
               <FieldWithHelp
                 label="Custom Shape Image"
-                help="Upload an image or technical drawing of the custom shape"
+                fieldKey="inspection_setup.custom_shape_image"
               >
                 <Card className="p-4">
                   <div className="space-y-4">
@@ -451,7 +451,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Thickness (mm)"
-          help="Nominal thickness - must be ≥ 6.35mm per MIL-STD scope"
+          fieldKey="inspection_setup.part_thickness"
           required
         >
           <Input
@@ -471,7 +471,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Length (mm)"
-          help="Length of the part for 3D visualization"
+          fieldKey="inspection_setup.part_length"
         >
           <Input
             type="number"
@@ -485,7 +485,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Width (mm)"
-          help="Width of the part for 3D visualization"
+          fieldKey="inspection_setup.part_width"
         >
           <Input
             type="number"
@@ -500,7 +500,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
         {showDiameter && (
           <FieldWithHelp
             label="Outer Diameter (mm)"
-            help="Outer diameter for cylindrical parts"
+            fieldKey="inspection_setup.outer_diameter"
             required={showDiameter}
           >
             <Input
@@ -561,7 +561,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
               <>
                 <FieldWithHelp
                   label="Inner Diameter (mm)"
-                  help="Inner diameter of the hollow section"
+                  fieldKey="inspection_setup.inner_diameter"
                   required
                 >
                   <Input
@@ -589,7 +589,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
                 <FieldWithHelp
                   label="Wall Thickness (mm)"
-                  help="Thickness of the wall (auto-calculated)"
+                  fieldKey="inspection_setup.wall_thickness"
                 >
                   <Input
                     type="number"
@@ -611,7 +611,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
               <>
                 <FieldWithHelp
                   label="Inner Length (mm)"
-                  help="Internal cavity length"
+                  fieldKey="inspection_setup.inner_length"
                   required
                 >
                   <Input
@@ -627,7 +627,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
                 <FieldWithHelp
                   label="Inner Width (mm)"
-                  help="Internal cavity width"
+                  fieldKey="inspection_setup.inner_width"
                   required
                 >
                   <Input
@@ -643,7 +643,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
                 <FieldWithHelp
                   label="Wall Thickness (mm)"
-                  help="Minimum wall thickness"
+                  fieldKey="inspection_setup.wall_thickness_rect"
                   required
                 >
                   <Input

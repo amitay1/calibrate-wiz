@@ -4,43 +4,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DocumentationData } from "@/types/techniqueSheet";
-import { Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FieldWithHelp } from "@/components/FieldWithHelp";
 
 interface DocumentationTabProps {
   data: DocumentationData;
   onChange: (data: DocumentationData) => void;
 }
 
-const FieldWithHelp = ({ 
-  label, 
-  help, 
-  required, 
-  children 
-}: { 
-  label: string; 
-  help: string; 
-  required?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center gap-2">
-      <Label className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-8 w-8"
-        title="Use the export buttons to generate PDF reports, Excel data sheets, or DXF technical drawings."
-      >
-        <Info className="h-4 w-4" />
-      </Button>
-    </div>
-    {children}
-  </div>
-);
+// Using imported FieldWithHelp component
 
 const inspectorLevels = ["Level I", "Level II", "Level III"];
 
@@ -60,7 +31,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Inspector Name"
-          help="Qualified inspector name per Section 4.2"
+          fieldKey="documentation.inspector_name"
           required
         >
           <Input
@@ -73,7 +44,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Inspector Certification"
-          help="Certification number and level per MIL-STD-410"
+          fieldKey="documentation.inspector_certification"
           required
         >
           <Input
@@ -86,7 +57,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Inspector Level"
-          help="Per MIL-STD-410 or equivalent"
+          fieldKey="documentation.inspector_level"
           required
         >
           <Select
@@ -108,7 +79,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Certifying Organization"
-          help="Organization that certified the inspector"
+          fieldKey="documentation.certifying_organization"
         >
           <Input
             value={data.certifyingOrganization}
@@ -120,7 +91,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Inspection Date"
-          help="Date this technique sheet was created/approved"
+          fieldKey="documentation.inspection_date"
           required
         >
           <Input
@@ -133,7 +104,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Procedure Number"
-          help="Reference to governing procedure per Section 4.3"
+          fieldKey="documentation.procedure_number"
         >
           <Input
             value={data.procedureNumber}
@@ -145,7 +116,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Drawing Reference"
-          help="Engineering drawing number"
+          fieldKey="documentation.drawing_reference"
         >
           <Input
             value={data.drawingReference}
@@ -157,7 +128,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Technique Sheet Revision"
-          help="Revision level of this technique sheet"
+          fieldKey="documentation.revision"
         >
           <Input
             value={data.revision}
@@ -170,7 +141,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
       <FieldWithHelp
         label="Additional Notes"
-        help="Any additional observations, deviations, or special instructions"
+        fieldKey="documentation.additional_notes"
       >
         <Textarea
           value={data.additionalNotes}

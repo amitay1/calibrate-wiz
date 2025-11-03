@@ -70,7 +70,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Equipment Model"
-          help="Model number and type"
+          fieldKey="equipment.model"
           required
         >
           <Input
@@ -83,7 +83,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Serial Number"
-          help="Equipment serial number for traceability"
+          fieldKey="equipment.serial_number"
         >
           <Input
             value={data.serialNumber}
@@ -119,7 +119,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Transducer Type"
-          help="Type of transducer being used"
+          fieldKey="equipment.transducer_type"
           required
         >
           <Select
@@ -141,7 +141,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Active Element Diameter (inches)"
-          help="Immersion: 3/8 to 3/4 inch, Contact: 1/4 to 1 inch (Table III)"
+          fieldKey="equipment.transducer_diameter"
           required
         >
           <Input
@@ -157,7 +157,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Couplant Type"
-          help="Type and brand of couplant used"
+          fieldKey="equipment.couplant"
           required
         >
           <Input
@@ -170,7 +170,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Vertical Linearity (%)"
-          help="Must be 10-95% for MIL-STD, 5-98% for AMS (Table II)"
+          fieldKey="equipment.vertical_linearity"
           required
         >
           <Input
@@ -185,7 +185,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Horizontal Linearity (%)"
-          help="Minimum 85% (MIL-STD) or 90% (AMS) per Table II"
+          fieldKey="equipment.horizontal_linearity"
           required
         >
           <Input
@@ -200,7 +200,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Entry Surface Resolution (inches)"
-          help="Auto-filled based on frequency per Table II"
+          fieldKey="equipment.entry_surface_resolution"
           required
           autoFilled
         >
@@ -215,7 +215,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Back Surface Resolution (inches)"
-          help="Auto-filled based on frequency per Table II"
+          fieldKey="equipment.back_surface_resolution"
           required
           autoFilled
         >
