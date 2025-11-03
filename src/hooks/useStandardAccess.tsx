@@ -22,6 +22,16 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
       try {
         setIsLoading(true);
         
+        // Get the current session to ensure we have a valid token
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.error('No active session');
+          setHasAccess(false);
+          setIsLoading(false);
+          return;
+        }
+        
         const { data, error } = await supabase.functions.invoke('validate-standard-access', {
           body: { standardCode },
         });
