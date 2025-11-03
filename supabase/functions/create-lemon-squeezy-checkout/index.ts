@@ -31,7 +31,34 @@ serve(async (req) => {
       });
     }
 
-    const { standardId, priceType } = await req.json();
+    const requestBody = await req.json();
+    const { standardId, priceType } = requestBody;
+
+    // Validate input parameters
+    if (!standardId || typeof standardId !== 'string') {
+      return new Response(JSON.stringify({ error: 'Invalid or missing standardId' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(standardId)) {
+      return new Response(JSON.stringify({ error: 'Invalid UUID format for standardId' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate price type
+    const validPriceTypes = ['one_time', 'monthly', 'annual'];
+    if (!priceType || !validPriceTypes.includes(priceType)) {
+      return new Response(JSON.stringify({ error: 'Invalid price type. Must be one_time, monthly, or annual' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Get standard details
     const { data: standard, error: standardError } = await supabaseClient

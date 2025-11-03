@@ -526,8 +526,33 @@ const Index = () => {
     }
   };
 
-  const handleSave = () => {
-    toast.success("Technique sheet saved successfully!");
+  const handleSave = async () => {
+    try {
+      // Validate technique sheet data before saving
+      const { validateTechniqueSheetData } = await import('@/lib/inputValidation');
+      
+      const techniqueData = {
+        standardName: standard,
+        inspectionSetup: currentData.inspectionSetup,
+        equipment: currentData.equipment,
+        calibration: currentData.calibration,
+        scanParameters: currentData.scanParameters,
+        acceptanceCriteria: currentData.acceptanceCriteria,
+        documentation: currentData.documentation,
+        scanDetails: currentData.scanDetails,
+      };
+
+      const validation = validateTechniqueSheetData(techniqueData);
+      if (!validation.valid) {
+        toast.error(`Validation failed: ${validation.error}`);
+        return;
+      }
+
+      toast.success("Technique sheet validated and saved successfully!");
+    } catch (error) {
+      console.error('Error saving technique sheet:', error);
+      toast.error('Error saving technique sheet');
+    }
   };
 
   const handleExportPDF = () => {

@@ -67,6 +67,23 @@ export default function Standards() {
     try {
       setProcessingStandard(standardId);
 
+      // Validate UUID format before sending to edge function
+      const { validateUUID, validatePriceType } = await import('@/lib/inputValidation');
+      
+      const uuidValidation = validateUUID(standardId);
+      if (!uuidValidation.valid) {
+        toast.error(uuidValidation.error || 'Invalid standard ID');
+        setProcessingStandard(null);
+        return;
+      }
+
+      const priceValidation = validatePriceType(priceType);
+      if (!priceValidation.valid) {
+        toast.error(priceValidation.error || 'Invalid price type');
+        setProcessingStandard(null);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-lemon-squeezy-checkout', {
         body: { standardId, priceType },
       });

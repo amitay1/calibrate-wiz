@@ -54,14 +54,46 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const customData = event.meta.custom_data;
+    const customData = event.meta?.custom_data;
     const userId = customData?.user_id;
     const standardId = customData?.standard_id;
     const priceType = customData?.price_type;
 
+    // Validate required webhook data
     if (!userId || !standardId) {
       console.error('Missing user_id or standard_id in webhook data');
       return new Response(JSON.stringify({ error: 'Missing required data' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate UUID formats
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId) || !uuidRegex.test(standardId)) {
+      console.error('Invalid UUID format in webhook data');
+      return new Response(JSON.stringify({ error: 'Invalid data format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate price type if provided
+    if (priceType) {
+      const validPriceTypes = ['one_time', 'monthly', 'annual'];
+      if (!validPriceTypes.includes(priceType)) {
+        console.error('Invalid price_type in webhook data:', priceType);
+        return new Response(JSON.stringify({ error: 'Invalid price type' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Validate event structure
+    if (!event.meta?.event_name || !event.data?.id) {
+      console.error('Invalid webhook event structure');
+      return new Response(JSON.stringify({ error: 'Invalid event structure' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

@@ -30,7 +30,30 @@ serve(async (req) => {
       });
     }
 
-    const { standardCode } = await req.json();
+    const requestBody = await req.json();
+    const { standardCode } = requestBody;
+
+    // Validate standard code
+    if (!standardCode || typeof standardCode !== 'string') {
+      return new Response(JSON.stringify({ 
+        hasAccess: false,
+        error: 'Invalid or missing standard code' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate standard code format (alphanumeric with dashes, max 50 chars)
+    if (standardCode.length > 50 || !/^[A-Za-z0-9\-]+$/.test(standardCode)) {
+      return new Response(JSON.stringify({ 
+        hasAccess: false,
+        error: 'Invalid standard code format' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Get standard by code
     const { data: standard, error: standardError } = await supabaseClient
