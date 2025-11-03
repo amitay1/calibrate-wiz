@@ -153,13 +153,13 @@ serve(async (req) => {
             store: {
               data: {
                 type: 'stores',
-                id: storeId,
+                id: String(storeId),  // Ensure it's a string
               },
             },
             variant: {
               data: {
                 type: 'variants',
-                id: variantId,
+                id: String(variantId),  // Ensure it's a string
               },
             },
           },
