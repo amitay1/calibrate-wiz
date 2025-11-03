@@ -141,7 +141,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Part Number"
-          fieldKey="inspection_setup.part_number"
+          fieldKey="partNumber"
           required
         >
           <Input
@@ -154,7 +154,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Name"
-          fieldKey="inspection_setup.part_name"
+          fieldKey="partName"
           required
         >
           <Input
@@ -167,7 +167,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Material"
-          fieldKey="inspection_setup.material"
+          fieldKey="material"
           required
           materialInfo={materialInfo}
         >
@@ -206,7 +206,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Material Specification"
-          fieldKey="inspection_setup.material_spec"
+          fieldKey="material"
           required
         >
           <Select
@@ -230,7 +230,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
         <div className="md:col-span-2">
           <FieldWithHelp
             label="Part Type/Geometry"
-            fieldKey="inspection_setup.part_type"
+            fieldKey="partType"
             required
           >
             <PartTypeVisualSelector
@@ -253,7 +253,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
             <div className="md:col-span-2">
               <FieldWithHelp
                 label="Custom Shape Description"
-                fieldKey="inspection_setup.custom_shape_description"
+                fieldKey="partType"
                 required
               >
                 <Input
@@ -268,7 +268,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
             <div className="md:col-span-2">
               <FieldWithHelp
                 label="Custom Shape Image"
-                fieldKey="inspection_setup.custom_shape_image"
+                fieldKey="partType"
               >
                 <Card className="p-4">
                   <div className="space-y-4">
@@ -451,7 +451,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Thickness (mm)"
-          fieldKey="inspection_setup.part_thickness"
+          fieldKey="thickness"
           required
         >
           <Input
@@ -471,7 +471,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Length (mm)"
-          fieldKey="inspection_setup.part_length"
+          fieldKey="thickness"
         >
           <Input
             type="number"
@@ -485,7 +485,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Width (mm)"
-          fieldKey="inspection_setup.part_width"
+          fieldKey="thickness"
         >
           <Input
             type="number"
@@ -500,7 +500,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
         {showDiameter && (
           <FieldWithHelp
             label="Outer Diameter (mm)"
-            fieldKey="inspection_setup.outer_diameter"
+            fieldKey="thickness"
             required={showDiameter}
           >
             <Input
@@ -561,7 +561,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
               <>
                 <FieldWithHelp
                   label="Inner Diameter (mm)"
-                  fieldKey="inspection_setup.inner_diameter"
+                  fieldKey="thickness"
                   required
                 >
                   <Input
@@ -589,7 +589,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
                 <FieldWithHelp
                   label="Wall Thickness (mm)"
-                  fieldKey="inspection_setup.wall_thickness"
+                  fieldKey="thickness"
                 >
                   <Input
                     type="number"
@@ -611,7 +611,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
               <>
                 <FieldWithHelp
                   label="Inner Length (mm)"
-                  fieldKey="inspection_setup.inner_length"
+                  fieldKey="thickness"
                   required
                 >
                   <Input
@@ -627,7 +627,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
                 <FieldWithHelp
                   label="Inner Width (mm)"
-                  fieldKey="inspection_setup.inner_width"
+                  fieldKey="thickness"
                   required
                 >
                   <Input
@@ -643,7 +643,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
                 <FieldWithHelp
                   label="Wall Thickness (mm)"
-                  fieldKey="inspection_setup.wall_thickness_rect"
+                  fieldKey="thickness"
                   required
                 >
                   <Input

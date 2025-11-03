@@ -31,7 +31,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Inspector Name"
-          fieldKey="documentation.inspector_name"
+          fieldKey="inspectorName"
           required
         >
           <Input
@@ -44,7 +44,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Inspector Certification"
-          fieldKey="documentation.inspector_certification"
+          fieldKey="inspectorName"
           required
         >
           <Input
@@ -57,7 +57,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Inspector Level"
-          fieldKey="documentation.inspector_level"
+          fieldKey="inspectorName"
           required
         >
           <Select
@@ -79,7 +79,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Certifying Organization"
-          fieldKey="documentation.certifying_organization"
+          fieldKey="inspectorName"
         >
           <Input
             value={data.certifyingOrganization}
@@ -91,7 +91,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Inspection Date"
-          fieldKey="documentation.inspection_date"
+          fieldKey="inspectionDate"
           required
         >
           <Input
@@ -104,7 +104,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Procedure Number"
-          fieldKey="documentation.procedure_number"
+          fieldKey="procedureNumber"
         >
           <Input
             value={data.procedureNumber}
@@ -116,7 +116,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Drawing Reference"
-          fieldKey="documentation.drawing_reference"
+          fieldKey="drawingReference"
         >
           <Input
             value={data.drawingReference}
@@ -128,7 +128,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
         <FieldWithHelp
           label="Technique Sheet Revision"
-          fieldKey="documentation.revision"
+          fieldKey="revisionLevel"
         >
           <Input
             value={data.revision}
@@ -141,7 +141,7 @@ export const DocumentationTab = ({ data, onChange }: DocumentationTabProps) => {
 
       <FieldWithHelp
         label="Additional Notes"
-        fieldKey="documentation.additional_notes"
+        fieldKey="inspectionDate"
       >
         <Textarea
           value={data.additionalNotes}

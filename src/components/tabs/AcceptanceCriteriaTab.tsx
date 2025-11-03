@@ -79,7 +79,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Acceptance Class"
-          fieldKey="acceptance.acceptance_class"
+          fieldKey="acceptanceClass"
           required
         >
           <Select
@@ -101,7 +101,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Back Reflection Loss Limit (%)"
-          fieldKey="acceptance.back_reflection"
+          fieldKey="backReflectionLoss"
           required
         >
           <Input
@@ -116,7 +116,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Single Discontinuity Response"
-          fieldKey="acceptance.single_discontinuity"
+          fieldKey="singleDiscontinuity"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -130,7 +130,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Multiple Discontinuities (centers < 1 inch apart)"
-          fieldKey="acceptance.multiple_discontinuities"
+          fieldKey="multipleDiscontinuities"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -144,7 +144,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Linear Discontinuity"
-          fieldKey="acceptance.linear_discontinuity"
+          fieldKey="linearDiscontinuity"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -158,7 +158,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Noise Level Requirements"
-          fieldKey="acceptance.noise_level"
+          fieldKey="noiseLevel"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -189,7 +189,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
       <FieldWithHelp
         label="Special Requirements"
-        fieldKey="acceptance.special_requirements"
+        fieldKey="acceptanceClass"
       >
         <Textarea
           value={data.specialRequirements}

@@ -23,7 +23,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Scan Method"
-          fieldKey="scan_params.scan_method"
+          fieldKey="scanMethod"
           required
         >
           <Select
@@ -43,7 +43,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Type"
-          fieldKey="scan_params.scan_type"
+          fieldKey="scanMethod"
           required
         >
           <Select
@@ -63,7 +63,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Speed (mm/s)"
-          fieldKey="scan_params.scan_speed"
+          fieldKey="scanSpeed"
           required
         >
           <Input
@@ -83,7 +83,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Index (% of beam width)"
-          fieldKey="scan_params.scan_index"
+          fieldKey="scanIndex"
           required
         >
           <Input
@@ -98,7 +98,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Coverage (%)"
-          fieldKey="scan_params.coverage"
+          fieldKey="coverage"
           required
         >
           <Input
@@ -114,7 +114,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Scan Pattern"
-          fieldKey="scan_params.scan_pattern"
+          fieldKey="scanPattern"
           required
         >
           <Select
@@ -135,7 +135,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
         {showWaterPath && (
           <FieldWithHelp
             label="Water Path (mm)"
-            fieldKey="scan_params.water_path"
+            fieldKey="waterPath"
           >
             <Input
               type="number"
@@ -149,7 +149,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Pulse Repetition Rate (Hz)"
-          fieldKey="scan_params.pulse_repetition_rate"
+          fieldKey="pulseRepetitionRate"
         >
           <Input
             type="number"
@@ -163,7 +163,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
         <FieldWithHelp
           label="Gain Settings (dB)"
-          fieldKey="scan_params.gain_settings"
+          fieldKey="gainSettings"
         >
           <Input
             value={data.gainSettings}
@@ -176,7 +176,7 @@ export const ScanParametersTab = ({ data, onChange, standard }: ScanParametersTa
 
       <FieldWithHelp
         label="Alarm/Gate Settings"
-        fieldKey="scan_params.alarm_gate_settings"
+        fieldKey="alarmGateSettings"
       >
         <Textarea
           value={data.alarmGateSettings}

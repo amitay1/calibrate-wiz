@@ -119,7 +119,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Reference Standard Material"
-          fieldKey="calibration.reference_material"
+          fieldKey="referenceBlockMaterial"
           required
           autoFilled={!!recommendation}
         >
@@ -133,7 +133,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Flat-Bottom Hole Sizes (inches)"
-          fieldKey="calibration.fbh_sizes"
+          fieldKey="fbhSize"
           required
           autoFilled={!!recommendation}
         >
@@ -147,7 +147,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Metal Travel Distance (mm)"
-          fieldKey="calibration.metal_travel"
+          fieldKey="fbhDepth"
           required
           autoFilled={!!recommendation}
         >
@@ -163,7 +163,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Block Dimensions (L×W×H mm)"
-          fieldKey="calibration.block_dimensions"
+          fieldKey="calibrationBlock"
         >
           <Input
             value={data.blockDimensions}
@@ -175,7 +175,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Block Serial Number"
-          fieldKey="calibration.block_serial"
+          fieldKey="calibrationBlock"
         >
           <Input
             value={data.blockSerialNumber}
@@ -187,7 +187,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Block Last Calibrated"
-          fieldKey="calibration.last_calibration_date"
+          fieldKey="calibrationBlock"
         >
           <Input
             type="date"

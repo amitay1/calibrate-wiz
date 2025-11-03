@@ -56,9 +56,8 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Equipment Manufacturer"
-          help="UT equipment manufacturer name"
-          required
           fieldKey="manufacturer"
+          required
         >
           <Input
             value={data.manufacturer}
@@ -70,7 +69,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Equipment Model"
-          fieldKey="equipment.model"
+          fieldKey="manufacturer"
           required
         >
           <Input
@@ -83,7 +82,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Serial Number"
-          fieldKey="equipment.serial_number"
+          fieldKey="manufacturer"
         >
           <Input
             value={data.serialNumber}
@@ -119,7 +118,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Transducer Type"
-          fieldKey="equipment.transducer_type"
+          fieldKey="transducerType"
           required
         >
           <Select
@@ -141,7 +140,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Active Element Diameter (inches)"
-          fieldKey="equipment.transducer_diameter"
+          fieldKey="transducerDiameter"
           required
         >
           <Input
@@ -157,7 +156,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Couplant Type"
-          fieldKey="equipment.couplant"
+          fieldKey="couplant"
           required
         >
           <Input
@@ -170,7 +169,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Vertical Linearity (%)"
-          fieldKey="equipment.vertical_linearity"
+          fieldKey="verticalLinearity"
           required
         >
           <Input
@@ -185,7 +184,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Horizontal Linearity (%)"
-          fieldKey="equipment.horizontal_linearity"
+          fieldKey="horizontalLinearity"
           required
         >
           <Input
@@ -200,7 +199,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Entry Surface Resolution (inches)"
-          fieldKey="equipment.entry_surface_resolution"
+          fieldKey="entrySurfaceResolution"
           required
           autoFilled
         >
@@ -215,7 +214,7 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
         <FieldWithHelp
           label="Back Surface Resolution (inches)"
-          fieldKey="equipment.back_surface_resolution"
+          fieldKey="backSurfaceResolution"
           required
           autoFilled
         >
