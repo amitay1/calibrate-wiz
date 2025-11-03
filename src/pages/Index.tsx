@@ -678,11 +678,11 @@ const Index = () => {
                   <>
                     <TabsList className="inline-flex flex-wrap md:flex-nowrap h-auto md:h-10 items-center justify-start md:justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
                       <TabsTrigger value="setup" className="flex-1 md:flex-initial min-w-[100px]">Setup</TabsTrigger>
+                      <TabsTrigger value="scandetails" className="flex-1 md:flex-initial min-w-[100px]">Scan Details</TabsTrigger>
                       <TabsTrigger value="drawing" className="flex-1 md:flex-initial min-w-[100px]">Technical Drawing</TabsTrigger>
                       <TabsTrigger value="equipment" className="flex-1 md:flex-initial min-w-[100px]">Equipment</TabsTrigger>
                       <TabsTrigger value="calibration" className="flex-1 md:flex-initial min-w-[100px]">Reference Standard</TabsTrigger>
                       <TabsTrigger value="scan" className="flex-1 md:flex-initial min-w-[100px]">Scan Params</TabsTrigger>
-                      <TabsTrigger value="scandetails" className="flex-1 md:flex-initial min-w-[100px]">Scan Details</TabsTrigger>
                       <TabsTrigger value="acceptance" className="flex-1 md:flex-initial min-w-[100px]">Acceptance</TabsTrigger>
                       <TabsTrigger value="docs" className="flex-1 md:flex-initial min-w-[100px]">Documentation</TabsTrigger>
                     </TabsList>
@@ -693,6 +693,14 @@ const Index = () => {
                           data={currentData.inspectionSetup} 
                           onChange={currentData.setInspectionSetup}
                           acceptanceClass={currentData.acceptanceCriteria.acceptanceClass}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="scandetails" className="m-0">
+                        <ScanDetailsTab
+                          data={currentData.scanDetails}
+                          onChange={currentData.setScanDetails}
+                          partType={currentData.inspectionSetup.partType}
                         />
                       </TabsContent>
 
@@ -744,14 +752,6 @@ const Index = () => {
                           data={currentData.scanParameters}
                           onChange={currentData.setScanParameters}
                           standard={standard}
-                        />
-                      </TabsContent>
-
-                      <TabsContent value="scandetails" className="m-0">
-                        <ScanDetailsTab
-                          data={currentData.scanDetails}
-                          onChange={currentData.setScanDetails}
-                          partType={currentData.inspectionSetup.partType}
                         />
                       </TabsContent>
 
