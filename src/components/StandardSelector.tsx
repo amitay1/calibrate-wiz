@@ -1,5 +1,9 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StandardType } from "@/types/techniqueSheet";
+import { Lock, Check } from "lucide-react";
+import { useStandardAccess } from "@/hooks/useStandardAccess";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface StandardSelectorProps {
   value: StandardType;
@@ -13,24 +17,60 @@ const standards = [
 ] as const;
 
 export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => {
+  const navigate = useNavigate();
+  const { hasAccess, isLoading } = useStandardAccess(value);
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-foreground">Inspection Standard</label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={onChange} disabled={isLoading}>
         <SelectTrigger className="w-full bg-card border-border">
           <SelectValue placeholder="Select a standard..." />
         </SelectTrigger>
         <SelectContent>
-          {standards.map((standard) => (
-            <SelectItem key={standard.value} value={standard.value}>
-              <div className="flex flex-col">
-                <span className="font-medium">{standard.label}</span>
-                <span className="text-xs text-muted-foreground">{standard.description}</span>
-              </div>
-            </SelectItem>
-          ))}
+          {standards.map((standard) => {
+            const standardAccess = useStandardAccess(standard.value);
+            const isLocked = !standardAccess.hasAccess && !standardAccess.isLoading;
+            
+            return (
+              <SelectItem 
+                key={standard.value} 
+                value={standard.value}
+                disabled={isLocked}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex flex-col flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{standard.label}</span>
+                      {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
+                      {standardAccess.hasAccess && <Check className="h-3 w-3 text-success" />}
+                    </div>
+                    <span className="text-xs text-muted-foreground">{standard.description}</span>
+                  </div>
+                </div>
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
+      
+      {!hasAccess && !isLoading && (
+        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md border">
+          <div className="flex items-center gap-2">
+            <Lock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              תקן זה נעול. רכוש אותו כדי להשתמש בו.
+            </span>
+          </div>
+          <Button 
+            size="sm" 
+            variant="default"
+            onClick={() => navigate('/standards')}
+          >
+            פתח תקן
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

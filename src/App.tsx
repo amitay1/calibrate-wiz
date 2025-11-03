@@ -5,6 +5,8 @@ import { UIToaster } from "@/components/ui/toaster-wrapper";
 import { SonnerToaster } from "@/components/ui/sonner-toaster";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Standards from "./pages/Standards";
+import MyStandards from "./pages/MyStandards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -12,11 +14,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/standards" element={<Standards />} />
+          <Route path="/my-standards" element={<MyStandards />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
     </BrowserRouter>
     <UIToaster />
     <SonnerToaster />
