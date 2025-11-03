@@ -12,23 +12,48 @@ serve(async (req) => {
   }
 
   try {
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.log('No authorization header found');
+      return new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Create client with service role for database queries
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    // Create client with user's token for auth verification
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader },
         },
       }
     );
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    // Verify the user's JWT token
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.log('Auth error:', authError?.message || 'No user found');
+      return new Response(JSON.stringify({ 
+        error: 'Unauthorized - Invalid token',
+        details: authError?.message 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    console.log('User authenticated:', user.id);
 
     const requestBody = await req.json();
     const { standardCode } = requestBody;
@@ -55,8 +80,8 @@ serve(async (req) => {
       });
     }
 
-    // Get standard by code
-    const { data: standard, error: standardError } = await supabaseClient
+    // Get standard by code (use admin client for reliable queries)
+    const { data: standard, error: standardError } = await supabaseAdmin
       .from('standards')
       .select('id, is_free')
       .eq('code', standardCode)
@@ -97,8 +122,8 @@ serve(async (req) => {
       );
     }
 
-    // Check user access
-    const { data: access, error: accessError } = await supabaseClient
+    // Check user access (use admin client for reliable queries)
+    const { data: access, error: accessError } = await supabaseAdmin
       .from('user_standard_access')
       .select('*')
       .eq('user_id', user.id)

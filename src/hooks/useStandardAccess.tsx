@@ -44,16 +44,43 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
 
     let isMounted = true;
     
-    const checkAccess = async () => {
+    const checkAccess = async (retryCount = 0) => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Get fresh session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (!isMounted) return;
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          setHasAccess(false);
+          setIsLoading(false);
+          return;
+        }
         
         if (!session) {
           setHasAccess(false);
           setIsLoading(false);
           return;
+        }
+
+        // Verify token hasn't expired
+        const tokenExpiry = session.expires_at ? new Date(session.expires_at * 1000) : null;
+        const now = new Date();
+        
+        if (tokenExpiry && tokenExpiry <= now) {
+          console.log('Token expired, refreshing session...');
+          const { data: { session: newSession }, error: refreshError } = await supabase.auth.refreshSession();
+          
+          if (refreshError || !newSession) {
+            console.error('Failed to refresh session:', refreshError);
+            setHasAccess(false);
+            setIsLoading(false);
+            return;
+          }
+          
+          // Use the new session token
+          session.access_token = newSession.access_token;
         }
         
         const { data, error } = await supabase.functions.invoke('validate-standard-access', {
@@ -66,12 +93,17 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
         if (!isMounted) return;
 
         if (error) {
-          // Handle 401 as "no access" rather than error
-          if (error.message?.includes('401')) {
-            setHasAccess(false);
-            setIsLoading(false);
-            return;
+          // Retry once on 401 with fresh token
+          if (error.message?.includes('401') && retryCount === 0) {
+            console.log('Got 401, refreshing session and retrying...');
+            const { data: { session: freshSession } } = await supabase.auth.refreshSession();
+            if (freshSession && isMounted) {
+              // Wait a bit before retrying
+              setTimeout(() => checkAccess(1), 500);
+              return;
+            }
           }
+          
           console.error('Error checking standard access:', error);
           setHasAccess(false);
           setIsLoading(false);
