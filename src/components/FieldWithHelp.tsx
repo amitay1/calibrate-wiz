@@ -32,8 +32,11 @@ export const FieldWithHelp = ({
   const standardReference = fieldKey ? getStandardReference(fieldKey) : undefined;
 
   const handleInfoClick = () => {
+    console.log('Info clicked!', { fieldKey, standardReference });
     if (standardReference) {
       setShowStandardDialog(true);
+    } else {
+      console.warn('No standard reference found for fieldKey:', fieldKey);
     }
   };
 
