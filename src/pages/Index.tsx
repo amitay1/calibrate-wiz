@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StandardSelector } from "@/components/StandardSelector";
@@ -35,13 +36,25 @@ import { InspectionReportData } from "@/types/inspectionReport";
 import { standardRules, getRecommendedFrequency, getCouplantRecommendation, calculateMetalTravel } from "@/utils/autoFillLogic";
 import { exportTechniqueSheetToPDF } from "@/utils/techniqueSheetExport";
 import { exportInspectionReportToPDF } from "@/utils/inspectionReportExport";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
   const [standard, setStandard] = useState<StandardType>("AMS-STD-2154E");
   const [activeTab, setActiveTab] = useState("setup");
   const [reportMode, setReportMode] = useState<"Technique" | "Report">("Technique");
   const [isSplitMode, setIsSplitMode] = useState(false);
   const [activePart, setActivePart] = useState<"A" | "B">("A");
+  
+  // Check authentication
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
   
   const [inspectionSetup, setInspectionSetup] = useState<InspectionSetupData>({
     partNumber: "",
@@ -379,7 +392,8 @@ const Index = () => {
 
   const currentData = getCurrentData();
 
-  // Auto-save to localStorage
+  // Remove localStorage auto-save - now using database with manual save
+  // Keep localStorage only for temporary draft data
   useEffect(() => {
     const data = {
       standard,
@@ -400,12 +414,12 @@ const Index = () => {
       documentationB,
       scanDetailsB,
     };
-    localStorage.setItem("techniqueSheet", JSON.stringify(data));
+    localStorage.setItem("techniqueSheet_draft", JSON.stringify(data));
   }, [standard, isSplitMode, activePart, inspectionSetup, equipment, calibration, scanParameters, acceptanceCriteria, documentation, scanDetails, inspectionSetupB, equipmentB, calibrationB, scanParametersB, acceptanceCriteriaB, documentationB, scanDetailsB]);
 
-  // Load from localStorage on mount
+  // Load draft from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("techniqueSheet");
+    const saved = localStorage.getItem("techniqueSheet_draft");
     if (saved) {
       try {
         const data = JSON.parse(saved);
@@ -427,7 +441,7 @@ const Index = () => {
         setDocumentationB(data.documentationB || documentationB);
         setScanDetailsB(data.scanDetailsB || { scanDetails: [] });
       } catch (error) {
-        console.error("Failed to load saved data", error);
+        console.error("Failed to load draft data", error);
       }
     }
   }, []);
@@ -588,6 +602,23 @@ const Index = () => {
     }
   };
 
+  // Show loading screen while checking authentication
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, render nothing (will redirect in useEffect)
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Menu Bar - Hidden on Mobile */}
@@ -596,6 +627,7 @@ const Index = () => {
           onSave={handleSave}
           onExport={handleExportPDF}
           onNew={handleNewProject}
+          onSignOut={signOut}
         />
       </div>
 

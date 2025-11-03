@@ -8,15 +8,16 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { FileText, Save, Download, FolderOpen, Settings, Info, Book } from "lucide-react";
+import { FileText, Save, Download, FolderOpen, Settings, Info, Book, LogOut } from "lucide-react";
 
 interface MenuBarProps {
   onSave: () => void;
   onExport: () => void;
   onNew: () => void;
+  onSignOut: () => void;
 }
 
-export const MenuBar = ({ onSave, onExport, onNew }: MenuBarProps) => {
+export const MenuBar = ({ onSave, onExport, onNew, onSignOut }: MenuBarProps) => {
   return (
     <Menubar className="border-b border-border bg-card rounded-none h-10 px-2">
       <MenubarMenu>
@@ -42,6 +43,11 @@ export const MenuBar = ({ onSave, onExport, onNew }: MenuBarProps) => {
             <Download className="mr-2 h-4 w-4" />
             Export PDF
             <MenubarShortcut>Ctrl+E</MenubarShortcut>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onClick={onSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
