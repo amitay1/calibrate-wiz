@@ -53,11 +53,11 @@ export const FieldWithHelp = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 hover:bg-primary/10" 
+            className="h-10 w-10 min-w-[2.5rem] hover:bg-primary/10 touch-manipulation" 
             title={standardReference ? "Click to view standard reference" : (help || "Information")}
             onClick={handleInfoClick}
           >
-            <Info className="h-4 w-4" />
+            <Info className="h-5 w-5" />
           </Button>
         </div>
         {children}
