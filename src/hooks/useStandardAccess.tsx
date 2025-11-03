@@ -58,7 +58,16 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
           return;
         }
         
-        if (!session) {
+        if (!session?.access_token) {
+          console.log('No valid session or access token');
+          setHasAccess(false);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Verify the token is not 'null' or 'undefined' as string
+        if (session.access_token === 'null' || session.access_token === 'undefined') {
+          console.error('Access token is invalid string value');
           setHasAccess(false);
           setIsLoading(false);
           return;

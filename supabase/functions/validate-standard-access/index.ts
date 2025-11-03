@@ -4,6 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
@@ -11,12 +12,35 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (req.method !== 'POST') {
+    return new Response('Method Not Allowed', { 
+      status: 405, 
+      headers: corsHeaders 
+    });
+  }
+
   try {
-    // Get authorization header
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.log('No authorization header found');
-      return new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+    // Get authorization header and extract Bearer token
+    const authHeader = req.headers.get('Authorization') ?? '';
+    console.log('Auth header present:', !!authHeader, 'length:', authHeader.length);
+
+    const match = authHeader.match(/^Bearer\s+(.+)$/i);
+    if (!match) {
+      console.log('Invalid Authorization format - expected Bearer token');
+      return new Response(JSON.stringify({ 
+        error: 'Unauthorized - Invalid Authorization format' 
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const bearerToken = match[1];
+    if (!bearerToken || bearerToken === 'null' || bearerToken === 'undefined') {
+      console.log('Bearer token is empty or invalid');
+      return new Response(JSON.stringify({ 
+        error: 'Unauthorized - Invalid token value' 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -34,7 +58,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: authHeader },
+          headers: { Authorization: `Bearer ${bearerToken}` },
         },
       }
     );
@@ -53,7 +77,11 @@ serve(async (req) => {
       });
     }
 
-    console.log('User authenticated:', user.id);
+    console.log('User authenticated successfully:', {
+      userId: user.id,
+      tokenLength: bearerToken.length,
+      tokenPrefix: bearerToken.substring(0, 20) + '...'
+    });
 
     const requestBody = await req.json();
     const { standardCode } = requestBody;
