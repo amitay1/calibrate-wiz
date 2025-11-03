@@ -124,10 +124,46 @@ serve(async (req) => {
       });
     }
 
-    // Create Lemon Squeezy checkout
+    // Verify Lemon Squeezy API key and store access
     const storeId = Deno.env.get('LEMON_SQUEEZY_STORE_ID');
+    const apiKey = Deno.env.get('LEMON_SQUEEZY_API_KEY');
+    
     console.log('Store ID:', storeId);
     console.log('Variant ID:', variantId);
+    
+    // First, verify the store exists and is accessible
+    try {
+      const storeCheckResponse = await fetch(`https://api.lemonsqueezy.com/v1/stores/${storeId}`, {
+        headers: {
+          'Accept': 'application/vnd.api+json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+      });
+      
+      if (!storeCheckResponse.ok) {
+        const storeError = await storeCheckResponse.json();
+        console.error('Store verification failed:', storeError);
+        return new Response(JSON.stringify({ 
+          error: 'Store verification failed',
+          details: `Store ${storeId} is not accessible with the current API key. Please verify the store ID and API key in your Lemon Squeezy dashboard.`,
+          lemonSqueezyError: storeError
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      console.log('Store verification successful');
+    } catch (verifyError) {
+      console.error('Store verification error:', verifyError);
+      return new Response(JSON.stringify({ 
+        error: 'Failed to verify store access',
+        details: 'Please check your LEMON_SQUEEZY_API_KEY and LEMON_SQUEEZY_STORE_ID configuration'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     const lemonSqueezyResponse = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
       method: 'POST',
