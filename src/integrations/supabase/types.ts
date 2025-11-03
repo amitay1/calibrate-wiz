@@ -167,6 +167,9 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_free: boolean | null
+          lemon_squeezy_variant_id_annual: string | null
+          lemon_squeezy_variant_id_monthly: string | null
+          lemon_squeezy_variant_id_onetime: string | null
           metadata: Json | null
           name: string
           price_annual: number | null
@@ -186,6 +189,9 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_free?: boolean | null
+          lemon_squeezy_variant_id_annual?: string | null
+          lemon_squeezy_variant_id_monthly?: string | null
+          lemon_squeezy_variant_id_onetime?: string | null
           metadata?: Json | null
           name: string
           price_annual?: number | null
@@ -205,6 +211,9 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_free?: boolean | null
+          lemon_squeezy_variant_id_annual?: string | null
+          lemon_squeezy_variant_id_monthly?: string | null
+          lemon_squeezy_variant_id_onetime?: string | null
           metadata?: Json | null
           name?: string
           price_annual?: number | null
@@ -264,6 +273,7 @@ export type Database = {
           expiry_date: string | null
           id: string
           is_active: boolean | null
+          lemon_squeezy_order_id: string | null
           purchase_date: string | null
           standard_id: string
           stripe_payment_id: string | null
@@ -276,6 +286,7 @@ export type Database = {
           expiry_date?: string | null
           id?: string
           is_active?: boolean | null
+          lemon_squeezy_order_id?: string | null
           purchase_date?: string | null
           standard_id: string
           stripe_payment_id?: string | null
@@ -288,6 +299,7 @@ export type Database = {
           expiry_date?: string | null
           id?: string
           is_active?: boolean | null
+          lemon_squeezy_order_id?: string | null
           purchase_date?: string | null
           standard_id?: string
           stripe_payment_id?: string | null
