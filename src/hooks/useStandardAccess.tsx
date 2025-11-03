@@ -58,11 +58,20 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
         
         const { data, error } = await supabase.functions.invoke('validate-standard-access', {
           body: { standardCode },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
         });
 
         if (!isMounted) return;
 
         if (error) {
+          // Handle 401 as "no access" rather than error
+          if (error.message?.includes('401')) {
+            setHasAccess(false);
+            setIsLoading(false);
+            return;
+          }
           console.error('Error checking standard access:', error);
           setHasAccess(false);
           setIsLoading(false);
