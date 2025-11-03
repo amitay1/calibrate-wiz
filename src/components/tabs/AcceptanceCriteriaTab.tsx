@@ -101,7 +101,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Back Reflection Loss Limit (%)"
-          help="Maximum allowable: 50% per Table VI"
+          fieldKey="acceptance.back_reflection"
           required
         >
           <Input
@@ -116,7 +116,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Single Discontinuity Response"
-          help="Auto-filled per Table VI based on acceptance class"
+          fieldKey="acceptance.single_discontinuity"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -130,7 +130,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Multiple Discontinuities (centers < 1 inch apart)"
-          help="Auto-filled per Table VI based on acceptance class"
+          fieldKey="acceptance.multiple_discontinuities"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -144,7 +144,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Linear Discontinuity"
-          help="Auto-filled per Table VI based on acceptance class"
+          fieldKey="acceptance.linear_discontinuity"
           required
           autoFilled={!!data.acceptanceClass}
         >
@@ -158,7 +158,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
 
         <FieldWithHelp
           label="Noise Level Requirements"
-          help="Alarm level per Section 5.2.3"
+          fieldKey="acceptance.noise_level"
           required
           autoFilled={!!data.acceptanceClass}
         >

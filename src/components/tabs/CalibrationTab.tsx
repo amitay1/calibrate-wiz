@@ -133,7 +133,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Flat-Bottom Hole Sizes (inches)"
-          help="Comma-separated FBH sizes used (e.g., 2/64, 3/64)"
+          fieldKey="calibration.fbh_sizes"
           required
           autoFilled={!!recommendation}
         >
@@ -147,7 +147,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Metal Travel Distance (mm)"
-          help="Distance from entry surface to FBH per Table IV"
+          fieldKey="calibration.metal_travel"
           required
           autoFilled={!!recommendation}
         >

@@ -154,7 +154,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Part Name"
-          help="Descriptive name of the part being inspected"
+          fieldKey="inspection_setup.part_name"
           required
         >
           <Input
@@ -167,7 +167,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Material"
-          help="Base material type of the part"
+          fieldKey="inspection_setup.material"
           required
           materialInfo={materialInfo}
         >
@@ -206,7 +206,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
 
         <FieldWithHelp
           label="Material Specification"
-          help="Specific material specification (e.g., 7075-T6, Ti-6Al-4V)"
+          fieldKey="inspection_setup.material_spec"
           required
         >
           <Select
@@ -230,7 +230,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
         <div className="md:col-span-2">
           <FieldWithHelp
             label="Part Type/Geometry"
-            help="Select the geometry of your part visually"
+            fieldKey="inspection_setup.part_type"
             required
           >
             <PartTypeVisualSelector
