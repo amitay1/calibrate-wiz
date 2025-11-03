@@ -15,7 +15,7 @@ serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
           headers: { Authorization: req.headers.get('Authorization')! },
@@ -38,10 +38,18 @@ serve(async (req) => {
       .from('standards')
       .select('*')
       .eq('id', standardId)
-      .single();
+      .maybeSingle();
 
-    if (standardError || !standard) {
-      console.error('Standard not found:', standardError);
+    if (standardError) {
+      console.error('Error fetching standard:', standardError);
+      return new Response(JSON.stringify({ error: 'Error fetching standard' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!standard) {
+      console.error('Standard not found:', standardId);
       return new Response(JSON.stringify({ error: 'Standard not found' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

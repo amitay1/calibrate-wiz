@@ -37,9 +37,20 @@ serve(async (req) => {
       .from('standards')
       .select('id, is_free')
       .eq('code', standardCode)
-      .single();
+      .maybeSingle();
 
-    if (standardError || !standard) {
+    if (standardError) {
+      console.error('Error fetching standard:', standardError);
+      return new Response(JSON.stringify({ 
+        hasAccess: false,
+        error: 'Error fetching standard' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!standard) {
       return new Response(JSON.stringify({ 
         hasAccess: false,
         error: 'Standard not found' 
@@ -70,9 +81,25 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .eq('standard_id', standard.id)
       .eq('is_active', true)
-      .single();
+      .maybeSingle();
 
-    if (accessError || !access) {
+    if (accessError) {
+      console.error('Error checking access:', accessError);
+      return new Response(
+        JSON.stringify({ 
+          hasAccess: false,
+          accessType: null,
+          expiryDate: null,
+          error: 'Error checking access'
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    if (!access) {
       return new Response(
         JSON.stringify({ 
           hasAccess: false,
