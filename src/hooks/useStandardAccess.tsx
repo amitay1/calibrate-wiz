@@ -18,15 +18,16 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
   const [expired, setExpired] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAccess = async () => {
       try {
-        setIsLoading(true);
-        
-        // Get the current session to ensure we have a valid token
+        // Wait for auth to be ready
         const { data: { session } } = await supabase.auth.getSession();
         
+        if (!isMounted) return;
+        
         if (!session) {
-          console.error('No active session');
           setHasAccess(false);
           setIsLoading(false);
           return;
@@ -36,9 +37,12 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
           body: { standardCode },
         });
 
+        if (!isMounted) return;
+
         if (error) {
           console.error('Error checking standard access:', error);
           setHasAccess(false);
+          setIsLoading(false);
           return;
         }
 
@@ -46,15 +50,32 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
         setAccessType(data.accessType);
         setExpiryDate(data.expiryDate);
         setExpired(data.expired || false);
+        setIsLoading(false);
       } catch (error) {
+        if (!isMounted) return;
         console.error('Error in useStandardAccess:', error);
         setHasAccess(false);
-      } finally {
         setIsLoading(false);
       }
     };
 
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && isMounted) {
+        checkAccess();
+      } else if (!session && isMounted) {
+        setHasAccess(false);
+        setIsLoading(false);
+      }
+    });
+
+    // Initial check
     checkAccess();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [standardCode]);
 
   return { hasAccess, isLoading, accessType, expiryDate, expired };
