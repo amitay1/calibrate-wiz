@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, CreditCard } from 'lucide-react';
+import { Loader2, Calendar, CreditCard, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -23,6 +24,7 @@ interface UserStandard {
 }
 
 export default function MyStandards() {
+  const navigate = useNavigate();
   const [standards, setStandards] = useState<UserStandard[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -71,6 +73,14 @@ export default function MyStandards() {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
+          <Button
+            variant="ghost"
+            className="mb-4"
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
           <h1 className="text-3xl font-bold mb-2">My Standards</h1>
           <p className="text-muted-foreground">Here you will see all the standards you purchased</p>
         </div>
@@ -94,6 +104,14 @@ export default function MyStandards() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
         <h1 className="text-3xl font-bold mb-2">My Standards</h1>
         <p className="text-muted-foreground">
           You have access to {standards.length} {standards.length === 1 ? 'standard' : 'standards'}

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Lock, Check, Loader2 } from 'lucide-react';
+import { Lock, Check, Loader2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Standard {
@@ -125,6 +125,14 @@ export default function Standards() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
         <h1 className="text-3xl font-bold mb-2">Standards Catalog</h1>
         <p className="text-muted-foreground">Select and purchase standards for use in the system</p>
       </div>

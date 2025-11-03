@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { signUpSchema, signInSchema } from '@/lib/validationSchemas';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -127,15 +127,24 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>{isSignUp ? 'Create Account' : 'Sign In'}</CardTitle>
-          <CardDescription>
-            {isSignUp
-              ? 'Create an account to save and manage your inspection technique sheets'
-              : 'Sign in to access your inspection technique sheets'}
-          </CardDescription>
-        </CardHeader>
+      <div className="w-full max-w-md">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>{isSignUp ? 'Create Account' : 'Sign In'}</CardTitle>
+            <CardDescription>
+              {isSignUp
+                ? 'Create an account to save and manage your inspection technique sheets'
+                : 'Sign in to access your inspection technique sheets'}
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
             {isSignUp && (
@@ -210,6 +219,7 @@ export default function Auth() {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
