@@ -16,13 +16,36 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
   const [accessType, setAccessType] = useState<string | null>(null);
   const [expiryDate, setExpiryDate] = useState<string | null>(null);
   const [expired, setExpired] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     
+    // First, wait for auth to be ready
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (isMounted) {
+        setAuthReady(true);
+        if (!session) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    initAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!authReady) return;
+
+    let isMounted = true;
+    
     const checkAccess = async () => {
       try {
-        // Wait for auth to be ready
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!isMounted) return;
@@ -76,7 +99,7 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [standardCode]);
+  }, [standardCode, authReady]);
 
   return { hasAccess, isLoading, accessType, expiryDate, expired };
 };
