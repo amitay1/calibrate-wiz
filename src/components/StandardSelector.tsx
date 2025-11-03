@@ -27,8 +27,9 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
         </SelectTrigger>
         <SelectContent>
           {standards.map((standard) => {
-            const standardAccess = useStandardAccess(standard.value);
-            const isLocked = !standardAccess.hasAccess && !standardAccess.isLoading;
+            const isCurrentStandard = standard.value === value;
+            const isLocked = isCurrentStandard && !hasAccess && !isLoading;
+            const hasCurrentAccess = isCurrentStandard && hasAccess;
             
             return (
               <SelectItem 
@@ -41,7 +42,7 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{standard.label}</span>
                       {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
-                      {standardAccess.hasAccess && <Check className="h-3 w-3 text-success" />}
+                      {hasCurrentAccess && <Check className="h-3 w-3 text-success" />}
                     </div>
                     <span className="text-xs text-muted-foreground">{standard.description}</span>
                   </div>
