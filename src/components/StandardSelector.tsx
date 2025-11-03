@@ -57,7 +57,7 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
           <div className="flex items-center gap-2">
             <Lock className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              תקן זה נעול. רכוש אותו כדי להשתמש בו.
+              This standard is locked. Purchase it to use it.
             </span>
           </div>
           <Button 
@@ -65,7 +65,7 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
             variant="default"
             onClick={() => navigate('/standards')}
           >
-            פתח תקן
+            Unlock Standard
           </Button>
         </div>
       )}

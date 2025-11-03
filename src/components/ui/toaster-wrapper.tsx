@@ -2,7 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
 
 function InnerToaster() {
-  const { toasts } = useToast(); // עכשיו בתוך ה-Provider
+  const { toasts } = useToast(); // Now inside the Provider
   return (
     <>
       {toasts.map(({ id, title, description, action, ...props }) => (

@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Calendar, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { he } from 'date-fns/locale';
 
 interface UserStandard {
   id: string;
@@ -42,7 +41,7 @@ export default function MyStandards() {
       setStandards(data.standards || []);
     } catch (error) {
       console.error('Error loading my standards:', error);
-      toast.error('שגיאה בטעינת התקנים שלך');
+      toast.error('Error loading your standards');
     } finally {
       setLoading(false);
     }
@@ -50,10 +49,10 @@ export default function MyStandards() {
 
   const getAccessTypeBadge = (accessType: string) => {
     const types = {
-      free: { label: 'חינם', variant: 'outline' as const },
-      purchased: { label: 'נרכש', variant: 'default' as const },
-      trial: { label: 'תקופת ניסיון', variant: 'secondary' as const },
-      subscription: { label: 'מנוי', variant: 'default' as const },
+      free: { label: 'Free', variant: 'outline' as const },
+      purchased: { label: 'Purchased', variant: 'default' as const },
+      trial: { label: 'Trial Period', variant: 'secondary' as const },
+      subscription: { label: 'Subscription', variant: 'default' as const },
     };
 
     const type = types[accessType as keyof typeof types] || { label: accessType, variant: 'outline' as const };
@@ -72,19 +71,19 @@ export default function MyStandards() {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">התקנים שלי</h1>
-          <p className="text-muted-foreground">כאן תראה את כל התקנים שרכשת</p>
+          <h1 className="text-3xl font-bold mb-2">My Standards</h1>
+          <p className="text-muted-foreground">Here you will see all the standards you purchased</p>
         </div>
 
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <CreditCard className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">עדיין לא רכשת תקנים</h3>
+            <h3 className="text-xl font-semibold mb-2">No Standards Purchased Yet</h3>
             <p className="text-muted-foreground text-center mb-6">
-              עבור לקטלוג התקנים כדי לרכוש תקנים נוספים
+              Go to the standards catalog to purchase additional standards
             </p>
             <Button onClick={() => window.location.href = '/standards'}>
-              עבור לקטלוג
+              Go to Catalog
             </Button>
           </CardContent>
         </Card>
@@ -95,9 +94,9 @@ export default function MyStandards() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">התקנים שלי</h1>
+        <h1 className="text-3xl font-bold mb-2">My Standards</h1>
         <p className="text-muted-foreground">
-          יש לך גישה ל-{standards.length} {standards.length === 1 ? 'תקן' : 'תקנים'}
+          You have access to {standards.length} {standards.length === 1 ? 'standard' : 'standards'}
         </p>
       </div>
 
@@ -120,35 +119,35 @@ export default function MyStandards() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">נרכש:</span>
+                  <span className="text-muted-foreground">Purchased:</span>
                   <span>
-                    {format(new Date(standard.purchase_date), 'dd/MM/yyyy', { locale: he })}
+                    {format(new Date(standard.purchase_date), 'dd/MM/yyyy')}
                   </span>
                 </div>
 
                 {standard.expiry_date && (
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">תוקף עד:</span>
+                    <span className="text-muted-foreground">Valid until:</span>
                     <span>
-                      {format(new Date(standard.expiry_date), 'dd/MM/yyyy', { locale: he })}
+                      {format(new Date(standard.expiry_date), 'dd/MM/yyyy')}
                     </span>
                   </div>
                 )}
 
                 {!standard.expiry_date && standard.access_type === 'purchased' && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-success font-medium">גישה לכל החיים</span>
+                    <span className="text-success font-medium">Lifetime Access</span>
                   </div>
                 )}
               </div>
 
               <div className="mt-4 pt-4 border-t">
                 <p className="text-xs text-muted-foreground">
-                  קטגוריה: {standard.standards.category}
+                  Category: {standard.standards.category}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  גרסה: {standard.standards.version}
+                  Version: {standard.standards.version}
                 </p>
               </div>
             </CardContent>

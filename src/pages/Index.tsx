@@ -348,7 +348,7 @@ const Index = () => {
     setAcceptanceCriteriaB({ ...acceptanceCriteria });
     setDocumentationB({ ...documentation });
     setScanDetailsB({ ...scanDetails });
-    toast.success("חלק A הועתק לחלק B");
+    toast.success("Part A copied to Part B");
   };
 
   // Get current data based on active part
@@ -556,7 +556,7 @@ const Index = () => {
             documentation: documentationB,
           }, "Part_B");
           
-          toast.success("שני חלקי הטכניקה שיט יוצאו בהצלחה!");
+          toast.success("Both technique sheets exported successfully!");
         } else {
           exportTechniqueSheetToPDF({
             standard,

@@ -57,7 +57,7 @@ export default function Standards() {
       }
     } catch (error) {
       console.error('Error loading standards:', error);
-      toast.error('שגיאה בטעינת התקנים');
+      toast.error('Error loading standards');
     } finally {
       setLoading(false);
     }
@@ -76,11 +76,11 @@ export default function Standards() {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {
-        throw new Error('לא התקבל קישור לתשלום');
+        throw new Error('No payment link received');
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
-      toast.error('שגיאה ביצירת תשלום');
+      toast.error('Error creating payment');
       setProcessingStandard(null);
     }
   };
@@ -108,8 +108,8 @@ export default function Standards() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">קטלוג תקנים</h1>
-        <p className="text-muted-foreground">בחר ורכוש תקנים לשימוש במערכת</p>
+        <h1 className="text-3xl font-bold mb-2">Standards Catalog</h1>
+        <p className="text-muted-foreground">Select and purchase standards for use in the system</p>
       </div>
 
       {Object.entries(groupedStandards).map(([category, categoryStandards]) => (
@@ -126,7 +126,7 @@ export default function Standards() {
                     <div className="absolute top-4 right-4">
                       <Badge variant="default" className="bg-success">
                         <Check className="h-3 w-3 mr-1" />
-                        פתוח
+                        Open
                       </Badge>
                     </div>
                   )}
@@ -134,14 +134,14 @@ export default function Standards() {
                     <div className="absolute top-4 right-4">
                       <Badge variant="secondary">
                         <Lock className="h-3 w-3 mr-1" />
-                        נעול
+                        Locked
                       </Badge>
                     </div>
                   )}
                   {standard.is_free && (
                     <div className="absolute top-4 right-4">
                       <Badge variant="outline" className="bg-primary/10">
-                        חינם
+                        Free
                       </Badge>
                     </div>
                   )}
@@ -156,25 +156,25 @@ export default function Standards() {
                       {standard.description}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      גרסה: {standard.version}
+                      Version: {standard.version}
                     </p>
 
                     {!hasAccess && !standard.is_free && (
                       <div className="mt-4 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm">רכישה חד-פעמית:</span>
+                          <span className="text-sm">One-time purchase:</span>
                           <span className="font-semibold">${standard.price_one_time}</span>
                         </div>
                         {standard.price_monthly && (
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">מנוי חודשי:</span>
-                            <span className="font-semibold">${standard.price_monthly}/חודש</span>
+                            <span className="text-sm">Monthly subscription:</span>
+                            <span className="font-semibold">${standard.price_monthly}/month</span>
                           </div>
                         )}
                         {standard.price_annual && (
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">מנוי שנתי:</span>
-                            <span className="font-semibold">${standard.price_annual}/שנה</span>
+                            <span className="text-sm">Annual subscription:</span>
+                            <span className="font-semibold">${standard.price_annual}/year</span>
                           </div>
                         )}
                       </div>
@@ -187,26 +187,26 @@ export default function Standards() {
                         className="w-full" 
                         onClick={() => handleSelectStandard(standard.code)}
                       >
-                        בחר תקן זה
+                        Select This Standard
                       </Button>
                     ) : standard.is_free ? (
                       <Button 
                         className="w-full" 
                         onClick={() => handleSelectStandard(standard.code)}
                       >
-                        התחל להשתמש
+                        Start Using
                       </Button>
                     ) : (
                       <>
-                        <Button
-                          className="w-full"
+                        <Button 
+                          className="w-full" 
                           onClick={() => handlePurchase(standard.id, 'one_time')}
                           disabled={isProcessing}
                         >
                           {isProcessing ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
-                            `רכוש ב-$${standard.price_one_time}`
+                            `Purchase for $${standard.price_one_time}`
                           )}
                         </Button>
                         {standard.price_monthly && (
@@ -216,7 +216,7 @@ export default function Standards() {
                             onClick={() => handlePurchase(standard.id, 'monthly')}
                             disabled={isProcessing}
                           >
-                            מנוי חודשי - ${standard.price_monthly}/חודש
+                            Monthly Subscription - ${standard.price_monthly}/month
                           </Button>
                         )}
                         {standard.price_annual && (
@@ -226,7 +226,7 @@ export default function Standards() {
                             onClick={() => handlePurchase(standard.id, 'annual')}
                             disabled={isProcessing}
                           >
-                            מנוי שנתי - ${standard.price_annual}/שנה
+                            Annual Subscription - ${standard.price_annual}/year
                           </Button>
                         )}
                       </>
