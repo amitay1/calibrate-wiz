@@ -3,13 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { InspectionSetupData, MaterialType, PartGeometry, AcceptanceClass } from "@/types/techniqueSheet";
-import { Info, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { materialDatabase } from "@/utils/autoFillLogic";
 import { SmartRecommendations } from "@/components/SmartRecommendations";
 import { PartTypeVisualSelector } from "@/components/PartTypeVisualSelector";
 import { Card } from "@/components/ui/card";
+import { FieldWithHelp } from "@/components/FieldWithHelp";
 
 interface InspectionSetupTabProps {
   data: InspectionSetupData;
@@ -62,44 +63,7 @@ const materialSpecs: Record<MaterialType, string[]> = {
   custom: ["Custom Specification"],
 };
 
-const FieldWithHelp = ({ 
-  label, 
-  help, 
-  required,
-  autoFilled,
-  materialInfo,
-  children 
-}: { 
-  label: string; 
-  help: string; 
-  required?: boolean;
-  autoFilled?: boolean;
-  materialInfo?: string;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center gap-2">
-      <Label className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {autoFilled && (
-        <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent">
-          Auto-filled
-        </Badge>
-      )}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-8 w-8"
-        title="Auto-fill Features: Recommended settings based on material and thickness, standard-compliant parameters, historical data from similar inspections."
-      >
-        <Info className="h-4 w-4" />
-      </Button>
-    </div>
-    {children}
-  </div>
-);
+// Using imported FieldWithHelp component
 
 export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: InspectionSetupTabProps) => {
   const updateField = (field: keyof InspectionSetupData, value: any) => {
@@ -177,7 +141,7 @@ export const InspectionSetupTab = ({ data, onChange, acceptanceClass }: Inspecti
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Part Number"
-          help="Drawing or part number for identification"
+          fieldKey="inspection_setup.part_number"
           required
         >
           <Input

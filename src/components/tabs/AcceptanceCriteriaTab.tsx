@@ -1,13 +1,12 @@
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AcceptanceCriteriaData, AcceptanceClass, StandardType } from "@/types/techniqueSheet";
-import { Info, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { acceptanceLimits } from "@/utils/autoFillLogic";
+import { FieldWithHelp } from "@/components/FieldWithHelp";
 
 interface AcceptanceCriteriaTabProps {
   data: AcceptanceCriteriaData;
@@ -16,42 +15,7 @@ interface AcceptanceCriteriaTabProps {
   standard?: StandardType;
 }
 
-const FieldWithHelp = ({ 
-  label, 
-  help, 
-  required,
-  autoFilled,
-  children 
-}: { 
-  label: string; 
-  help: string; 
-  required?: boolean;
-  autoFilled?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center gap-2">
-      <Label className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {autoFilled && (
-        <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent">
-          Auto-filled
-        </Badge>
-      )}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-8 w-8"
-        title="Auto-fill will populate acceptance criteria based on the selected standard and inspection type."
-      >
-        <Info className="h-4 w-4" />
-      </Button>
-    </div>
-    {children}
-  </div>
-);
+// Using imported FieldWithHelp component
 
 const acceptanceClasses: AcceptanceClass[] = ["AAA", "AA", "A", "B", "C"];
 
@@ -115,7 +79,7 @@ export const AcceptanceCriteriaTab = ({ data, onChange, material, standard }: Ac
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Acceptance Class"
-          help="Per Table VI - AAA is most stringent"
+          fieldKey="acceptance.acceptance_class"
           required
         >
           <Select

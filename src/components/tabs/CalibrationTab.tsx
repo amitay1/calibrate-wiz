@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CalibrationData, InspectionSetupData, AcceptanceClass, CalibrationBlockType } from "@/types/techniqueSheet";
-import { Info, Target, Sparkles } from "lucide-react";
+import { Target, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { generateCalibrationRecommendation } from "@/utils/calibrationRecommender";
 import { CalibrationCatalog } from "../CalibrationCatalog";
 import { toast } from "sonner";
+import { FieldWithHelp } from "@/components/FieldWithHelp";
 
 interface CalibrationTabProps {
   data: CalibrationData;
@@ -16,42 +16,7 @@ interface CalibrationTabProps {
   acceptanceClass: AcceptanceClass | "";
 }
 
-const FieldWithHelp = ({ 
-  label, 
-  help, 
-  required, 
-  autoFilled,
-  children 
-}: { 
-  label: string; 
-  help: string; 
-  required?: boolean;
-  autoFilled?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center gap-2">
-      <Label className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {autoFilled && (
-        <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent">
-          Auto-filled
-        </Badge>
-      )}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-8 w-8" 
-        title="Auto-fill will populate calibration data based on the selected standard and probe settings"
-      >
-        <Info className="h-4 w-4" />
-      </Button>
-    </div>
-    {children}
-  </div>
-);
+// Using imported FieldWithHelp component
 
 export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClass }: CalibrationTabProps) => {
   const [recommendation, setRecommendation] = useState<any>(null);
@@ -154,7 +119,7 @@ export const CalibrationTab = ({ data, onChange, inspectionSetup, acceptanceClas
 
         <FieldWithHelp
           label="Reference Standard Material"
-          help="Must match part material per Table I"
+          fieldKey="calibration.reference_material"
           required
           autoFilled={!!recommendation}
         >
