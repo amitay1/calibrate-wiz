@@ -119,10 +119,19 @@ export default function Auth() {
     e.preventDefault();
     setErrors({});
 
+    // Dev mode: Allow "0" as shortcut for developer credentials
+    let finalEmail = email;
+    let finalPassword = password;
+    
+    if (email === '0' && password === '0') {
+      finalEmail = 'dev@sm.com';
+      finalPassword = 'dev123';
+    }
+
     // Validate input
     const validation = signInSchema.safeParse({
-      email,
-      password
+      email: finalEmail,
+      password: finalPassword
     });
     if (!validation.success) {
       const newErrors: Record<string, string> = {};
