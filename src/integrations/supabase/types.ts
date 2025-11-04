@@ -50,6 +50,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
@@ -57,6 +58,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          tenant_id: string
           updated_at?: string
         }
         Update: {
@@ -64,9 +66,18 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          tenant_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       purchase_history: {
         Row: {
@@ -237,6 +248,7 @@ export type Database = {
           sheet_name: string
           standard: string | null
           status: string | null
+          tenant_id: string
           updated_at: string
           user_id: string
         }
@@ -249,6 +261,7 @@ export type Database = {
           sheet_name: string
           standard?: string | null
           status?: string | null
+          tenant_id: string
           updated_at?: string
           user_id: string
         }
@@ -261,8 +274,50 @@ export type Database = {
           sheet_name?: string
           standard?: string | null
           status?: string | null
+          tenant_id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technique_sheets_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string | null
+          custom_domain: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          settings: Json | null
+          subdomain: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          settings?: Json | null
+          subdomain: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          settings?: Json | null
+          subdomain?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -278,6 +333,7 @@ export type Database = {
           standard_id: string
           stripe_payment_id: string | null
           stripe_subscription_id: string | null
+          tenant_id: string
           user_id: string
         }
         Insert: {
@@ -291,6 +347,7 @@ export type Database = {
           standard_id: string
           stripe_payment_id?: string | null
           stripe_subscription_id?: string | null
+          tenant_id: string
           user_id: string
         }
         Update: {
@@ -304,6 +361,7 @@ export type Database = {
           standard_id?: string
           stripe_payment_id?: string | null
           stripe_subscription_id?: string | null
+          tenant_id?: string
           user_id?: string
         }
         Relationships: [
@@ -314,6 +372,13 @@ export type Database = {
             referencedRelation: "standards"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_standard_access_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -321,6 +386,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_current_tenant_id: { Args: never; Returns: string }
       has_standard_access: {
         Args: { _standard_code: string; _user_id: string }
         Returns: boolean

@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StandardSelector } from "@/components/StandardSelector";
 import { ThreeDViewer } from "@/components/ThreeDViewer";
 import { MenuBar } from "@/components/MenuBar";
+import { TenantIndicator } from "@/components/TenantIndicator";
 import { Toolbar } from "@/components/Toolbar";
 import { StatusBar } from "@/components/StatusBar";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -647,13 +648,17 @@ const Index = () => {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Menu Bar - Hidden on Mobile */}
-      <div className="hidden md:block">
+      <div className="hidden md:flex md:items-center md:justify-between md:gap-4 md:border-b md:border-border">
         <MenuBar 
           onSave={handleSave}
           onExport={handleExportPDF}
           onNew={handleNewProject}
           onSignOut={signOut}
+          onNavigateToAdmin={() => navigate('/admin/tenants')}
         />
+        <div className="pr-4">
+          <TenantIndicator />
+        </div>
       </div>
 
       {/* Toolbar */}

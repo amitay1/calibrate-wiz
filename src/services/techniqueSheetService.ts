@@ -28,11 +28,16 @@ export const techniqueSheetService = {
         return { success: false, error: 'User not authenticated' };
       }
 
+      // Get user's profile with tenant_id
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, tenant_id')
         .eq('id', user.id)
         .single();
+
+      if (!profile?.tenant_id) {
+        return { success: false, error: 'User not assigned to a tenant' };
+      }
 
       const userName = profile?.full_name || user.email || 'Unknown';
 
@@ -57,6 +62,7 @@ export const techniqueSheetService = {
           .from('technique_sheets')
           .insert({
             user_id: user.id,
+            tenant_id: profile.tenant_id,
             sheet_name: sheetName,
             standard: data.standardName || '',
             data: data as any,

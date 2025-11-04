@@ -8,16 +8,17 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { FileText, Save, Download, FolderOpen, Settings, Info, Book, LogOut } from "lucide-react";
+import { FileText, Save, Download, FolderOpen, Settings, Info, Book, LogOut, Building2 } from "lucide-react";
 
 interface MenuBarProps {
   onSave: () => void;
   onExport: () => void;
   onNew: () => void;
   onSignOut: () => void;
+  onNavigateToAdmin?: () => void;
 }
 
-export const MenuBar = ({ onSave, onExport, onNew, onSignOut }: MenuBarProps) => {
+export const MenuBar = ({ onSave, onExport, onNew, onSignOut, onNavigateToAdmin }: MenuBarProps) => {
   return (
     <Menubar className="border-b border-border bg-card rounded-none h-10 px-2">
       <MenubarMenu>
@@ -108,6 +109,16 @@ export const MenuBar = ({ onSave, onExport, onNew, onSignOut }: MenuBarProps) =>
           <MenubarItem>
             <Info className="mr-2 h-4 w-4" />
             About
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+
+      <MenubarMenu>
+        <MenubarTrigger className="font-medium text-sm">Admin</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={onNavigateToAdmin}>
+            <Building2 className="mr-2 h-4 w-4" />
+            Manage Tenants
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
