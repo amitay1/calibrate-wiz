@@ -226,7 +226,7 @@ export default function Auth() {
             </CardDescription>
           </CardHeader>
         <CardContent>
-          <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
+          <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4" noValidate>
             {isSignUp && <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={e => setFullName(e.target.value)} disabled={loading} className={errors.fullName ? 'border-destructive' : ''} />
