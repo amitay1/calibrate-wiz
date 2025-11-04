@@ -174,7 +174,7 @@ export default function Auth() {
         duration: 0.6
       }} className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 min-h-[4rem] flex items-center justify-center whitespace-nowrap mx-0 my-0 px-[300px]">
-            <span className="inline-block px-[111px]">
+            <span className="inline-block px-[230px] mx-[185px]">
               {displayedText.split('').map((char, index) => <motion.span key={index} initial={{
               opacity: 0,
               y: -10
