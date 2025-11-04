@@ -157,14 +157,8 @@ export default function Auth() {
       setLoading(false);
     }
   };
-  return <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <Button variant="ghost" className="mb-4" onClick={() => navigate('/')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
-        </Button>
-        
-        <motion.div initial={{
+  return <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+      <motion.div initial={{
         opacity: 0,
         y: -20
       }} animate={{
@@ -172,42 +166,48 @@ export default function Auth() {
         y: 0
       }} transition={{
         duration: 0.6
-      }} className="mb-8 text-center overflow-visible">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 flex items-center justify-center whitespace-nowrap">
-            <span className="inline-block">
-              {displayedText.split('').map((char, index) => <motion.span key={index} initial={{
-              opacity: 0,
-              y: -10
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} transition={{
-              duration: 0.1
-            }} className="inline-block font-extrabold">
-                  {char === ' ' ? '\u00A0' : char}
-                </motion.span>)}
-            </span>
-            <motion.span animate={{
-            opacity: [1, 0, 1]
+      }} className="mb-8 text-center w-full overflow-visible">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 flex items-center justify-center whitespace-nowrap overflow-visible">
+          <span className="inline-block">
+            {displayedText.split('').map((char, index) => <motion.span key={index} initial={{
+            opacity: 0,
+            y: -10
+          }} animate={{
+            opacity: 1,
+            y: 0
           }} transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            ease: "linear"
-          }} className="inline-block w-1 h-8 md:h-10 bg-primary ml-1" style={{
-            verticalAlign: 'middle'
-          }} />
-          </h1>
-          <motion.p initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
+            duration: 0.1
+          }} className="inline-block font-extrabold">
+                {char === ' ' ? '\u00A0' : char}
+              </motion.span>)}
+          </span>
+          <motion.span animate={{
+          opacity: [1, 0, 1]
         }} transition={{
-          delay: 2.5,
-          duration: 0.5
-        }} className="text-muted-foreground text-lg">
-            Professional Ultrasonic Inspection
-          </motion.p>
-        </motion.div>
+          duration: 0.8,
+          repeat: Infinity,
+          ease: "linear"
+        }} className="inline-block w-1 h-8 md:h-10 bg-primary ml-1" style={{
+          verticalAlign: 'middle'
+        }} />
+        </h1>
+        <motion.p initial={{
+        opacity: 0
+      }} animate={{
+        opacity: 1
+      }} transition={{
+        delay: 2.5,
+        duration: 0.5
+      }} className="text-muted-foreground text-lg">
+          Professional Ultrasonic Inspection
+        </motion.p>
+      </motion.div>
+
+      <div className="w-full max-w-md">
+        <Button variant="ghost" className="mb-4" onClick={() => navigate('/')}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
 
         <Card className="w-full">
           <CardHeader>
