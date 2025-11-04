@@ -126,6 +126,29 @@ export default function Auth() {
     if (email === '0' && password === '0') {
       finalEmail = 'dev@sm.com';
       finalPassword = 'dev123';
+      
+      // Skip validation for dev shortcut and go straight to login
+      setLoading(true);
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: finalEmail,
+          password: finalPassword
+        });
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            toast.error('Invalid email or password. Please try again.');
+          } else {
+            toast.error(error.message);
+          }
+        } else {
+          toast.success('Signed in successfully!');
+        }
+      } catch (error) {
+        toast.error('An unexpected error occurred. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
     }
 
     // Validate input
