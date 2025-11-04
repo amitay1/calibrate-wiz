@@ -183,7 +183,7 @@ export default function Auth() {
               y: 0
             }} transition={{
               duration: 0.1
-            }} className="inline-block text-6xl text-left px-0 font-extrabold mx-0">
+            }} className="inline-block text-left px-0 font-extrabold mx-0 text-8xl">
                   {char === ' ' ? '\u00A0' : char}
                 </motion.span>)}
             </span>
