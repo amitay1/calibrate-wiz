@@ -174,7 +174,7 @@ export default function Auth() {
         duration: 0.6
       }} className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 min-h-[4rem] flex items-center justify-center whitespace-nowrap mx-0 my-0 px-[300px]">
-            <span className="inline-block">
+            <span className="inline-block px-[111px]">
               {displayedText.split('').map((char, index) => <motion.span key={index} initial={{
               opacity: 0,
               y: -10
@@ -183,7 +183,7 @@ export default function Auth() {
               y: 0
             }} transition={{
               duration: 0.1
-            }} className="inline-block text-6xl font-bold text-left px-[11px]">
+            }} className="inline-block text-6xl text-left px-0 mx-[5px] font-medium">
                   {char === ' ' ? '\u00A0' : char}
                 </motion.span>)}
             </span>
