@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { useInactivityLogout } from '@/hooks/useInactivityLogout';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,6 +11,9 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Only activate inactivity logout when user is authenticated
+  useInactivityLogout();
 
   useEffect(() => {
     let isMounted = true;
