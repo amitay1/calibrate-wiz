@@ -24,16 +24,28 @@ export default function Auth() {
 
   useEffect(() => {
     let currentIndex = 0;
-    const typingInterval = setInterval(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const typeNextCharacter = () => {
       if (currentIndex <= fullText.length) {
         setDisplayedText(fullText.slice(0, currentIndex));
         currentIndex++;
-      } else {
-        clearInterval(typingInterval);
+        
+        // Random delay between 50-150ms for realistic typing
+        // Longer delay after spaces (200-300ms)
+        const isSpace = fullText[currentIndex - 1] === ' ';
+        const delay = isSpace 
+          ? Math.random() * 100 + 200 
+          : Math.random() * 100 + 50;
+        
+        timeoutId = setTimeout(typeNextCharacter, delay);
       }
-    }, 100);
+    };
 
-    return () => clearInterval(typingInterval);
+    // Initial delay before starting
+    timeoutId = setTimeout(typeNextCharacter, 300);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
@@ -161,15 +173,35 @@ export default function Auth() {
           transition={{ duration: 0.6 }}
           className="mb-8 text-center"
         >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2">
-            {displayedText}
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 min-h-[4rem] flex items-center justify-center">
+            <span className="inline-block">
+              {displayedText.split('').map((char, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.1 }}
+                  className="inline-block"
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </motion.span>
+              ))}
+            </span>
             <motion.span
-              animate={{ opacity: [1, 0] }}
-              transition={{ duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
-              className="inline-block w-1 h-12 bg-primary ml-1 align-middle"
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+              className="inline-block w-1 h-12 bg-primary ml-1"
+              style={{ verticalAlign: 'middle' }}
             />
           </h1>
-          <p className="text-muted-foreground text-lg">Professional Ultrasonic Inspection</p>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.5, duration: 0.5 }}
+            className="text-muted-foreground text-lg"
+          >
+            Professional Ultrasonic Inspection
+          </motion.p>
         </motion.div>
 
         <Card className="w-full">
