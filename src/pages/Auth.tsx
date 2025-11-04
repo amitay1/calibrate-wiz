@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { signUpSchema, signInSchema } from '@/lib/validationSchemas';
 import { Loader2, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -16,7 +17,24 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [displayedText, setDisplayedText] = useState('');
   const navigate = useNavigate();
+
+  const fullText = 'Welcome to Scan Master';
+
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setDisplayedText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 100);
+
+    return () => clearInterval(typingInterval);
+  }, []);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -136,6 +154,24 @@ export default function Auth() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Button>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8 text-center"
+        >
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2">
+            {displayedText}
+            <motion.span
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
+              className="inline-block w-1 h-12 bg-primary ml-1 align-middle"
+            />
+          </h1>
+          <p className="text-muted-foreground text-lg">Professional Ultrasonic Inspection</p>
+        </motion.div>
+
         <Card className="w-full">
           <CardHeader>
             <CardTitle>{isSignUp ? 'Create Account' : 'Sign In'}</CardTitle>
