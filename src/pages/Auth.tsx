@@ -172,8 +172,8 @@ export default function Auth() {
         y: 0
       }} transition={{
         duration: 0.6
-      }} className="mb-8 text-center">
-          <h1 className="text-[10rem] md:text-[12rem] lg:text-[15rem] font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 flex items-center justify-center whitespace-nowrap">
+      }} className="mb-8 text-center overflow-visible">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 flex items-center justify-center whitespace-nowrap">
             <span className="inline-block">
               {displayedText.split('').map((char, index) => <motion.span key={index} initial={{
               opacity: 0,
@@ -183,7 +183,7 @@ export default function Auth() {
               y: 0
             }} transition={{
               duration: 0.1
-            }} className="inline-block font-extrabold text-3xl">
+            }} className="inline-block font-extrabold">
                   {char === ' ' ? '\u00A0' : char}
                 </motion.span>)}
             </span>
@@ -193,7 +193,7 @@ export default function Auth() {
             duration: 0.8,
             repeat: Infinity,
             ease: "linear"
-          }} className="inline-block w-1 h-10 md:h-12 bg-primary ml-1" style={{
+          }} className="inline-block w-1 h-8 md:h-10 bg-primary ml-1" style={{
             verticalAlign: 'middle'
           }} />
           </h1>
