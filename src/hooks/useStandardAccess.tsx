@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { StandardType } from '@/types/techniqueSheet';
+import { toast } from 'sonner';
 
 interface StandardAccess {
   hasAccess: boolean;
@@ -11,6 +13,7 @@ interface StandardAccess {
 }
 
 export const useStandardAccess = (standardCode: StandardType): StandardAccess => {
+  const navigate = useNavigate();
   const [hasAccess, setHasAccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [accessType, setAccessType] = useState<string | null>(null);
@@ -53,23 +56,26 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          setHasAccess(false);
-          setIsLoading(false);
+          toast.error('Session expired. Please login again.');
+          await supabase.auth.signOut();
+          navigate('/auth');
           return;
         }
         
         if (!session?.access_token) {
           console.log('No valid session or access token');
-          setHasAccess(false);
-          setIsLoading(false);
+          toast.error('Authentication required. Please login.');
+          await supabase.auth.signOut();
+          navigate('/auth');
           return;
         }
         
         // Verify the token is not 'null' or 'undefined' as string
         if (session.access_token === 'null' || session.access_token === 'undefined') {
           console.error('Access token is invalid string value');
-          setHasAccess(false);
-          setIsLoading(false);
+          toast.error('Invalid session. Please login again.');
+          await supabase.auth.signOut();
+          navigate('/auth');
           return;
         }
 
@@ -83,8 +89,9 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
           
           if (refreshError || !newSession) {
             console.error('Failed to refresh session:', refreshError);
-            setHasAccess(false);
-            setIsLoading(false);
+            toast.error('Session expired. Please login again.');
+            await supabase.auth.signOut();
+            navigate('/auth');
             return;
           }
           
@@ -105,12 +112,30 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
           // Retry once on 401 with fresh token
           if (error.message?.includes('401') && retryCount === 0) {
             console.log('Got 401, refreshing session and retrying...');
-            const { data: { session: freshSession } } = await supabase.auth.refreshSession();
-            if (freshSession && isMounted) {
+            const { data: { session: freshSession }, error: refreshError } = await supabase.auth.refreshSession();
+            
+            if (refreshError || !freshSession) {
+              console.error('Failed to refresh after 401:', refreshError);
+              toast.error('Authentication failed. Please login again.');
+              await supabase.auth.signOut();
+              navigate('/auth');
+              return;
+            }
+            
+            if (isMounted) {
               // Wait a bit before retrying
               setTimeout(() => checkAccess(1), 500);
               return;
             }
+          }
+          
+          // If we got 401 on retry or other auth error, redirect to login
+          if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+            console.error('Authentication error:', error);
+            toast.error('Session invalid. Please login again.');
+            await supabase.auth.signOut();
+            navigate('/auth');
+            return;
           }
           
           console.error('Error checking standard access:', error);
