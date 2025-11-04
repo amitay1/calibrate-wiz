@@ -173,7 +173,7 @@ export default function Auth() {
           transition={{ duration: 0.6 }}
           className="mb-8 text-center"
         >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 min-h-[4rem] flex items-center justify-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 min-h-[4rem] flex items-center justify-center whitespace-nowrap">
             <span className="inline-block">
               {displayedText.split('').map((char, index) => (
                 <motion.span
@@ -190,7 +190,7 @@ export default function Auth() {
             <motion.span
               animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-              className="inline-block w-1 h-12 bg-primary ml-1"
+              className="inline-block w-1 h-10 md:h-12 bg-primary ml-1"
               style={{ verticalAlign: 'middle' }}
             />
           </h1>
