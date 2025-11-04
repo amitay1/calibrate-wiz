@@ -6,6 +6,9 @@ import { StandardSelector } from "@/components/StandardSelector";
 import { ThreeDViewer } from "@/components/ThreeDViewer";
 import { MenuBar } from "@/components/MenuBar";
 import { TenantIndicator } from "@/components/TenantIndicator";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { InstallPrompt } from "@/components/InstallPrompt";
+import { syncManager } from "@/services/syncManager";
 import { Toolbar } from "@/components/Toolbar";
 import { StatusBar } from "@/components/StatusBar";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -49,6 +52,15 @@ const Index = () => {
   const [reportMode, setReportMode] = useState<"Technique" | "Report">("Technique");
   const [isSplitMode, setIsSplitMode] = useState(false);
   const [activePart, setActivePart] = useState<"A" | "B">("A");
+
+  // Initialize sync manager
+  useEffect(() => {
+    syncManager.initialize();
+
+    return () => {
+      syncManager.destroy();
+    };
+  }, []);
   
   // Check authentication
   useEffect(() => {
@@ -656,7 +668,8 @@ const Index = () => {
           onSignOut={signOut}
           onNavigateToAdmin={() => navigate('/admin/tenants')}
         />
-        <div className="pr-4">
+        <div className="flex items-center gap-4 pr-4">
+          <OfflineIndicator />
           <TenantIndicator />
         </div>
       </div>
@@ -936,6 +949,9 @@ const Index = () => {
         })()}
         totalRequiredFields={reportMode === "Technique" ? 50 : 40}
       />
+
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </div>
   );
 };

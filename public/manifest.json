@@ -1,8 +1,9 @@
 {
   "name": "Scan Master Inspection Pro",
   "short_name": "Scan Master",
-  "description": "Professional ultrasonic inspection technique sheet creator",
+  "description": "Professional ultrasonic inspection technique sheet creator with offline support",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0f1419",
   "theme_color": "#115eb0",
@@ -11,10 +12,24 @@
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "type": "image/x-icon",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["productivity", "utilities"],
+  "categories": ["productivity", "utilities", "business"],
   "screenshots": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "New Technique Sheet",
+      "short_name": "New Sheet",
+      "description": "Create a new technique sheet",
+      "url": "/",
+      "icons": []
+    }
+  ],
+  "related_applications": [],
+  "iarc_rating_id": "",
+  "lang": "en-US",
+  "dir": "ltr"
 }
