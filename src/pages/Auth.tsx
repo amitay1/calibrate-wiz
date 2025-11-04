@@ -198,8 +198,8 @@ export default function Auth() {
         y: 0
       }} transition={{
         duration: 0.6
-      }} className="mb-8 text-center w-full overflow-visible">
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 flex items-center justify-center whitespace-nowrap overflow-visible">
+      }} className="mb-8 text-center w-full px-4">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2 flex flex-wrap items-center justify-center gap-1">
           <span className="inline-block">
             {displayedText.split('').map((char, index) => <motion.span key={index} initial={{
             opacity: 0,
@@ -219,7 +219,7 @@ export default function Auth() {
           duration: 0.8,
           repeat: Infinity,
           ease: "linear"
-        }} className="inline-block w-1 h-16 md:h-20 bg-primary ml-1" style={{
+        }} className="inline-block w-0.5 sm:w-1 h-8 sm:h-12 md:h-16 lg:h-20 bg-primary" style={{
           verticalAlign: 'middle'
         }} />
         </h1>
@@ -230,7 +230,7 @@ export default function Auth() {
       }} transition={{
         delay: 2.5,
         duration: 0.5
-      }} className="text-muted-foreground text-lg">
+      }} className="text-muted-foreground text-sm sm:text-base md:text-lg">
           Professional Ultrasonic Inspection
         </motion.p>
       </motion.div>
