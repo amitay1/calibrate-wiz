@@ -71,6 +71,31 @@ export interface ElectronAPI {
     onData: (callback: (data: DeviceMessage) => void) => void;
   };
   
+  // Window Management
+  window: {
+    openSheet: (sheetId: string, sheetName: string) => Promise<{ 
+      success: boolean; 
+      sheetId?: string; 
+      windowId?: number; 
+      error?: string;
+    }>;
+    closeSheet: (sheetId: string) => Promise<{ success: boolean; error?: string }>;
+    focusSheet: (sheetId: string) => Promise<{ success: boolean; error?: string }>;
+    getAllSheets: () => Promise<{ 
+      success: boolean; 
+      windows: SheetWindowInfo[]; 
+      error?: string;
+    }>;
+    broadcast: (channel: string, ...args: any[]) => Promise<{ success: boolean; error?: string }>;
+    sendToSheet: (sheetId: string, channel: string, ...args: any[]) => Promise<{ 
+      success: boolean; 
+      error?: string;
+    }>;
+    onSheetDataUpdated: (callback: (event: any, sheetId: string, data: any) => void) => void;
+    onSheetWindowClosed: (callback: (event: any, sheetId: string) => void) => void;
+    notifySheetDataChanged: (sheetId: string, data: any) => void;
+  };
+  
   // Updates
   onUpdateAvailable: (callback: () => void) => void;
   onUpdateDownloaded: (callback: () => void) => void;
@@ -119,6 +144,12 @@ export interface DeviceMessage {
   raw?: string;
   timestamp?: string;
   error?: string;
+}
+
+export interface SheetWindowInfo {
+  sheetId: string;
+  isDestroyed: boolean;
+  isFocused: boolean;
 }
 
 declare global {

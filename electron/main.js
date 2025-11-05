@@ -5,6 +5,7 @@ const Store = require('electron-store');
 const { createMenu } = require('./menu');
 const { initBackendSwitcher } = require('./backend-switcher');
 const { setupDeviceIpcHandlers } = require('./device-ipc-handlers');
+const { setupWindowIpcHandlers } = require('./window-ipc-handlers');
 
 const store = new Store();
 let mainWindow = null;
@@ -59,6 +60,9 @@ function createMainWindow() {
 
   // Setup device communication IPC handlers
   setupDeviceIpcHandlers(mainWindow);
+
+  // Setup window management IPC handlers
+  setupWindowIpcHandlers(mainWindow, isDev, VITE_DEV_SERVER_URL);
 
   return mainWindow;
 }

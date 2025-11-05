@@ -45,6 +45,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
     },
   },
   
+  // Window Management
+  window: {
+    openSheet: (sheetId, sheetName) => ipcRenderer.invoke('window:open-sheet', sheetId, sheetName),
+    closeSheet: (sheetId) => ipcRenderer.invoke('window:close-sheet', sheetId),
+    focusSheet: (sheetId) => ipcRenderer.invoke('window:focus-sheet', sheetId),
+    getAllSheets: () => ipcRenderer.invoke('window:get-all-sheets'),
+    broadcast: (channel, ...args) => ipcRenderer.invoke('window:broadcast', channel, ...args),
+    sendToSheet: (sheetId, channel, ...args) => ipcRenderer.invoke('window:send-to-sheet', sheetId, channel, ...args),
+    onSheetDataUpdated: (callback) => ipcRenderer.on('sheet-data-updated', callback),
+    onSheetWindowClosed: (callback) => ipcRenderer.on('sheet-window-closed', callback),
+    notifySheetDataChanged: (sheetId, data) => ipcRenderer.send('sheet-data-changed', sheetId, data),
+  },
+  
   // Updates
   onUpdateAvailable: (callback) => {
     ipcRenderer.on('update-available', callback);
