@@ -2,11 +2,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EquipmentData } from "@/types/techniqueSheet";
 import { FieldWithHelp } from "@/components/FieldWithHelp";
+import { ValidationWarnings } from "@/components/ValidationWarnings";
+import { AdvancedCalculators } from "@/components/AdvancedCalculators";
 
 interface EquipmentTabProps {
   data: EquipmentData;
   onChange: (data: EquipmentData) => void;
   partThickness: number;
+  material?: string;
+  standard?: string;
 }
 
 const frequencies = ["1.0", "2.25", "5.0", "10.0", "15.0"];
@@ -31,7 +35,7 @@ const getResolutionValues = (frequency: string) => {
   return resolutions[frequency] || { entry: 0.125, back: 0.05 };
 };
 
-export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProps) => {
+export const EquipmentTab = ({ data, onChange, partThickness, material, standard = "AMS-STD-2154E" }: EquipmentTabProps) => {
   const updateField = (field: keyof EquipmentData, value: any) => {
     let newData = { ...data, [field]: value };
     
@@ -53,6 +57,25 @@ export const EquipmentTab = ({ data, onChange, partThickness }: EquipmentTabProp
 
   return (
     <div className="space-y-6 p-6">
+      {/* Validation Warnings */}
+      <ValidationWarnings
+        frequency={data.frequency}
+        thickness={partThickness}
+        material={material as any}
+        standard={standard as any}
+        verticalLinearity={{ min: 5, max: data.verticalLinearity || 95 }}
+        horizontalLinearity={data.horizontalLinearity}
+        transducerDiameter={data.transducerDiameter?.toString()}
+      />
+
+      {/* Advanced Calculators */}
+      <AdvancedCalculators
+        frequency={data.frequency}
+        transducerDiameter={data.transducerDiameter?.toString()}
+        material={material as any}
+        thickness={partThickness}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FieldWithHelp
           label="Equipment Manufacturer"

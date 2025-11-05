@@ -810,6 +810,8 @@ const Index = () => {
                           data={currentData.equipment}
                           onChange={currentData.setEquipment}
                           partThickness={currentData.inspectionSetup.partThickness}
+                          material={currentData.inspectionSetup.material}
+                          standard={standard}
                         />
                       </TabsContent>
 
