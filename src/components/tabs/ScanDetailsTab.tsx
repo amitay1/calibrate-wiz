@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Info, Eye, EyeOff } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScanDirectionVisualizer, type ScanVisualization } from "@/components/ScanDirectionVisualizer";
+import ColoredScanDrawing from "@/components/ColoredScanDrawing";
 
 export interface ScanDetail {
   scanningDirection: string;
@@ -116,7 +117,29 @@ export const ScanDetailsTab = ({ data, onChange, partType }: ScanDetailsTabProps
 
   return (
     <div className="space-y-6">
-      {/* Visualization */}
+      {/* Color-Coded Scan Coverage Visualization */}
+      {partType && data.scanDetails.length > 0 && (
+        <ColoredScanDrawing
+          partType={partType}
+          dimensions={{
+            outerDiameter: 640,
+            innerDiameter: 478,
+            wallThickness: 81,
+            length: 736
+          }}
+          scans={data.scanDetails.map(detail => ({
+            id: detail.scanningDirection,
+            name: detail.scanningDirection,
+            waveType: detail.waveMode,
+            beamAngle: detail.waveMode.includes('45') ? 45 : 
+                       detail.waveMode.includes('60') ? 60 :
+                       detail.waveMode.includes('70') ? 70 : 0,
+            side: 'A', // Default to side A, can be enhanced later
+          }))}
+        />
+      )}
+
+      {/* Scan Direction Visualizer */}
       {partType && data.scanDetails.length > 0 && (
         <ScanDirectionVisualizer
           partType={partType}
