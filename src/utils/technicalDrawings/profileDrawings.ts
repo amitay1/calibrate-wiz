@@ -9,7 +9,8 @@ import { TechnicalDrawingGenerator, Dimensions, LayoutConfig } from './Technical
 export function drawLProfileTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const { length, width, thickness } = dimensions;
   
@@ -77,7 +78,8 @@ function drawLProfileFrontView(
 export function drawTProfileTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const { length, width, thickness } = dimensions;
   
@@ -147,7 +149,8 @@ function drawTProfileFrontView(
 export function drawIProfileTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const { length, width, thickness } = dimensions;
   
@@ -225,7 +228,8 @@ function drawIProfileFrontView(
 export function drawUProfileTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const { length, width, thickness } = dimensions;
   
@@ -295,7 +299,8 @@ function drawUProfileFrontView(
 export function drawZProfileTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const { length, width, thickness } = dimensions;
   

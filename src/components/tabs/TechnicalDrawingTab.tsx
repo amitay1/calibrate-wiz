@@ -19,12 +19,20 @@ interface TechnicalDrawingTabProps {
     wallThickness?: number;
   };
   material?: MaterialType;
+  scans?: Array<{
+    id: string;
+    name: string;
+    waveType: string;
+    beamAngle: number;
+    side: 'A' | 'B';
+  }>;
 }
 
 export const TechnicalDrawingTab = ({
   partType,
   dimensions,
   material,
+  scans = [],
 }: TechnicalDrawingTabProps) => {
   const handleExportSVG = () => {
     toast.info('SVG export will be available soon');
@@ -97,6 +105,7 @@ export const TechnicalDrawingTab = ({
             partType={partType}
             dimensions={dimensions}
             material={material}
+            scans={scans}
             viewMode="multi"
             showGrid={true}
             showDimensions={true}

@@ -4,25 +4,38 @@
  */
 
 import { TechnicalDrawingGenerator, Dimensions, LayoutConfig } from './TechnicalDrawingGenerator';
+import { getScanZonesForPartType } from '@/utils/scanZoneMapper';
 
 export function drawTubeTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const outerDiameter = dimensions.diameter || dimensions.outerDiameter || 50;
   const wallThickness = dimensions.wallThickness || dimensions.thickness || 5;
   const innerDiameter = outerDiameter - (2 * wallThickness);
   const length = dimensions.length;
   
+  // Calculate scan zones if scans are provided
+  const scanCoverage = scans.length > 0 
+    ? getScanZonesForPartType('tube', scans, { 
+        outerDiameter, 
+        innerDiameter, 
+        wallThickness,
+        diameter: outerDiameter,
+        thickness: wallThickness
+      })
+    : null;
+  
   // FRONT VIEW (Length × OD with inner rectangle)
   drawFrontView(generator, length, outerDiameter, innerDiameter, layout.frontView);
   
-  // TOP VIEW (Concentric circles)
-  drawTopView(generator, outerDiameter, innerDiameter, wallThickness, layout.topView);
+  // TOP VIEW (Concentric circles) - with color zones
+  drawTopView(generator, outerDiameter, innerDiameter, wallThickness, layout.topView, scanCoverage);
   
-  // SECTION A-A (with hatching in wall)
-  drawSectionView(generator, length, outerDiameter, innerDiameter, layout.sideView);
+  // SECTION A-A (with hatching in wall and color zones)
+  drawSectionView(generator, length, outerDiameter, innerDiameter, layout.sideView, scanCoverage);
   
   // ISOMETRIC VIEW
   drawIsometricView(generator, length, outerDiameter, innerDiameter, layout.isometric);
@@ -112,7 +125,8 @@ function drawTopView(
   outerDiameter: number,
   innerDiameter: number,
   wallThickness: number,
-  viewConfig: { x: number; y: number; width: number; height: number }
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanCoverage: any = null
 ) {
   const { x, y, width, height } = viewConfig;
   
@@ -126,6 +140,27 @@ function drawTopView(
   
   const centerX = x + width / 2;
   const centerY = y + height / 2;
+  
+  // Draw color zones if scans exist (in wall thickness)
+  if (scanCoverage && scanCoverage.zones.length > 0) {
+    const scope = generator.getScope();
+    
+    scanCoverage.zones.forEach((zone: any) => {
+      const startRadius = scaledInnerRadius + (zone.depthRange.start / wallThickness) * (scaledOuterRadius - scaledInnerRadius);
+      const endRadius = scaledInnerRadius + (zone.depthRange.end / wallThickness) * (scaledOuterRadius - scaledInnerRadius);
+      
+      // Draw colored ring
+      const outerCircle = new scope.Path.Circle(new scope.Point(centerX, centerY), endRadius);
+      const innerCircle = new scope.Path.Circle(new scope.Point(centerX, centerY), startRadius);
+      const ring = outerCircle.subtract(innerCircle);
+      outerCircle.remove();
+      innerCircle.remove();
+      
+      ring.fillColor = new scope.Color(zone.color + '80');
+      ring.strokeColor = new scope.Color(zone.color);
+      ring.strokeWidth = 0.5;
+    });
+  }
   
   // Outer circle
   generator.drawCircle(centerX, centerY, scaledOuterRadius, 'visible');
@@ -192,7 +227,8 @@ function drawSectionView(
   length: number,
   outerDiameter: number,
   innerDiameter: number,
-  viewConfig: { x: number; y: number; width: number; height: number }
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanCoverage: any = null
 ) {
   const { x, y, width, height } = viewConfig;
   
@@ -211,6 +247,34 @@ function drawSectionView(
   const innerX = outerX;
   const innerY = outerY + (scaledOD - scaledID) / 2;
   
+  // Draw color zones if scans exist (in wall thickness)
+  const wallThicknessScaled = (scaledOD - scaledID) / 2;
+  
+  if (scanCoverage && scanCoverage.zones.length > 0) {
+    const scope = generator.getScope();
+    const actualWallThickness = (outerDiameter - innerDiameter) / 2;
+    
+    scanCoverage.zones.forEach((zone: any) => {
+      const startDepth = (zone.depthRange.start / actualWallThickness) * wallThicknessScaled;
+      const endDepth = (zone.depthRange.end / actualWallThickness) * wallThicknessScaled;
+      const zoneHeight = endDepth - startDepth;
+      
+      // Top wall zone
+      const topZone = new scope.Path.Rectangle(
+        new scope.Point(outerX, outerY + startDepth),
+        new scope.Size(scaledLength, zoneHeight)
+      );
+      topZone.fillColor = new scope.Color(zone.color + '60');
+      
+      // Bottom wall zone
+      const bottomZone = new scope.Path.Rectangle(
+        new scope.Point(outerX, outerY + scaledOD - endDepth),
+        new scope.Size(scaledLength, zoneHeight)
+      );
+      bottomZone.fillColor = new scope.Color(zone.color + '60');
+    });
+  }
+  
   // Outer rectangle
   generator.drawRectangle(outerX, outerY, scaledLength, scaledOD, 'visible');
   
@@ -218,9 +282,8 @@ function drawSectionView(
   generator.drawRectangle(innerX, innerY, scaledLength, scaledID, 'visible');
   
   // Hatching in wall (top and bottom)
-  const wallThickness = (scaledOD - scaledID) / 2;
-  generator.drawHatching(outerX, outerY, scaledLength, wallThickness, 45, 6);
-  generator.drawHatching(outerX, outerY + wallThickness + scaledID, scaledLength, wallThickness, 45, 6);
+  generator.drawHatching(outerX, outerY, scaledLength, wallThicknessScaled, 45, 6);
+  generator.drawHatching(outerX, outerY + wallThicknessScaled + scaledID, scaledLength, wallThicknessScaled, 45, 6);
   
   // Centerlines
   const centerX = x + width / 2;

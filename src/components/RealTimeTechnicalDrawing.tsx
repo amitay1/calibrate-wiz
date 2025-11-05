@@ -44,6 +44,13 @@ interface RealTimeTechnicalDrawingProps {
     innerWidth?: number;
     wallThickness?: number;
   };
+  scans?: Array<{
+    id: string;
+    name: string;
+    waveType: string;
+    beamAngle: number;
+    side: 'A' | 'B';
+  }>;
   showGrid?: boolean;
   showDimensions?: boolean;
   viewMode?: 'multi' | 'front' | 'top' | 'side' | 'isometric';
@@ -52,6 +59,7 @@ interface RealTimeTechnicalDrawingProps {
 export const RealTimeTechnicalDrawing = ({
   partType,
   dimensions,
+  scans = [],
   viewMode = 'multi',
 }: RealTimeTechnicalDrawingProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -106,50 +114,50 @@ export const RealTimeTechnicalDrawing = ({
         switch (partType) {
           case 'box':
           case 'rectangular_tube':
-            drawBoxTechnicalDrawing(generator, drawingDimensions, layout);
+            drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'cylinder':
-            drawCylinderTechnicalDrawing(generator, drawingDimensions, layout);
+            drawCylinderTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'sphere':
           case 'cone':
             // Use cylinder as base for sphere/cone
-            drawCylinderTechnicalDrawing(generator, drawingDimensions, layout);
+            drawCylinderTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'tube':
-            drawTubeTechnicalDrawing(generator, drawingDimensions, layout);
+            drawTubeTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'hexagon':
-            drawHexagonTechnicalDrawing(generator, drawingDimensions, layout);
+            drawHexagonTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'l_profile':
-            drawLProfileTechnicalDrawing(generator, drawingDimensions, layout);
+            drawLProfileTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 't_profile':
-            drawTProfileTechnicalDrawing(generator, drawingDimensions, layout);
+            drawTProfileTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'i_profile':
-            drawIProfileTechnicalDrawing(generator, drawingDimensions, layout);
+            drawIProfileTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'u_profile':
-            drawUProfileTechnicalDrawing(generator, drawingDimensions, layout);
+            drawUProfileTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'z_profile':
-            drawZProfileTechnicalDrawing(generator, drawingDimensions, layout);
+            drawZProfileTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           default:
             // Default to box
-            drawBoxTechnicalDrawing(generator, drawingDimensions, layout);
+            drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans);
         }
 
       // Render the drawing
@@ -157,7 +165,7 @@ export const RealTimeTechnicalDrawing = ({
     } catch (error) {
       console.error('Error generating technical drawing:', error);
     }
-  }, [partType, drawingDimensions, layout]);
+  }, [partType, drawingDimensions, layout, scans]);
 
   return (
     <div className="w-full h-full flex items-center justify-center bg-background">

@@ -4,23 +4,30 @@
  */
 
 import { TechnicalDrawingGenerator, Dimensions, LayoutConfig } from './TechnicalDrawingGenerator';
+import { getScanZonesForPartType } from '@/utils/scanZoneMapper';
 
 export function drawCylinderTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const diameter = dimensions.diameter || 50;
   const length = dimensions.length;
   
+  // Calculate scan zones if scans are provided
+  const scanCoverage = scans.length > 0 
+    ? getScanZonesForPartType('cylinder', scans, dimensions)
+    : null;
+  
   // FRONT VIEW (Length × Diameter)
   drawFrontView(generator, length, diameter, layout.frontView);
   
-  // TOP VIEW (Circle with Ø)
-  drawTopView(generator, diameter, layout.topView);
+  // TOP VIEW (Circle with Ø) - with color zones
+  drawTopView(generator, diameter, layout.topView, scanCoverage);
   
-  // SECTION A-A (with hatching)
-  drawSectionView(generator, length, diameter, layout.sideView);
+  // SECTION A-A (with hatching and color zones)
+  drawSectionView(generator, length, diameter, layout.sideView, scanCoverage);
   
   // ISOMETRIC VIEW
   drawIsometricView(generator, length, diameter, layout.isometric);
@@ -91,7 +98,8 @@ function drawFrontView(
 function drawTopView(
   generator: TechnicalDrawingGenerator,
   diameter: number,
-  viewConfig: { x: number; y: number; width: number; height: number }
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanCoverage: any = null
 ) {
   const { x, y, width, height } = viewConfig;
   
@@ -105,7 +113,29 @@ function drawTopView(
   const centerX = x + width / 2;
   const centerY = y + height / 2;
   
-  // Main circle
+  // Draw color zones if scans exist
+  if (scanCoverage && scanCoverage.zones.length > 0) {
+    const scope = generator.getScope();
+    const radius = diameter / 2;
+    
+    scanCoverage.zones.forEach((zone: any) => {
+      const startRadius = (zone.depthRange.start / radius) * scaledRadius;
+      const endRadius = (zone.depthRange.end / radius) * scaledRadius;
+      
+      // Draw colored ring
+      const ring = new scope.Path.Circle(new scope.Point(centerX, centerY), endRadius);
+      if (startRadius > 0) {
+        const innerCircle = new scope.Path.Circle(new scope.Point(centerX, centerY), startRadius);
+        ring.subtract(innerCircle);
+        innerCircle.remove();
+      }
+      ring.fillColor = new scope.Color(zone.color + '80'); // 50% opacity
+      ring.strokeColor = new scope.Color(zone.color);
+      ring.strokeWidth = 1;
+    });
+  }
+  
+  // Main circle outline
   generator.drawCircle(centerX, centerY, scaledRadius, 'visible');
   
   // Centerlines - cross
@@ -140,7 +170,8 @@ function drawSectionView(
   generator: TechnicalDrawingGenerator,
   length: number,
   diameter: number,
-  viewConfig: { x: number; y: number; width: number; height: number }
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanCoverage: any = null
 ) {
   const { x, y, width, height } = viewConfig;
   
@@ -155,7 +186,32 @@ function drawSectionView(
   const rectX = x + (width - scaledLength) / 2;
   const rectY = y + (height - scaledDiameter) / 2;
   
-  // Main rectangle with hatching (solid material)
+  // Draw color zones if scans exist
+  if (scanCoverage && scanCoverage.zones.length > 0) {
+    const scope = generator.getScope();
+    const radius = diameter / 2;
+    
+    scanCoverage.zones.forEach((zone: any) => {
+      const startDepth = (zone.depthRange.start / radius) * (scaledDiameter / 2);
+      const endDepth = (zone.depthRange.end / radius) * (scaledDiameter / 2);
+      const zoneHeight = endDepth - startDepth;
+      
+      // Draw colored band from center outward
+      const topBand = new scope.Path.Rectangle(
+        new scope.Point(rectX, rectY + (scaledDiameter / 2 - endDepth)),
+        new scope.Size(scaledLength, zoneHeight)
+      );
+      topBand.fillColor = new scope.Color(zone.color + '60');
+      
+      const bottomBand = new scope.Path.Rectangle(
+        new scope.Point(rectX, rectY + (scaledDiameter / 2 + startDepth)),
+        new scope.Size(scaledLength, zoneHeight)
+      );
+      bottomBand.fillColor = new scope.Color(zone.color + '60');
+    });
+  }
+  
+  // Main rectangle outline
   generator.drawRectangle(rectX, rectY, scaledLength, scaledDiameter, 'visible');
   
   // Hatching to show solid material

@@ -8,7 +8,8 @@ import { TechnicalDrawingGenerator, Dimensions, LayoutConfig } from './Technical
 export function drawHexagonTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
-  layout: LayoutConfig
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
 ): void {
   const diameter = dimensions.diameter || 50;
   const length = dimensions.length;
