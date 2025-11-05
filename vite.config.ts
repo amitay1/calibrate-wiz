@@ -22,7 +22,11 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
       // Critical: Dedupe React to prevent multiple instances
-      dedupe: ["react", "react-dom"],
+      dedupe: ["react", "react-dom", "react/jsx-runtime"],
+    },
+    
+    optimizeDeps: {
+      include: ["react", "react-dom", "react/jsx-runtime"],
     },
     
     build: {

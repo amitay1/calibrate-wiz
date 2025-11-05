@@ -2,8 +2,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import { UIToaster } from "@/components/ui/toaster-wrapper";
-import { SonnerToaster } from "@/components/ui/sonner-toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -25,8 +24,7 @@ function AppContent() {
         <Route path="/admin/tenants" element={<ProtectedRoute><AdminTenants /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <UIToaster />
-      <SonnerToaster />
+      <Toaster />
     </>
   );
 }
