@@ -11,6 +11,7 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { syncManager } from "@/services/syncManager";
 import { Toolbar } from "@/components/Toolbar";
 import { StatusBar } from "@/components/StatusBar";
+import { ExportDialog } from "@/components/export/ExportDialog";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { InspectionSetupTab } from "@/components/tabs/InspectionSetupTab";
@@ -52,6 +53,7 @@ const Index = () => {
   const [reportMode, setReportMode] = useState<"Technique" | "Report">("Technique");
   const [isSplitMode, setIsSplitMode] = useState(false);
   const [activePart, setActivePart] = useState<"A" | "B">("A");
+  const [showExportDialog, setShowExportDialog] = useState(false);
 
   // Initialize sync manager
   useEffect(() => {
@@ -569,60 +571,7 @@ const Index = () => {
   };
 
   const handleExportPDF = () => {
-    try {
-      if (reportMode === "Technique") {
-        if (isSplitMode) {
-          // Export Part A
-          exportTechniqueSheetToPDF({
-            standard,
-            inspectionSetup,
-            equipment,
-            calibration,
-            scanParameters,
-            acceptanceCriteria,
-            documentation,
-          }, "Part_A");
-          
-          // Export Part B
-          exportTechniqueSheetToPDF({
-            standard,
-            inspectionSetup: inspectionSetupB,
-            equipment: equipmentB,
-            calibration: calibrationB,
-            scanParameters: scanParametersB,
-            acceptanceCriteria: acceptanceCriteriaB,
-            documentation: documentationB,
-          }, "Part_B");
-          
-          toast.success("Both technique sheets exported successfully!");
-        } else {
-          exportTechniqueSheetToPDF({
-            standard,
-            inspectionSetup,
-            equipment,
-            calibration,
-            scanParameters,
-            acceptanceCriteria,
-            documentation,
-          });
-          toast.success("Technique Sheet PDF exported successfully!");
-        }
-      } else {
-        exportInspectionReportToPDF(
-          inspectionReport,
-          inspectionSetup.partNumber || '',
-          documentation.drawingReference || '',
-          documentation.inspectionDate || new Date().toISOString().split('T')[0],
-          documentation.inspectorName || '',
-          documentation.procedureNumber || '',
-          `Class: ${acceptanceCriteria.acceptanceClass}, Single: ${acceptanceCriteria.singleDiscontinuity}, Multiple: ${acceptanceCriteria.multipleDiscontinuities}`
-        );
-        toast.success("Inspection Report PDF exported successfully!");
-      }
-    } catch (error) {
-      console.error("Failed to export PDF:", error);
-      toast.error("Failed to export PDF. Please try again.");
-    }
+    setShowExportDialog(true);
   };
 
   const handleValidate = () => {
@@ -954,6 +903,30 @@ const Index = () => {
 
       {/* PWA Install Prompt */}
       <InstallPrompt />
+
+      {/* Export Dialog */}
+      <ExportDialog 
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        data={{
+          id: '',
+          standardName: standard,
+          standardVersion: '1.0',
+          createdDate: new Date().toISOString(),
+          modifiedDate: new Date().toISOString(),
+          status: 'draft',
+          inspectionSetup: currentData.inspectionSetup,
+          equipment: currentData.equipment,
+          calibration: currentData.calibration,
+          scanParameters: currentData.scanParameters,
+          acceptanceCriteria: currentData.acceptanceCriteria,
+          documentation: currentData.documentation,
+          metadata: {
+            completionPercent: calculateCompletion(),
+            lastModifiedBy: documentation.inspectorName || 'Unknown',
+          },
+        }}
+      />
     </div>
   );
 };

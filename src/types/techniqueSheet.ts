@@ -174,3 +174,6 @@ export interface TechniqueSheet {
     lastModifiedBy: string;
   };
 }
+
+// Alias for export functionality
+export type TechniqueSheetData = TechniqueSheet;
