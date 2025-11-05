@@ -130,16 +130,43 @@ export default function Auth() {
       // Skip validation for dev shortcut and go straight to login
       setLoading(true);
       try {
-        const { error } = await supabase.auth.signInWithPassword({
+        // Try to sign in first
+        let { error } = await supabase.auth.signInWithPassword({
           email: finalEmail,
           password: finalPassword
         });
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            toast.error('Invalid email or password. Please try again.');
-          } else {
-            toast.error(error.message);
+        
+        // If user doesn't exist, create it automatically
+        if (error && error.message.includes('Invalid login credentials')) {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: finalEmail,
+            password: finalPassword,
+            options: {
+              data: {
+                full_name: 'Developer'
+              },
+              emailRedirectTo: `${window.location.origin}/`
+            }
+          });
+          
+          if (signUpError) {
+            toast.error('Failed to create dev account: ' + signUpError.message);
+            return;
           }
+          
+          // Now try to sign in again
+          const signInResult = await supabase.auth.signInWithPassword({
+            email: finalEmail,
+            password: finalPassword
+          });
+          
+          if (signInResult.error) {
+            toast.error('Failed to sign in: ' + signInResult.error.message);
+          } else {
+            toast.success('Dev account created and signed in!');
+          }
+        } else if (error) {
+          toast.error(error.message);
         } else {
           toast.success('Signed in successfully!');
         }
