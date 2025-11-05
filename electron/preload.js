@@ -32,6 +32,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setBackendConfig: (config) => ipcRenderer.invoke('set-backend-config', config),
   detectBackend: () => ipcRenderer.invoke('detect-backend'),
   
+  // Device Communication
+  device: {
+    listPorts: () => ipcRenderer.invoke('device:list-ports'),
+    connect: (options) => ipcRenderer.invoke('device:connect', options),
+    disconnect: () => ipcRenderer.invoke('device:disconnect'),
+    getStatus: () => ipcRenderer.invoke('device:status'),
+    sendCommand: (command) => ipcRenderer.invoke('device:send-command', command),
+    requestData: (dataType) => ipcRenderer.invoke('device:request-data', dataType),
+    onData: (callback) => {
+      ipcRenderer.on('device:data', callback);
+    },
+  },
+  
   // Updates
   onUpdateAvailable: (callback) => {
     ipcRenderer.on('update-available', callback);
@@ -66,6 +79,15 @@ window.electronAPI = {
   getBackendConfig: () => Promise.resolve(null),
   setBackendConfig: (config) => Promise.resolve(true),
   detectBackend: () => Promise.resolve({ mode: 'auto' }),
+  device: {
+    listPorts: () => Promise.resolve({ success: true, ports: [] }),
+    connect: (options) => Promise.resolve({ success: true }),
+    disconnect: () => Promise.resolve({ success: true }),
+    getStatus: () => Promise.resolve({ success: true, connected: false }),
+    sendCommand: (command) => Promise.resolve({ success: true }),
+    requestData: (dataType) => Promise.resolve({ success: true }),
+    onData: (callback) => {},
+  },
   onUpdateAvailable: (callback) => {},
   onUpdateDownloaded: (callback) => {},
   restartApp: () => {},

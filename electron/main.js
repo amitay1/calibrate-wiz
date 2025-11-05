@@ -4,6 +4,7 @@ const { autoUpdater } = require('electron-updater');
 const Store = require('electron-store');
 const { createMenu } = require('./menu');
 const { initBackendSwitcher } = require('./backend-switcher');
+const { setupDeviceIpcHandlers } = require('./device-ipc-handlers');
 
 const store = new Store();
 let mainWindow = null;
@@ -55,6 +56,9 @@ function createMainWindow() {
 
   // Initialize backend switcher
   initBackendSwitcher(mainWindow);
+
+  // Setup device communication IPC handlers
+  setupDeviceIpcHandlers(mainWindow);
 
   return mainWindow;
 }

@@ -50,6 +50,27 @@ export interface ElectronAPI {
   setBackendConfig: (config: BackendConfig) => Promise<boolean>;
   detectBackend: () => Promise<BackendDetectionResult>;
   
+  // Device Communication
+  device: {
+    listPorts: () => Promise<{ success: boolean; ports: SerialPort[]; error?: string }>;
+    connect: (options: {
+      port: string;
+      deviceType: 'olympus' | 'ge' | 'evident';
+      baudRate?: number;
+    }) => Promise<{ success: boolean; deviceType?: string; port?: string; error?: string }>;
+    disconnect: () => Promise<{ success: boolean; error?: string }>;
+    getStatus: () => Promise<{
+      success: boolean;
+      connected: boolean;
+      deviceType?: string | null;
+      port?: string | null;
+      error?: string;
+    }>;
+    sendCommand: (command: string) => Promise<{ success: boolean; error?: string }>;
+    requestData: (dataType: string) => Promise<{ success: boolean; error?: string }>;
+    onData: (callback: (data: DeviceMessage) => void) => void;
+  };
+  
   // Updates
   onUpdateAvailable: (callback: () => void) => void;
   onUpdateDownloaded: (callback: () => void) => void;
@@ -71,6 +92,33 @@ export interface BackendDetectionResult {
   url: string;
   key: string;
   isConnected: boolean;
+}
+
+export interface SerialPort {
+  path: string;
+  manufacturer: string;
+  serialNumber: string;
+  vendorId?: string;
+  productId?: string;
+}
+
+export interface DeviceData {
+  frequency?: string | null;
+  gain?: number | null;
+  range?: number | null;
+  velocity?: number | null;
+  probeType?: string | null;
+  serialNumber?: string | null;
+  temperature?: number | null;
+  couplant?: string | null;
+}
+
+export interface DeviceMessage {
+  type: 'data' | 'error';
+  data?: DeviceData;
+  raw?: string;
+  timestamp?: string;
+  error?: string;
 }
 
 declare global {
