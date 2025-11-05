@@ -1,15 +1,28 @@
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useElectron } from '@/hooks/useElectron';
 import { WifiOff, Wifi, CloudOff } from 'lucide-react';
 import { Button } from './ui/button';
 import { syncManager } from '@/services/syncManager';
+import { BackendStatusIndicator } from './BackendStatusIndicator';
 
 export const OfflineIndicator = () => {
   const isOnline = useOnlineStatus();
+  const { isElectron } = useElectron();
 
   const handleSyncNow = async () => {
     await syncManager.forceSyncNow();
   };
 
+  // If running in Electron, show backend status instead
+  if (isElectron) {
+    return (
+      <div className="flex items-center gap-2">
+        <BackendStatusIndicator />
+      </div>
+    );
+  }
+
+  // Web version - show simple online/offline
   if (isOnline) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
