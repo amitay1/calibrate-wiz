@@ -1,8 +1,10 @@
 import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { autoUpdater } from 'electron-updater';
-import Store from 'electron-store';
+import updaterPkg from 'electron-updater';
+const { autoUpdater } = updaterPkg;
+import StorePkg from 'electron-store';
+const Store = StorePkg.default || StorePkg;
 import { createMenu } from './menu.js';
 import { initBackendSwitcher } from './backend-switcher.js';
 import { setupDeviceIpcHandlers } from './device-ipc-handlers.js';

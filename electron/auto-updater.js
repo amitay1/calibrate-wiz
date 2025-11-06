@@ -1,4 +1,5 @@
-import { autoUpdater } from 'electron-updater';
+import updaterPkg from 'electron-updater';
+const { autoUpdater } = updaterPkg;
 import { dialog } from 'electron';
 
 let mainWindow = null;
