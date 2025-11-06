@@ -26,8 +26,15 @@ export default defineConfig(({ mode }) => {
   },
   
   optimizeDeps: {
-    include: ["react", "react-dom", "react/jsx-runtime", "react-router-dom"],
+    include: [
+      "react", 
+      "react-dom", 
+      "react/jsx-runtime", 
+      "react-router-dom",
+      "react-router"
+    ],
     exclude: [],
+    force: true, // Force re-optimization
   },
     
     build: {
