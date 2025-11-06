@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import scanMasterLogo from '@/assets/scan-master-logo.png';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -56,17 +57,38 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             >
               {/* Logo */}
               <motion.div
-                initial={{ rotateY: 0 }}
-                animate={{ rotateY: 360 }}
-                transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
+                initial={{ scale: 0.3, opacity: 0, rotateY: -180 }}
+                animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+                transition={{ 
+                  duration: 1.2, 
+                  delay: 0.3,
+                  type: "spring",
+                  stiffness: 100
+                }}
                 className="relative inline-block"
               >
                 <div className="relative">
-                  {/* Pulse effect */}
+                  {/* Outer glow ring */}
                   <motion.div
-                    className="absolute inset-0 rounded-2xl bg-primary/20"
+                    className="absolute -inset-8 rounded-full bg-gradient-to-r from-primary via-accent to-primary"
                     animate={{
-                      scale: [1, 1.2, 1],
+                      rotate: [0, 360],
+                      scale: [1, 1.1, 1],
+                      opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    style={{ filter: 'blur(20px)' }}
+                  />
+                  
+                  {/* Inner pulse effect */}
+                  <motion.div
+                    className="absolute -inset-4 rounded-full bg-primary/30"
+                    animate={{
+                      scale: [1, 1.3, 1],
                       opacity: [0.5, 0, 0.5],
                     }}
                     transition={{
@@ -76,22 +98,60 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                     }}
                   />
                   
-                  {/* Logo container */}
-                  <div className="relative bg-gradient-to-br from-primary to-accent p-8 rounded-2xl shadow-2xl">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                  {/* Logo container with glass effect */}
+                  <motion.div
+                    className="relative bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm p-12 rounded-3xl shadow-2xl border border-primary/30"
+                    animate={{
+                      boxShadow: [
+                        '0 0 30px rgba(74, 144, 226, 0.3)',
+                        '0 0 60px rgba(74, 144, 226, 0.6)',
+                        '0 0 30px rgba(74, 144, 226, 0.3)',
+                      ],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <motion.img
+                      src={scanMasterLogo}
+                      alt="Scan Master Logo"
+                      className="w-64 h-auto"
+                      initial={{ filter: 'brightness(0.5)' }}
+                      animate={{ filter: 'brightness(1)' }}
                       transition={{ delay: 0.8, duration: 0.5 }}
-                      className="space-y-2"
-                    >
-                      <div className="text-5xl font-bold text-white tracking-tight">
-                        SCAN
-                      </div>
-                      <div className="text-3xl font-semibold text-white/90">
-                        MASTER
-                      </div>
-                    </motion.div>
-                  </div>
+                    />
+                  </motion.div>
+
+                  {/* Floating particles */}
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-2 h-2 bg-primary rounded-full"
+                      initial={{ 
+                        x: 0, 
+                        y: 0,
+                        opacity: 0 
+                      }}
+                      animate={{
+                        x: [0, Math.cos(i * 60 * Math.PI / 180) * 100],
+                        y: [0, Math.sin(i * 60 * Math.PI / 180) * 100],
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        delay: 1 + i * 0.1,
+                        repeat: Infinity,
+                        repeatDelay: 1,
+                      }}
+                      style={{
+                        left: '50%',
+                        top: '50%',
+                      }}
+                    />
+                  ))}
                 </div>
               </motion.div>
 
