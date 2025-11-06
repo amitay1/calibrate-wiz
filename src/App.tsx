@@ -36,10 +36,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <BrowserRouter>
-          <AppContent />
-          {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-        </BrowserRouter>
+        {showSplash ? (
+          <SplashScreen onComplete={() => setShowSplash(false)} />
+        ) : (
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        )}
       </ThemeProvider>
     </QueryClientProvider>
   );
