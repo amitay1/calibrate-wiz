@@ -68,9 +68,12 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 className="relative inline-block"
               >
                 <div className="relative">
-                  {/* Logo container without background */}
+                  {/* Logo container - circular radar style */}
                   <motion.div
-                    className="relative overflow-hidden"
+                    className="relative overflow-hidden rounded-full p-16"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0.05) 50%, transparent 100%)',
+                    }}
                   >
                     {/* Advanced Ultrasonic Scan Lines - Multiple Layers */}
                     {/* Fast scan lines */}
