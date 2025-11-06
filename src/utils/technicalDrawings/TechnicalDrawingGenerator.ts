@@ -65,30 +65,51 @@ export class TechnicalDrawingGenerator {
   private scope: paper.PaperScope;
   private canvas: HTMLCanvasElement;
   private scale: number = 1;
-  private foregroundColor: string;
-  private dimensionColor: string;
-  private centerlineColor: string;
+  private _foregroundColor: string | null = null;
+  private _dimensionColor: string | null = null;
+  private _centerlineColor: string | null = null;
   
   constructor(canvas: HTMLCanvasElement, scale: number = 1) {
     this.canvas = canvas;
     this.scale = scale;
     this.scope = new paper.PaperScope();
     this.scope.setup(canvas);
-    
-    // Get colors from CSS variables for theme support
-    const computedStyle = getComputedStyle(canvas);
-    this.foregroundColor = this.getHslColor(computedStyle, '--foreground') || '#e5e7eb';
-    this.dimensionColor = this.getHslColor(computedStyle, '--primary') || '#3b82f6';
-    this.centerlineColor = this.getHslColor(computedStyle, '--muted-foreground') || '#9ca3af';
   }
 
-  private getHslColor(computedStyle: CSSStyleDeclaration, varName: string): string | null {
-    const hslValue = computedStyle.getPropertyValue(varName).trim();
-    if (!hslValue) return null;
-    
-    // Convert HSL values to hex for Paper.js
-    const [h, s, l] = hslValue.split(' ').map(v => parseFloat(v));
-    return this.hslToHex(h, s, l);
+  private get foregroundColor(): string {
+    if (!this._foregroundColor) {
+      this._foregroundColor = this.getThemeColor('--foreground') || '#e5e7eb';
+    }
+    return this._foregroundColor;
+  }
+
+  private get dimensionColor(): string {
+    if (!this._dimensionColor) {
+      this._dimensionColor = this.getThemeColor('--primary') || '#3b82f6';
+    }
+    return this._dimensionColor;
+  }
+
+  private get centerlineColor(): string {
+    if (!this._centerlineColor) {
+      this._centerlineColor = this.getThemeColor('--muted-foreground') || '#9ca3af';
+    }
+    return this._centerlineColor;
+  }
+
+  private getThemeColor(varName: string): string | null {
+    try {
+      const computedStyle = getComputedStyle(this.canvas);
+      const hslValue = computedStyle.getPropertyValue(varName).trim();
+      if (!hslValue) return null;
+      
+      // Convert HSL values to hex for Paper.js
+      const [h, s, l] = hslValue.split(' ').map(v => parseFloat(v));
+      return this.hslToHex(h, s, l);
+    } catch (error) {
+      console.warn(`Failed to get theme color for ${varName}`, error);
+      return null;
+    }
   }
 
   private hslToHex(h: number, s: number, l: number): string {
