@@ -4,6 +4,9 @@ import { Download, FileImage, FileText } from 'lucide-react';
 import { RealTimeTechnicalDrawing } from '@/components/RealTimeTechnicalDrawing';
 import { PartGeometry, MaterialType } from '@/types/techniqueSheet';
 import { toast } from 'sonner';
+import { useMemo } from 'react';
+import { getScanZonesForPartType } from '@/utils/scanZoneMapper';
+import { Badge } from '@/components/ui/badge';
 
 interface TechnicalDrawingTabProps {
   partType: PartGeometry;
@@ -34,6 +37,15 @@ export const TechnicalDrawingTab = ({
   material,
   scans = [],
 }: TechnicalDrawingTabProps) => {
+  // Calculate scan coverage
+  const scanCoverage = useMemo(() => {
+    return getScanZonesForPartType(
+      partType,
+      scans,
+      dimensions
+    );
+  }, [partType, dimensions, scans]);
+
   const handleExportSVG = () => {
     toast.info('SVG export will be available soon');
   };
@@ -154,6 +166,63 @@ export const TechnicalDrawingTab = ({
           </div>
         </Card>
       </div>
+
+      {/* Scan Coverage Analysis */}
+      {scans.length > 0 && (
+        <Card className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-lg font-semibold">Scan Coverage Analysis</h4>
+            <Badge 
+              variant={scanCoverage.totalCoverage >= 95 ? "default" : scanCoverage.totalCoverage >= 80 ? "secondary" : "destructive"}
+              className="text-base px-3 py-1"
+            >
+              {scanCoverage.totalCoverage.toFixed(1)}% Coverage
+            </Badge>
+          </div>
+
+          {/* Scan Zones */}
+          <div className="space-y-3 mb-4">
+            {scanCoverage.zones.map((zone, index) => (
+              <div key={zone.scanId} className="flex items-center gap-3 p-3 border rounded-lg bg-card">
+                <div 
+                  className="w-12 h-12 rounded border-2 border-border flex-shrink-0"
+                  style={{ backgroundColor: zone.color }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold">{zone.scanId}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {zone.waveType === 'longitudinal' ? 'L-Wave' : 'S-Wave'} @ {zone.beamAngle}°
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Side {zone.side}
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Depth: {zone.depthRange.start.toFixed(1)}mm - {zone.depthRange.end.toFixed(1)}mm
+                    <span className="mx-2">•</span>
+                    Coverage: {zone.coverage.replace('_', ' ').toUpperCase()}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Uncovered Areas Warning */}
+          {scanCoverage.uncoveredAreas.length > 0 && (
+            <div className="p-4 bg-destructive/10 border border-destructive rounded-lg">
+              <h5 className="font-semibold text-destructive mb-2">⚠️ Uncovered Areas Detected</h5>
+              <div className="space-y-1 text-sm text-destructive">
+                {scanCoverage.uncoveredAreas.map((area, index) => (
+                  <div key={index}>
+                    • Depth range {area.start.toFixed(1)}mm - {area.end.toFixed(1)}mm is not covered
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Legend */}
       <Card className="p-4">
