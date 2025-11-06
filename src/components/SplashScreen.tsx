@@ -154,14 +154,44 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                       }}
                     />
                     
-                    <motion.img
-                      src={scanMasterLogo}
-                      alt="Scan Master Logo"
-                      className="w-64 h-auto relative z-10"
-                      initial={{ filter: 'brightness(0.5)' }}
-                      animate={{ filter: 'brightness(1)' }}
-                      transition={{ delay: 0.8, duration: 0.5 }}
-                    />
+                    {/* Logo with enhanced SM highlight */}
+                    <div className="relative z-10">
+                      <motion.img
+                        src={scanMasterLogo}
+                        alt="Scan Master Logo"
+                        className="w-64 h-auto"
+                        initial={{ filter: 'brightness(0.5) drop-shadow(0 0 0px rgba(74, 144, 226, 0))' }}
+                        animate={{ 
+                          filter: [
+                            'brightness(1.2) drop-shadow(0 0 20px rgba(74, 144, 226, 0.8))',
+                            'brightness(1.4) drop-shadow(0 0 30px rgba(74, 144, 226, 1))',
+                            'brightness(1.2) drop-shadow(0 0 20px rgba(74, 144, 226, 0.8))',
+                          ]
+                        }}
+                        transition={{ 
+                          delay: 0.8, 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      
+                      {/* Additional SM glow overlay */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent"
+                        animate={{
+                          opacity: [0.3, 0.6, 0.3],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        style={{
+                          mixBlendMode: 'screen',
+                        }}
+                      />
+                    </div>
                   </motion.div>
 
                   {/* Floating particles */}
