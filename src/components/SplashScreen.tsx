@@ -33,8 +33,11 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             <motion.div
               className="absolute inset-0 -z-10"
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 2, opacity: 0.1 }}
-              transition={{ duration: 2, ease: "easeOut" }}
+              animate={{ 
+                scale: [2, 2.3, 2],
+                opacity: [0.05, 0.15, 0.05],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
               <div className="absolute inset-0 rounded-full bg-primary blur-3xl" />
             </motion.div>
@@ -42,11 +45,54 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             <motion.div
               className="absolute inset-0 -z-10"
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1.5, opacity: 0.2 }}
-              transition={{ duration: 2, delay: 0.2, ease: "easeOut" }}
+              animate={{ 
+                scale: [1.5, 1.8, 1.5],
+                opacity: [0.1, 0.25, 0.1],
+              }}
+              transition={{ duration: 3, delay: 0.5, repeat: Infinity, ease: "easeInOut" }}
             >
               <div className="absolute inset-0 rounded-full bg-accent blur-2xl" />
             </motion.div>
+
+            {/* Dynamic lighting effects */}
+            <motion.div
+              className="absolute inset-0 -z-10"
+              animate={{
+                background: [
+                  'radial-gradient(circle at 30% 30%, rgba(74, 144, 226, 0.3) 0%, transparent 50%)',
+                  'radial-gradient(circle at 70% 70%, rgba(255, 215, 0, 0.25) 0%, transparent 50%)',
+                  'radial-gradient(circle at 50% 50%, rgba(74, 144, 226, 0.35) 0%, transparent 50%)',
+                  'radial-gradient(circle at 30% 30%, rgba(74, 144, 226, 0.3) 0%, transparent 50%)',
+                ],
+                scale: [1, 1.2, 1.1, 1],
+                rotate: [0, 45, 90, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{ filter: 'blur(40px)' }}
+            />
+
+            {/* Moving spotlight effect */}
+            <motion.div
+              className="absolute inset-0 -z-10"
+              animate={{
+                background: [
+                  'conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(74, 144, 226, 0.4) 60deg, transparent 120deg)',
+                  'conic-gradient(from 120deg at 50% 50%, transparent 0deg, rgba(74, 144, 226, 0.4) 60deg, transparent 120deg)',
+                  'conic-gradient(from 240deg at 50% 50%, transparent 0deg, rgba(74, 144, 226, 0.4) 60deg, transparent 120deg)',
+                  'conic-gradient(from 360deg at 50% 50%, transparent 0deg, rgba(74, 144, 226, 0.4) 60deg, transparent 120deg)',
+                ],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              style={{ filter: 'blur(30px)' }}
+            />
 
             {/* Main content */}
             <motion.div
