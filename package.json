@@ -1,5 +1,13 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "scan-master-inspection-pro",
+  "version": "1.0.0",
+  "description": "Professional Ultrasonic Inspection Technique Sheet Management",
+  "main": "electron/main.js",
+  "author": "Scan Master Team",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  ...
   "private": true,
   "version": "0.0.0",
   "type": "module",
