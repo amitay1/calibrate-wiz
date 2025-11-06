@@ -100,7 +100,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                   
                   {/* Logo container with glass effect */}
                   <motion.div
-                    className="relative bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm p-12 rounded-3xl shadow-2xl border border-primary/30"
+                    className="relative bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm p-12 rounded-3xl shadow-2xl border border-primary/30 overflow-hidden"
                     animate={{
                       boxShadow: [
                         '0 0 30px rgba(74, 144, 226, 0.3)',
@@ -114,10 +114,50 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                       ease: "easeInOut",
                     }}
                   >
+                    {/* Ultrasonic Scan Lines */}
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={`scan-${i}`}
+                        className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/60 to-transparent"
+                        style={{
+                          filter: 'blur(2px)',
+                          boxShadow: '0 0 10px rgba(74, 144, 226, 0.8)',
+                        }}
+                        animate={{
+                          y: [-20, 320],
+                          opacity: [0, 1, 1, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          delay: i * 0.4,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      />
+                    ))}
+                    
+                    {/* Horizontal scan line (slower) */}
+                    <motion.div
+                      className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/80 to-transparent"
+                      style={{
+                        filter: 'blur(1px)',
+                        boxShadow: '0 0 8px rgba(255, 215, 0, 0.9)',
+                      }}
+                      animate={{
+                        y: [-10, 330],
+                        opacity: [0, 1, 1, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                    
                     <motion.img
                       src={scanMasterLogo}
                       alt="Scan Master Logo"
-                      className="w-64 h-auto"
+                      className="w-64 h-auto relative z-10"
                       initial={{ filter: 'brightness(0.5)' }}
                       animate={{ filter: 'brightness(1)' }}
                       transition={{ delay: 0.8, duration: 0.5 }}
