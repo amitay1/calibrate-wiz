@@ -16,9 +16,11 @@ import {
 export interface BoxDrawingOptions {
   showScanCoverage?: boolean;
   scanDepth?: number;           // Depth of penetration in mm
-  beamAngle?: BeamAngle;        // 0 or 45 degrees
+  beamAngle?: BeamAngle;        // 0, 45, 60, or 70 degrees
   scanDirection?: ScanDirection;
   numberOfZones?: number;       // Number of depth zones to show
+  waveType?: 'longitudinal' | 'shear';  // NEW: Wave type for intelligent depth calculation
+  probeFrequency?: number;      // NEW: Probe frequency in MHz
 }
 
 export function drawBoxTechnicalDrawing(
@@ -34,13 +36,22 @@ export function drawBoxTechnicalDrawing(
     scanDepth = thickness,
     beamAngle = 0,
     scanDirection = 'longitudinal',
-    numberOfZones = 5
+    numberOfZones = 5,
+    waveType = 'longitudinal',
+    probeFrequency = 5
   } = options;
   
-  // Generate scan zones if scan coverage is enabled
+  // Generate INTELLIGENT scan zones if scan coverage is enabled
   let scanConfig: ScanCoverageConfig | undefined;
   if (showScanCoverage) {
-    const zones = generateScanZones(scanDepth, numberOfZones);
+    const zones = generateScanZones(
+      scanDepth, 
+      numberOfZones,
+      undefined, // Use default colors
+      waveType,
+      beamAngle,
+      probeFrequency
+    );
     scanConfig = {
       zones,
       beamAngle,

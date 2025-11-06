@@ -115,16 +115,29 @@ export const RealTimeTechnicalDrawing = ({
     // Draw title
     generator.drawText(425, 30, `TECHNICAL DRAWING - ${partType.toUpperCase()}`, 18, '#000000');
 
-    // Prepare scan coverage options
+    // Prepare INTELLIGENT scan coverage options based on actual scan data
     const scanDepth = scanDepthPenetration || dimensions.thickness || dimensions.diameter || 50;
     const beamAngle = (scans[0]?.beamAngle || 0) as 0 | 45 | 60 | 70;
+    
+    // Determine wave type from scan data
+    const waveType: 'longitudinal' | 'shear' = 
+      scans[0]?.waveType?.toLowerCase().includes('shear') || 
+      scans[0]?.waveType?.toLowerCase().includes('transverse') || 
+      beamAngle > 0 
+        ? 'shear' 
+        : 'longitudinal';
+    
+    // Estimate probe frequency (typical values: 2-10 MHz)
+    const probeFrequency = 5; // Default to 5MHz, could be extracted from scan data if available
     
     const scanOptions: BoxDrawingOptions = {
       showScanCoverage,
       scanDepth,
       beamAngle,
       scanDirection: 'longitudinal',
-      numberOfZones: 5
+      numberOfZones: 5,
+      waveType,
+      probeFrequency
     };
 
       // Draw based on part type

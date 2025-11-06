@@ -1,10 +1,15 @@
 /**
  * Scan Coverage Renderer
  * Adds colored hatching patterns to technical drawings to visualize scan depth coverage
- * Based on ultrasonic inspection visualization standards
+ * Based on ultrasonic inspection visualization standards with INTELLIGENT depth calculation
  */
 
 import { TechnicalDrawingGenerator } from './TechnicalDrawingGenerator';
+import { 
+  calculateDepthZones, 
+  DEPTH_ZONE_COLORS,
+  type DepthZone 
+} from './advancedScanCoverage';
 
 // Scan depth zone colors (matching the reference image pattern)
 export interface ScanZone {
@@ -38,24 +43,32 @@ export interface ScanCoverageConfig {
 }
 
 /**
- * Generates scan zones based on material thickness and inspection requirements
+ * Generates INTELLIGENT scan zones based on wave physics, beam angle, and probe characteristics
+ * This replaces the old simple equal-division approach
  */
 export function generateScanZones(
   totalThickness: number,
   numberOfZones: number = 5,
-  colors: typeof DEFAULT_DEPTH_COLORS = DEFAULT_DEPTH_COLORS
+  colors: typeof DEFAULT_DEPTH_COLORS = DEFAULT_DEPTH_COLORS,
+  waveType: 'longitudinal' | 'shear' = 'longitudinal',
+  beamAngle: number = 0,
+  probeFrequency: number = 5
 ): ScanZone[] {
-  const zones: ScanZone[] = [];
-  const zoneHeight = totalThickness / numberOfZones;
+  // Use the advanced physics-based depth calculation
+  const advancedZones: DepthZone[] = calculateDepthZones(
+    waveType,
+    beamAngle,
+    probeFrequency,
+    totalThickness
+  );
   
-  for (let i = 0; i < numberOfZones && i < colors.length; i++) {
-    zones.push({
-      startDepth: i * zoneHeight,
-      endDepth: (i + 1) * zoneHeight,
-      color: colors[i].color,
-      label: colors[i].label
-    });
-  }
+  // Convert DepthZone to ScanZone format with proper colors
+  const zones: ScanZone[] = advancedZones.map((zone, index) => ({
+    startDepth: zone.startDepth,
+    endDepth: zone.endDepth,
+    color: zone.color,
+    label: zone.label
+  }));
   
   return zones;
 }
