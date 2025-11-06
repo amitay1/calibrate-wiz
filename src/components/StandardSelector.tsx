@@ -45,15 +45,18 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
                 key={standard.value} 
                 value={standard.value}
                 disabled={isLocked}
+                className="py-3"
               >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{standard.label}</span>
-                      {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
-                      {hasCurrentAccess && <Check className="h-3 w-3 text-success" />}
+                <div className="flex items-start justify-between w-full gap-3">
+                  <div className="flex flex-col flex-1 gap-1.5 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-sm break-words">{standard.label}</span>
+                      {isLocked && <Lock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />}
+                      {hasCurrentAccess && <Check className="h-3.5 w-3.5 text-success flex-shrink-0" />}
                     </div>
-                    <span className="text-xs text-muted-foreground">{standard.description}</span>
+                    <span className="text-xs text-muted-foreground leading-relaxed break-words">
+                      {standard.description}
+                    </span>
                   </div>
                 </div>
               </SelectItem>
@@ -63,10 +66,10 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
       </Select>
       
       {!hasAccess && !isLoading && (
-        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md border">
-          <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-muted/50 rounded-md border">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
+            <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <span className="text-sm text-muted-foreground leading-relaxed break-words">
               This standard is locked. Purchase it to use it.
             </span>
           </div>
@@ -74,6 +77,7 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
             size="sm" 
             variant="default"
             onClick={() => navigate('/standards')}
+            className="flex-shrink-0 w-full sm:w-auto"
           >
             Unlock Standard
           </Button>
