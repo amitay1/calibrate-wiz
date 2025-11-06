@@ -4,6 +4,7 @@ import { Lock, Check } from "lucide-react";
 import { useStandardAccess } from "@/hooks/useStandardAccess";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface StandardSelectorProps {
   value: StandardType;
@@ -65,24 +66,62 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
         </SelectContent>
       </Select>
       
-      {!hasAccess && !isLoading && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-muted/50 rounded-md border">
-          <div className="flex items-start gap-3 min-w-0 flex-1">
-            <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <span className="text-sm text-muted-foreground leading-relaxed break-words">
-              This standard is locked. Purchase it to use it.
-            </span>
-          </div>
-          <Button 
-            size="sm" 
-            variant="default"
-            onClick={() => navigate('/standards')}
-            className="flex-shrink-0 w-full sm:w-auto"
+      <AnimatePresence mode="wait">
+        {!hasAccess && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            transition={{ 
+              duration: 0.3,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            className="overflow-hidden"
           >
-            Unlock Standard
-          </Button>
-        </div>
-      )}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-muted/50 rounded-md border">
+              <motion.div 
+                className="flex items-start gap-3 min-w-0 flex-1"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+              >
+                <motion.div
+                  animate={{ 
+                    rotate: [0, -5, 5, -5, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ 
+                    delay: 0.2,
+                    duration: 0.6,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                </motion.div>
+                <span className="text-sm text-muted-foreground leading-relaxed break-words">
+                  This standard is locked. Purchase it to use it.
+                </span>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15, duration: 0.3 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button 
+                  size="sm" 
+                  variant="default"
+                  onClick={() => navigate('/standards')}
+                  className="flex-shrink-0 w-full sm:w-auto"
+                >
+                  Unlock Standard
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
