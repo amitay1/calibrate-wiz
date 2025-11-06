@@ -276,22 +276,22 @@ export default function Auth() {
             </CardDescription>
           </CardHeader>
         <CardContent>
-          <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4" noValidate>
+          <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4" noValidate autoComplete="off">
             {isSignUp && <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={e => setFullName(e.target.value)} disabled={loading} className={errors.fullName ? 'border-destructive' : ''} />
+                <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={e => setFullName(e.target.value)} disabled={loading} className={errors.fullName ? 'border-destructive' : ''} autoComplete="off" />
                 {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
               </div>}
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="inspector@example.com" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} className={errors.email ? 'border-destructive' : ''} />
+              <Input id="email" type="email" placeholder="inspector@example.com" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} className={errors.email ? 'border-destructive' : ''} autoComplete="off" />
               {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} className={errors.password ? 'border-destructive' : ''} />
+              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} className={errors.password ? 'border-destructive' : ''} autoComplete="new-password" />
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
 
