@@ -37,11 +37,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <BrowserRouter>
-          {showSplash ? (
-            <SplashScreen onComplete={() => setShowSplash(false)} />
-          ) : (
-            <AppContent />
-          )}
+          <AppContent />
+          {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
         </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
