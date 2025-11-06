@@ -68,21 +68,9 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 className="relative inline-block"
               >
                 <div className="relative">
-                  {/* Logo container with glass effect */}
+                  {/* Logo container without background */}
                   <motion.div
-                    className="relative bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm p-12 rounded-3xl shadow-2xl border border-primary/30 overflow-hidden"
-                    animate={{
-                      boxShadow: [
-                        '0 0 30px rgba(74, 144, 226, 0.3)',
-                        '0 0 60px rgba(74, 144, 226, 0.6)',
-                        '0 0 30px rgba(74, 144, 226, 0.3)',
-                      ],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
+                    className="relative overflow-hidden"
                   >
                     {/* Advanced Ultrasonic Scan Lines - Multiple Layers */}
                     {/* Fast scan lines */}
@@ -211,18 +199,18 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                       }}
                     />
                     
-                    {/* Logo with enhanced SM highlight */}
+                    {/* Logo with enhanced SM highlight and sharpness */}
                     <div className="relative z-10">
                       <motion.img
                         src={scanMasterLogo}
                         alt="Scan Master Logo"
                         className="w-64 h-auto"
-                        initial={{ filter: 'brightness(0.5) drop-shadow(0 0 0px rgba(74, 144, 226, 0))' }}
+                        initial={{ filter: 'brightness(0.5) contrast(1) drop-shadow(0 0 0px rgba(74, 144, 226, 0))' }}
                         animate={{ 
                           filter: [
-                            'brightness(1.2) drop-shadow(0 0 25px rgba(74, 144, 226, 0.9))',
-                            'brightness(1.5) drop-shadow(0 0 40px rgba(74, 144, 226, 1))',
-                            'brightness(1.2) drop-shadow(0 0 25px rgba(74, 144, 226, 0.9))',
+                            'brightness(1.3) contrast(1.3) saturate(1.2) drop-shadow(0 0 30px rgba(74, 144, 226, 1)) drop-shadow(0 0 15px rgba(74, 144, 226, 0.8))',
+                            'brightness(1.6) contrast(1.4) saturate(1.3) drop-shadow(0 0 50px rgba(74, 144, 226, 1.2)) drop-shadow(0 0 25px rgba(74, 144, 226, 1))',
+                            'brightness(1.3) contrast(1.3) saturate(1.2) drop-shadow(0 0 30px rgba(74, 144, 226, 1)) drop-shadow(0 0 15px rgba(74, 144, 226, 0.8))',
                           ]
                         }}
                         transition={{ 
@@ -230,6 +218,9 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                           duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut"
+                        }}
+                        style={{
+                          imageRendering: 'crisp-edges',
                         }}
                       />
                       
