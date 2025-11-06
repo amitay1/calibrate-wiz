@@ -33,12 +33,15 @@ function AppContent() {
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <BrowserRouter>
           <AppContent />
-          {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
         </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
