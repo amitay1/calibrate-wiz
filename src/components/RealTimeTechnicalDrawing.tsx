@@ -1,7 +1,7 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { PartGeometry, MaterialType } from '@/types/techniqueSheet';
 import { TechnicalDrawingGenerator, LayoutConfig, Dimensions } from '@/utils/technicalDrawings/TechnicalDrawingGenerator';
-import { drawBoxTechnicalDrawing } from '@/utils/technicalDrawings/boxDrawing';
+import { drawBoxTechnicalDrawing, type BoxDrawingOptions } from '@/utils/technicalDrawings/boxDrawing';
 import { drawCylinderTechnicalDrawing } from '@/utils/technicalDrawings/cylinderDrawing';
 import { drawTubeTechnicalDrawing } from '@/utils/technicalDrawings/tubeDrawing';
 import { drawHexagonTechnicalDrawing } from '@/utils/technicalDrawings/hexagonDrawing';
@@ -51,6 +51,9 @@ interface RealTimeTechnicalDrawingProps {
     beamAngle: number;
     side: 'A' | 'B';
   }>;
+  // New: Scan coverage visualization options
+  showScanCoverage?: boolean;
+  scanDepthPenetration?: number;  // Depth of penetration in mm (usually thickness)
   showGrid?: boolean;
   showDimensions?: boolean;
   viewMode?: 'multi' | 'front' | 'top' | 'side' | 'isometric';
@@ -58,8 +61,11 @@ interface RealTimeTechnicalDrawingProps {
 
 export const RealTimeTechnicalDrawing = ({
   partType,
+  material,
   dimensions,
   scans = [],
+  showScanCoverage = true,
+  scanDepthPenetration,
   viewMode = 'multi',
 }: RealTimeTechnicalDrawingProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -109,12 +115,24 @@ export const RealTimeTechnicalDrawing = ({
     // Draw title
     generator.drawText(425, 30, `TECHNICAL DRAWING - ${partType.toUpperCase()}`, 18, '#000000');
 
+    // Prepare scan coverage options
+    const scanDepth = scanDepthPenetration || dimensions.thickness || dimensions.diameter || 50;
+    const beamAngle = (scans[0]?.beamAngle || 0) as 0 | 45 | 60 | 70;
+    
+    const scanOptions: BoxDrawingOptions = {
+      showScanCoverage,
+      scanDepth,
+      beamAngle,
+      scanDirection: 'longitudinal',
+      numberOfZones: 5
+    };
+
       // Draw based on part type
       try {
         switch (partType) {
           case 'box':
           case 'rectangular_tube':
-            drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans);
+            drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans, scanOptions);
             break;
 
           case 'cylinder':
@@ -157,7 +175,7 @@ export const RealTimeTechnicalDrawing = ({
 
           default:
             // Default to box
-            drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans);
+            drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans, scanOptions);
         }
 
       // Render the drawing
@@ -165,7 +183,7 @@ export const RealTimeTechnicalDrawing = ({
     } catch (error) {
       console.error('Error generating technical drawing:', error);
     }
-  }, [partType, drawingDimensions, layout, scans]);
+  }, [partType, drawingDimensions, layout, scans, showScanCoverage, scanDepthPenetration]);
 
   return (
     <div className="w-full h-full flex items-center justify-center bg-background">

@@ -4,23 +4,59 @@
  */
 
 import { TechnicalDrawingGenerator, Dimensions, LayoutConfig } from './TechnicalDrawingGenerator';
+import {
+  generateScanZones,
+  addBoxScanCoverage,
+  drawScanDirectionIndicator,
+  type ScanCoverageConfig,
+  type BeamAngle,
+  type ScanDirection
+} from './scanCoverageRenderer';
+
+export interface BoxDrawingOptions {
+  showScanCoverage?: boolean;
+  scanDepth?: number;           // Depth of penetration in mm
+  beamAngle?: BeamAngle;        // 0 or 45 degrees
+  scanDirection?: ScanDirection;
+  numberOfZones?: number;       // Number of depth zones to show
+}
 
 export function drawBoxTechnicalDrawing(
   generator: TechnicalDrawingGenerator,
   dimensions: Dimensions,
   layout: LayoutConfig,
-  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = []
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = [],
+  options: BoxDrawingOptions = {}
 ): void {
   const { length, width, thickness } = dimensions;
+  const {
+    showScanCoverage = false,
+    scanDepth = thickness,
+    beamAngle = 0,
+    scanDirection = 'longitudinal',
+    numberOfZones = 5
+  } = options;
   
-  // FRONT VIEW (Length × Thickness)
-  drawFrontView(generator, length, thickness, layout.frontView);
+  // Generate scan zones if scan coverage is enabled
+  let scanConfig: ScanCoverageConfig | undefined;
+  if (showScanCoverage) {
+    const zones = generateScanZones(scanDepth, numberOfZones);
+    scanConfig = {
+      zones,
+      beamAngle,
+      scanDirection,
+      showLabels: true
+    };
+  }
+  
+  // FRONT VIEW (Length × Thickness) - with scan coverage
+  drawFrontView(generator, length, thickness, layout.frontView, scanConfig);
   
   // TOP VIEW (Length × Width)
   drawTopView(generator, length, width, layout.topView);
   
-  // SIDE VIEW (Width × Thickness)
-  drawSideView(generator, width, thickness, layout.sideView);
+  // SIDE VIEW (Width × Thickness) - with scan coverage
+  drawSideView(generator, width, thickness, layout.sideView, scanConfig);
   
   // ISOMETRIC VIEW
   drawIsometricView(generator, length, width, thickness, layout.isometric);
@@ -30,12 +66,13 @@ function drawFrontView(
   generator: TechnicalDrawingGenerator,
   length: number,
   thickness: number,
-  viewConfig: { x: number; y: number; width: number; height: number }
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanConfig?: ScanCoverageConfig
 ) {
   const { x, y, width, height } = viewConfig;
   
   // View label
-  generator.drawViewLabel(x + width / 2, y, 'FRONT VIEW');
+  generator.drawViewLabel(x + width / 2, y, 'FRONT VIEW - SIDE A');
   
   // Scale to fit
   const scale = Math.min(width / length, height / thickness) * 0.6;
@@ -45,7 +82,27 @@ function drawFrontView(
   const rectX = x + (width - scaledLength) / 2;
   const rectY = y + (height - scaledThickness) / 2;
   
-  // Main rectangle
+  // Add scan coverage BEFORE drawing the rectangle outline
+  if (scanConfig) {
+    addBoxScanCoverage(
+      generator,
+      viewConfig,
+      { length, width: 0, thickness },
+      scanConfig
+    );
+    
+    // Add scan direction indicator
+    drawScanDirectionIndicator(
+      generator,
+      rectX + scaledLength + 60,
+      rectY + scaledThickness / 2,
+      scanConfig.scanDirection,
+      scanConfig.beamAngle,
+      'Beam Direction'
+    );
+  }
+  
+  // Main rectangle (draw AFTER scan coverage)
   generator.drawRectangle(rectX, rectY, scaledLength, scaledThickness, 'visible');
   
   // Centerlines
@@ -130,12 +187,13 @@ function drawSideView(
   generator: TechnicalDrawingGenerator,
   width: number,
   thickness: number,
-  viewConfig: { x: number; y: number; width: number; height: number }
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanConfig?: ScanCoverageConfig
 ) {
   const { x, y, width: viewWidth, height } = viewConfig;
   
   // View label
-  generator.drawViewLabel(x + viewWidth / 2, y, 'SIDE VIEW');
+  generator.drawViewLabel(x + viewWidth / 2, y, 'SIDE VIEW - SIDE B');
   
   // Scale to fit
   const scale = Math.min(viewWidth / width, height / thickness) * 0.6;
@@ -144,6 +202,22 @@ function drawSideView(
   
   const rectX = x + (viewWidth - scaledWidth) / 2;
   const rectY = y + (height - scaledThickness) / 2;
+  
+  // Add scan coverage if enabled
+  if (scanConfig) {
+    // Create a modified config for the side view
+    const sideConfig = {
+      ...scanConfig,
+      scanDirection: 'transverse' as ScanDirection
+    };
+    
+    addBoxScanCoverage(
+      generator,
+      viewConfig,
+      { length: width, width: 0, thickness },
+      sideConfig
+    );
+  }
   
   // Main rectangle
   generator.drawRectangle(rectX, rectY, scaledWidth, scaledThickness, 'visible');
