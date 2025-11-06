@@ -1,11 +1,15 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
-const path = require('path');
-const { autoUpdater } = require('electron-updater');
-const Store = require('electron-store');
-const { createMenu } = require('./menu');
-const { initBackendSwitcher } = require('./backend-switcher');
-const { setupDeviceIpcHandlers } = require('./device-ipc-handlers');
-const { setupWindowIpcHandlers } = require('./window-ipc-handlers');
+import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { autoUpdater } from 'electron-updater';
+import Store from 'electron-store';
+import { createMenu } from './menu.js';
+import { initBackendSwitcher } from './backend-switcher.js';
+import { setupDeviceIpcHandlers } from './device-ipc-handlers.js';
+import { setupWindowIpcHandlers } from './window-ipc-handlers.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const store = new Store();
 let mainWindow = null;
@@ -23,7 +27,7 @@ function createMainWindow() {
     title: 'Scan Master - Inspection Pro',
     icon: path.join(__dirname, '../public/favicon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -111,9 +115,9 @@ ipcMain.handle('open-file-dialog', async (event, options) => {
 });
 
 ipcMain.handle('write-file', async (event, filePath, data) => {
-  const fs = require('fs/promises');
+  const { writeFile } = await import('fs/promises');
   try {
-    await fs.writeFile(filePath, data);
+    await writeFile(filePath, data);
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
@@ -121,9 +125,9 @@ ipcMain.handle('write-file', async (event, filePath, data) => {
 });
 
 ipcMain.handle('read-file', async (event, filePath) => {
-  const fs = require('fs/promises');
+  const { readFile } = await import('fs/promises');
   try {
-    const data = await fs.readFile(filePath);
+    const data = await readFile(filePath);
     return { success: true, data };
   } catch (error) {
     return { success: false, error: error.message };

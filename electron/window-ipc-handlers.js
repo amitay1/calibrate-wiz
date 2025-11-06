@@ -1,7 +1,7 @@
-const { ipcMain } = require('electron');
-const windowManager = require('./window-manager');
+import { ipcMain } from 'electron';
+import windowManager from './window-manager.js';
 
-function setupWindowIpcHandlers(mainWindow, isDev, devServerUrl) {
+export function setupWindowIpcHandlers(mainWindow, isDev, devServerUrl) {
   windowManager.setMainWindow(mainWindow);
 
   // Open sheet in new window
@@ -113,5 +113,3 @@ function setupWindowIpcHandlers(mainWindow, isDev, devServerUrl) {
     windowManager.broadcastToAllWindows('sheet-data-updated', sheetId, data);
   });
 }
-
-module.exports = { setupWindowIpcHandlers };

@@ -1,5 +1,5 @@
-const { ipcMain } = require('electron');
-const Store = require('electron-store');
+import { ipcMain } from 'electron';
+import Store from 'electron-store';
 
 const store = new Store();
 
@@ -72,7 +72,7 @@ async function detectBackend() {
   };
 }
 
-function initBackendSwitcher(mainWindow) {
+export function initBackendSwitcher(mainWindow) {
   // Get current backend config
   ipcMain.handle('get-backend-config', () => {
     const savedConfig = store.get('backendConfig');
@@ -121,8 +121,4 @@ function initBackendSwitcher(mainWindow) {
   });
 }
 
-module.exports = {
-  initBackendSwitcher,
-  BACKEND_MODES,
-  DEFAULT_BACKENDS,
-};
+export { BACKEND_MODES, DEFAULT_BACKENDS };

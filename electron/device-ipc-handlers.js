@@ -2,12 +2,12 @@
  * IPC Handlers for Device Communication
  */
 
-const { ipcMain } = require('electron');
-const deviceService = require('./device-communication');
+import { ipcMain } from 'electron';
+import deviceService from './device-communication.js';
 
 let mainWindow = null;
 
-function setupDeviceIpcHandlers(window) {
+export function setupDeviceIpcHandlers(window) {
   mainWindow = window;
 
   // Setup device data callback to send to renderer
@@ -77,5 +77,3 @@ function setupDeviceIpcHandlers(window) {
     }
   });
 }
-
-module.exports = { setupDeviceIpcHandlers };

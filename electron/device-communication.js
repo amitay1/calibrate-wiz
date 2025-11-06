@@ -3,8 +3,8 @@
  * Handles serial port communication with Olympus, GE, and Evident UT devices
  */
 
-const { SerialPort } = require('serialport');
-const { ReadlineParser } = require('@serialport/parser-readline');
+import { SerialPort } from 'serialport';
+import { ReadlineParser } from '@serialport/parser-readline';
 
 class DeviceCommunicationService {
   constructor() {
@@ -316,4 +316,4 @@ class DeviceCommunicationService {
 // Singleton instance
 const deviceService = new DeviceCommunicationService();
 
-module.exports = deviceService;
+export default deviceService;

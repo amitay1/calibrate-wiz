@@ -1,5 +1,9 @@
-const { BrowserWindow } = require('electron');
-const path = require('path');
+import { BrowserWindow } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class WindowManager {
   constructor() {
@@ -31,7 +35,7 @@ class WindowManager {
       title: `${sheetName} - Scan Master`,
       icon: path.join(__dirname, '../public/favicon.ico'),
       webPreferences: {
-        preload: path.join(__dirname, 'preload.js'),
+        preload: path.join(__dirname, 'preload.cjs'),
         contextIsolation: true,
         nodeIntegration: false,
         sandbox: true,
@@ -145,4 +149,4 @@ class WindowManager {
   }
 }
 
-module.exports = new WindowManager();
+export default new WindowManager();

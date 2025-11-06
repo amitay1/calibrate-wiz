@@ -1,9 +1,9 @@
-const { autoUpdater } = require('electron-updater');
-const { dialog } = require('electron');
+import { autoUpdater } from 'electron-updater';
+import { dialog } from 'electron';
 
 let mainWindow = null;
 
-function initAutoUpdater(window) {
+export function initAutoUpdater(window) {
   mainWindow = window;
 
   // Configure auto-updater
@@ -74,11 +74,6 @@ function initAutoUpdater(window) {
   });
 }
 
-function checkForUpdates() {
+export function checkForUpdates() {
   autoUpdater.checkForUpdates();
 }
-
-module.exports = {
-  initAutoUpdater,
-  checkForUpdates,
-};
