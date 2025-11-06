@@ -49,7 +49,15 @@ function createMainWindow() {
 
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+    // In production, delay showing the window to allow React splash screen to display
+    if (isDev) {
+      mainWindow.show();
+    } else {
+      // Wait 5.5 seconds for the React splash screen animation to complete
+      setTimeout(() => {
+        mainWindow.show();
+      }, 5500);
+    }
   });
 
   // Window closed
