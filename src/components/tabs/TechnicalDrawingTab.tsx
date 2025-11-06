@@ -1,12 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Download, FileImage, FileText } from 'lucide-react';
+import { Download, FileImage, FileText, Box, Layout } from 'lucide-react';
 import { RealTimeTechnicalDrawing } from '@/components/RealTimeTechnicalDrawing';
+import { ScanCoverage3DViewer } from '@/components/ScanCoverage3DViewer';
 import { PartGeometry, MaterialType } from '@/types/techniqueSheet';
 import { toast } from 'sonner';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { getScanZonesForPartType } from '@/utils/scanZoneMapper';
 import { Badge } from '@/components/ui/badge';
+import { calculateDepthZones } from '@/utils/technicalDrawings/advancedScanCoverage';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface TechnicalDrawingTabProps {
   partType: PartGeometry;
@@ -37,6 +40,8 @@ export const TechnicalDrawingTab = ({
   material,
   scans = [],
 }: TechnicalDrawingTabProps) => {
+  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
+  
   // Calculate scan coverage
   const scanCoverage = useMemo(() => {
     return getScanZonesForPartType(
@@ -45,6 +50,25 @@ export const TechnicalDrawingTab = ({
       dimensions
     );
   }, [partType, dimensions, scans]);
+  
+  // Calculate 3D depth zones
+  const depthZones3D = useMemo(() => {
+    if (scans.length === 0) return [];
+    
+    const waveType: 'longitudinal' | 'shear' = 
+      scans[0]?.waveType?.toLowerCase().includes('shear') || 
+      scans[0]?.waveType?.toLowerCase().includes('transverse') || 
+      scans[0]?.beamAngle > 0 
+        ? 'shear' 
+        : 'longitudinal';
+    
+    return calculateDepthZones(
+      waveType,
+      scans[0]?.beamAngle || 0,
+      5, // Default 5MHz frequency
+      dimensions.thickness || dimensions.diameter || 50
+    );
+  }, [scans, dimensions]);
 
   const handleExportSVG = () => {
     toast.info('SVG export will be available soon');
@@ -110,20 +134,50 @@ export const TechnicalDrawingTab = ({
         </div>
       </div>
 
-      {/* Drawing Card */}
-      <Card className="p-6">
-        <div className="w-full" style={{ height: '650px' }}>
-          <RealTimeTechnicalDrawing
-            partType={partType}
-            dimensions={dimensions}
-            material={material}
-            scans={scans}
-            viewMode="multi"
-            showGrid={true}
-            showDimensions={true}
-          />
-        </div>
-      </Card>
+      {/* View Mode Selector */}
+      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as '2d' | '3d')} className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="2d" className="flex items-center gap-2">
+            <Layout className="w-4 h-4" />
+            2D Multi-View
+          </TabsTrigger>
+          <TabsTrigger value="3d" className="flex items-center gap-2">
+            <Box className="w-4 h-4" />
+            3D Scan Coverage
+          </TabsTrigger>
+        </TabsList>
+
+        {/* 2D View */}
+        <TabsContent value="2d" className="mt-4">
+          <Card className="p-6">
+            <div className="w-full" style={{ height: '650px' }}>
+              <RealTimeTechnicalDrawing
+                partType={partType}
+                dimensions={dimensions}
+                material={material}
+                scans={scans}
+                viewMode="multi"
+                showGrid={true}
+                showDimensions={true}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* 3D View */}
+        <TabsContent value="3d" className="mt-4">
+          <Card className="p-6">
+            <div className="w-full" style={{ height: '650px' }}>
+              <ScanCoverage3DViewer
+                partType={partType}
+                dimensions={dimensions}
+                scans={scans}
+                depthZones={depthZones3D}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
