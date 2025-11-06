@@ -30,10 +30,10 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">Inspection Standard</label>
+      <label className="text-xs font-medium text-foreground uppercase tracking-wide">Standard</label>
       <Select value={value} onValueChange={onChange} disabled={isLoading}>
-        <SelectTrigger className="w-full bg-card border-border">
-          <SelectValue placeholder="Select a standard..." />
+        <SelectTrigger className="w-full bg-card border-border text-sm">
+          <SelectValue placeholder="Select standard..." />
         </SelectTrigger>
         <SelectContent>
           {standards.map((standard) => {
@@ -46,16 +46,16 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
                 key={standard.value} 
                 value={standard.value}
                 disabled={isLocked}
-                className="py-3"
+                className="py-2"
               >
-                <div className="flex items-start justify-between w-full gap-3">
-                  <div className="flex flex-col flex-1 gap-1.5 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-sm break-words">{standard.label}</span>
-                      {isLocked && <Lock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />}
-                      {hasCurrentAccess && <Check className="h-3.5 w-3.5 text-success flex-shrink-0" />}
+                <div className="flex items-start gap-2 w-full">
+                  <div className="flex flex-col flex-1 gap-1 min-w-0 overflow-hidden">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-medium text-xs truncate">{standard.label}</span>
+                      {isLocked && <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />}
+                      {hasCurrentAccess && <Check className="h-3 w-3 text-success flex-shrink-0" />}
                     </div>
-                    <span className="text-xs text-muted-foreground leading-relaxed break-words">
+                    <span className="text-[10px] text-muted-foreground leading-snug line-clamp-2">
                       {standard.description}
                     </span>
                   </div>
@@ -78,9 +78,9 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
             }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-muted/50 rounded-md border">
+            <div className="flex flex-col gap-2 p-3 bg-muted/50 rounded-md border">
               <motion.div 
-                className="flex items-start gap-3 min-w-0 flex-1"
+                className="flex items-center gap-2"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
@@ -96,10 +96,10 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
                     ease: "easeInOut"
                   }}
                 >
-                  <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <Lock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                 </motion.div>
-                <span className="text-sm text-muted-foreground leading-relaxed break-words">
-                  This standard is locked. Purchase it to use it.
+                <span className="text-xs text-muted-foreground">
+                  Locked - Purchase to unlock
                 </span>
               </motion.div>
               <motion.div
@@ -113,9 +113,9 @@ export const StandardSelector = ({ value, onChange }: StandardSelectorProps) => 
                   size="sm" 
                   variant="default"
                   onClick={() => navigate('/standards')}
-                  className="flex-shrink-0 w-full sm:w-auto"
+                  className="w-full text-xs h-7"
                 >
-                  Unlock Standard
+                  Unlock
                 </Button>
               </motion.div>
             </div>
