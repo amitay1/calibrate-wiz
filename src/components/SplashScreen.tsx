@@ -114,42 +114,55 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 className="relative inline-block"
               >
                 <div className="relative">
-                  {/* Logo container - 3D circular radar style */}
+                  {/* Logo container - 3D circular radar style with extreme depth */}
                   <motion.div
                     className="relative overflow-hidden rounded-full p-16"
                     style={{
-                      background: 'radial-gradient(circle at 40% 40%, rgba(74, 144, 226, 0.25) 0%, rgba(74, 144, 226, 0.15) 30%, rgba(74, 144, 226, 0.05) 60%, transparent 100%)',
+                      background: 'radial-gradient(circle at 35% 35%, rgba(74, 144, 226, 0.3) 0%, rgba(74, 144, 226, 0.2) 20%, rgba(74, 144, 226, 0.1) 40%, transparent 100%)',
                       boxShadow: `
-                        0 10px 40px rgba(74, 144, 226, 0.5),
-                        0 20px 80px rgba(74, 144, 226, 0.4),
-                        0 30px 120px rgba(74, 144, 226, 0.3),
-                        inset 0 -20px 40px rgba(74, 144, 226, 0.15),
-                        inset 0 20px 40px rgba(255, 255, 255, 0.1)
+                        0 15px 60px rgba(74, 144, 226, 0.7),
+                        0 30px 120px rgba(74, 144, 226, 0.6),
+                        0 50px 180px rgba(74, 144, 226, 0.5),
+                        0 70px 240px rgba(74, 144, 226, 0.4),
+                        inset 0 -30px 60px rgba(74, 144, 226, 0.2),
+                        inset 0 30px 60px rgba(255, 255, 255, 0.15),
+                        inset -10px -10px 30px rgba(0, 0, 0, 0.3),
+                        inset 10px 10px 30px rgba(255, 255, 255, 0.2)
                       `,
-                      transform: 'perspective(1000px) translateZ(50px)',
+                      transform: 'perspective(800px) translateZ(80px)',
+                      border: '1px solid rgba(74, 144, 226, 0.3)',
                     }}
                     animate={{
                       boxShadow: [
-                        `0 10px 40px rgba(74, 144, 226, 0.5),
-                         0 20px 80px rgba(74, 144, 226, 0.4),
-                         0 30px 120px rgba(74, 144, 226, 0.3),
-                         inset 0 -20px 40px rgba(74, 144, 226, 0.15),
-                         inset 0 20px 40px rgba(255, 255, 255, 0.1)`,
-                        `0 15px 50px rgba(74, 144, 226, 0.7),
-                         0 25px 100px rgba(74, 144, 226, 0.6),
-                         0 40px 150px rgba(74, 144, 226, 0.5),
-                         inset 0 -25px 50px rgba(74, 144, 226, 0.2),
-                         inset 0 25px 50px rgba(255, 255, 255, 0.15)`,
-                        `0 10px 40px rgba(74, 144, 226, 0.5),
-                         0 20px 80px rgba(74, 144, 226, 0.4),
-                         0 30px 120px rgba(74, 144, 226, 0.3),
-                         inset 0 -20px 40px rgba(74, 144, 226, 0.15),
-                         inset 0 20px 40px rgba(255, 255, 255, 0.1)`,
+                        `0 15px 60px rgba(74, 144, 226, 0.7),
+                         0 30px 120px rgba(74, 144, 226, 0.6),
+                         0 50px 180px rgba(74, 144, 226, 0.5),
+                         0 70px 240px rgba(74, 144, 226, 0.4),
+                         inset 0 -30px 60px rgba(74, 144, 226, 0.2),
+                         inset 0 30px 60px rgba(255, 255, 255, 0.15),
+                         inset -10px -10px 30px rgba(0, 0, 0, 0.3),
+                         inset 10px 10px 30px rgba(255, 255, 255, 0.2)`,
+                        `0 25px 80px rgba(74, 144, 226, 0.9),
+                         0 40px 160px rgba(74, 144, 226, 0.8),
+                         0 60px 240px rgba(74, 144, 226, 0.7),
+                         0 90px 320px rgba(74, 144, 226, 0.6),
+                         inset 0 -40px 80px rgba(74, 144, 226, 0.3),
+                         inset 0 40px 80px rgba(255, 255, 255, 0.25),
+                         inset -15px -15px 40px rgba(0, 0, 0, 0.4),
+                         inset 15px 15px 40px rgba(255, 255, 255, 0.3)`,
+                        `0 15px 60px rgba(74, 144, 226, 0.7),
+                         0 30px 120px rgba(74, 144, 226, 0.6),
+                         0 50px 180px rgba(74, 144, 226, 0.5),
+                         0 70px 240px rgba(74, 144, 226, 0.4),
+                         inset 0 -30px 60px rgba(74, 144, 226, 0.2),
+                         inset 0 30px 60px rgba(255, 255, 255, 0.15),
+                         inset -10px -10px 30px rgba(0, 0, 0, 0.3),
+                         inset 10px 10px 30px rgba(255, 255, 255, 0.2)`,
                       ],
                       transform: [
-                        'perspective(1000px) translateZ(50px) scale(1)',
-                        'perspective(1000px) translateZ(60px) scale(1.05)',
-                        'perspective(1000px) translateZ(50px) scale(1)',
+                        'perspective(800px) translateZ(80px) scale(1) rotateX(0deg)',
+                        'perspective(800px) translateZ(120px) scale(1.08) rotateX(2deg)',
+                        'perspective(800px) translateZ(80px) scale(1) rotateX(0deg)',
                       ],
                     }}
                     transition={{
