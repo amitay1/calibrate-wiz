@@ -12,8 +12,8 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(false);
-      setTimeout(onComplete, 500);
-    }, 3000);
+      setTimeout(onComplete, 800);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
@@ -109,46 +109,133 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                       ],
                     }}
                     transition={{
-                      duration: 2,
+                      duration: 3,
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
                   >
-                    {/* Ultrasonic Scan Lines */}
-                    {[...Array(5)].map((_, i) => (
+                    {/* Advanced Ultrasonic Scan Lines - Multiple Layers */}
+                    {/* Fast scan lines */}
+                    {[...Array(8)].map((_, i) => (
                       <motion.div
-                        key={`scan-${i}`}
+                        key={`fast-scan-${i}`}
                         className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/60 to-transparent"
                         style={{
                           filter: 'blur(2px)',
-                          boxShadow: '0 0 10px rgba(74, 144, 226, 0.8)',
+                          boxShadow: '0 0 15px rgba(74, 144, 226, 0.9)',
                         }}
                         animate={{
-                          y: [-20, 320],
-                          opacity: [0, 1, 1, 0],
+                          y: [-30, 340],
+                          opacity: [0, 0.8, 1, 0.8, 0],
+                          scaleX: [0.5, 1, 1, 0.5],
                         }}
                         transition={{
-                          duration: 2,
-                          delay: i * 0.4,
+                          duration: 3,
+                          delay: i * 0.5,
                           repeat: Infinity,
-                          ease: "linear",
+                          ease: "easeInOut",
                         }}
                       />
                     ))}
                     
-                    {/* Horizontal scan line (slower) */}
+                    {/* Slow powerful scan lines */}
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={`slow-scan-${i}`}
+                        className="absolute left-0 right-0 h-2 bg-gradient-to-r from-transparent via-accent/70 to-transparent"
+                        style={{
+                          filter: 'blur(3px)',
+                          boxShadow: '0 0 20px rgba(255, 215, 0, 1)',
+                        }}
+                        animate={{
+                          y: [-20, 340],
+                          opacity: [0, 1, 1, 0],
+                          scaleX: [0.8, 1.2, 1.2, 0.8],
+                        }}
+                        transition={{
+                          duration: 4.5,
+                          delay: i * 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                    
+                    {/* Radar sweep effect */}
                     <motion.div
-                      className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/80 to-transparent"
+                      className="absolute inset-0"
                       style={{
-                        filter: 'blur(1px)',
-                        boxShadow: '0 0 8px rgba(255, 215, 0, 0.9)',
+                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(74, 144, 226, 0.3) 30deg, transparent 60deg)',
+                        filter: 'blur(4px)',
                       }}
                       animate={{
-                        y: [-10, 330],
-                        opacity: [0, 1, 1, 0],
+                        rotate: [0, 360],
                       }}
                       transition={{
-                        duration: 3,
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                    
+                    {/* Data points scanning effect */}
+                    {[...Array(12)].map((_, i) => (
+                      <motion.div
+                        key={`data-point-${i}`}
+                        className="absolute w-1 h-1 bg-primary rounded-full"
+                        style={{
+                          left: `${(i * 8.33)}%`,
+                          filter: 'blur(0.5px)',
+                          boxShadow: '0 0 4px rgba(74, 144, 226, 1)',
+                        }}
+                        animate={{
+                          y: [-10, 330],
+                          opacity: [0, 1, 1, 0],
+                          scale: [0, 1.5, 1, 0],
+                        }}
+                        transition={{
+                          duration: 2.5,
+                          delay: i * 0.2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                    
+                    {/* Horizontal interference lines */}
+                    {[...Array(4)].map((_, i) => (
+                      <motion.div
+                        key={`interference-${i}`}
+                        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+                        style={{
+                          top: `${25 * (i + 1)}%`,
+                        }}
+                        animate={{
+                          opacity: [0.2, 0.6, 0.2],
+                          scaleX: [0.5, 1, 0.5],
+                        }}
+                        transition={{
+                          duration: 2,
+                          delay: i * 0.3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                    
+                    {/* Wave propagation effect */}
+                    <motion.div
+                      className="absolute left-0 right-0 h-24"
+                      style={{
+                        background: 'linear-gradient(to bottom, transparent, rgba(74, 144, 226, 0.2), transparent)',
+                        filter: 'blur(8px)',
+                      }}
+                      animate={{
+                        y: [-50, 350],
+                        opacity: [0, 0.6, 0],
+                      }}
+                      transition={{
+                        duration: 5,
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
@@ -163,14 +250,14 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                         initial={{ filter: 'brightness(0.5) drop-shadow(0 0 0px rgba(74, 144, 226, 0))' }}
                         animate={{ 
                           filter: [
-                            'brightness(1.2) drop-shadow(0 0 20px rgba(74, 144, 226, 0.8))',
-                            'brightness(1.4) drop-shadow(0 0 30px rgba(74, 144, 226, 1))',
-                            'brightness(1.2) drop-shadow(0 0 20px rgba(74, 144, 226, 0.8))',
+                            'brightness(1.2) drop-shadow(0 0 25px rgba(74, 144, 226, 0.9))',
+                            'brightness(1.5) drop-shadow(0 0 40px rgba(74, 144, 226, 1))',
+                            'brightness(1.2) drop-shadow(0 0 25px rgba(74, 144, 226, 0.9))',
                           ]
                         }}
                         transition={{ 
-                          delay: 0.8, 
-                          duration: 2,
+                          delay: 1, 
+                          duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
@@ -178,12 +265,12 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                       
                       {/* Additional SM glow overlay */}
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/15 to-transparent"
                         animate={{
-                          opacity: [0.3, 0.6, 0.3],
+                          opacity: [0.4, 0.8, 0.4],
                         }}
                         transition={{
-                          duration: 1.5,
+                          duration: 2.5,
                           repeat: Infinity,
                           ease: "easeInOut",
                         }}
