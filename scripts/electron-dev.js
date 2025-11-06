@@ -32,8 +32,13 @@ async function startVite() {
 function startElectron() {
   console.log('⚡ Starting Electron...');
   
-  electronProcess = spawn('electron', ['.'], {
+  // Use npx to properly locate electron executable
+  const isWindows = process.platform === 'win32';
+  const command = isWindows ? 'npx.cmd' : 'npx';
+  
+  electronProcess = spawn(command, ['electron', '.'], {
     stdio: 'inherit',
+    shell: true,
     env: {
       ...process.env,
       NODE_ENV: 'development',
