@@ -65,12 +65,41 @@ export class TechnicalDrawingGenerator {
   private scope: paper.PaperScope;
   private canvas: HTMLCanvasElement;
   private scale: number = 1;
+  private foregroundColor: string;
+  private dimensionColor: string;
+  private centerlineColor: string;
   
   constructor(canvas: HTMLCanvasElement, scale: number = 1) {
     this.canvas = canvas;
     this.scale = scale;
     this.scope = new paper.PaperScope();
     this.scope.setup(canvas);
+    
+    // Get colors from CSS variables for theme support
+    const computedStyle = getComputedStyle(canvas);
+    this.foregroundColor = this.getHslColor(computedStyle, '--foreground') || '#e5e7eb';
+    this.dimensionColor = this.getHslColor(computedStyle, '--primary') || '#3b82f6';
+    this.centerlineColor = this.getHslColor(computedStyle, '--muted-foreground') || '#9ca3af';
+  }
+
+  private getHslColor(computedStyle: CSSStyleDeclaration, varName: string): string | null {
+    const hslValue = computedStyle.getPropertyValue(varName).trim();
+    if (!hslValue) return null;
+    
+    // Convert HSL values to hex for Paper.js
+    const [h, s, l] = hslValue.split(' ').map(v => parseFloat(v));
+    return this.hslToHex(h, s, l);
+  }
+
+  private hslToHex(h: number, s: number, l: number): string {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
   }
 
   clear() {
@@ -85,7 +114,12 @@ export class TechnicalDrawingGenerator {
       new this.scope.Point(x2, y2)
     );
     
-    path.strokeColor = new this.scope.Color(lineStyle.color);
+    // Use theme colors
+    const color = style === 'dimension' ? this.dimensionColor :
+                  style === 'center' ? this.centerlineColor :
+                  this.foregroundColor;
+    
+    path.strokeColor = new this.scope.Color(color);
     path.strokeWidth = lineStyle.width;
     
     if (lineStyle.dash) {
@@ -103,7 +137,12 @@ export class TechnicalDrawingGenerator {
       new this.scope.Size(width, height)
     );
     
-    rect.strokeColor = new this.scope.Color(lineStyle.color);
+    // Use theme colors
+    const color = style === 'dimension' ? this.dimensionColor :
+                  style === 'center' ? this.centerlineColor :
+                  this.foregroundColor;
+    
+    rect.strokeColor = new this.scope.Color(color);
     rect.strokeWidth = lineStyle.width;
     rect.fillColor = null;
     
@@ -122,7 +161,12 @@ export class TechnicalDrawingGenerator {
       radius
     );
     
-    circle.strokeColor = new this.scope.Color(lineStyle.color);
+    // Use theme colors
+    const color = style === 'dimension' ? this.dimensionColor :
+                  style === 'center' ? this.centerlineColor :
+                  this.foregroundColor;
+    
+    circle.strokeColor = new this.scope.Color(color);
     circle.strokeWidth = lineStyle.width;
     circle.fillColor = null;
     
@@ -192,15 +236,15 @@ export class TechnicalDrawingGenerator {
       y - size * Math.sin(angle + Math.PI / 6)
     ));
     path.closed = true;
-    path.fillColor = new this.scope.Color(LINE_STANDARDS.dimension.color);
+    path.fillColor = new this.scope.Color(this.dimensionColor);
   }
 
   // Draw text
-  drawText(x: number, y: number, text: string, fontSize: number = 12, color: string = '#000000') {
+  drawText(x: number, y: number, text: string, fontSize: number = 12, color?: string) {
     const textItem = new this.scope.PointText(new this.scope.Point(x, y));
     textItem.content = text;
     textItem.fontSize = fontSize;
-    textItem.fillColor = new this.scope.Color(color);
+    textItem.fillColor = new this.scope.Color(color || this.foregroundColor);
     textItem.fontFamily = 'Arial, sans-serif';
     textItem.justification = 'center';
     return textItem;
@@ -229,8 +273,9 @@ export class TechnicalDrawingGenerator {
         new this.scope.Point(x1, y1),
         new this.scope.Point(x2, y2)
       );
-      line.strokeColor = new this.scope.Color('#666666');
+      line.strokeColor = new this.scope.Color(this.centerlineColor);
       line.strokeWidth = 0.5;
+      line.opacity = 0.5;
       
       const clipped = line.intersect(rect);
       group.addChild(clipped);
@@ -243,7 +288,7 @@ export class TechnicalDrawingGenerator {
 
   // Draw view label
   drawViewLabel(x: number, y: number, label: string) {
-    this.drawText(x, y - 15, label, 14, '#0066CC');
+    this.drawText(x, y - 15, label, 14, this.dimensionColor);
   }
 
   // Export to SVG

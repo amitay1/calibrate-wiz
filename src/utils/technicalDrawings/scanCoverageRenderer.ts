@@ -260,8 +260,7 @@ export function drawScanDirectionIndicator(
     endX + 15,
     endY,
     `${label} (${beamAngle}°)`,
-    10,
-    '#CC0000'
+    10
   );
 }
 
