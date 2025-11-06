@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import scanMasterLogo from '@/assets/scan-master-logo.png';
+
+const scanMasterLogo = '/scan-master-logo.png';
 
 interface SplashScreenProps {
   onComplete: () => void;
