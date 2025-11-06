@@ -17,17 +17,18 @@ export default defineConfig(({ mode }) => {
     
     plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
     
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
-      // Critical: Dedupe React to prevent multiple instances
-      dedupe: ["react", "react-dom", "react/jsx-runtime"],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
-    
-    optimizeDeps: {
-      include: ["react", "react-dom", "react/jsx-runtime"],
-    },
+    // Critical: Dedupe React to prevent multiple instances
+    dedupe: ["react", "react-dom", "react/jsx-runtime", "react-router", "react-router-dom"],
+  },
+  
+  optimizeDeps: {
+    include: ["react", "react-dom", "react/jsx-runtime", "react-router-dom"],
+    exclude: [],
+  },
     
     build: {
       outDir: isElectron ? 'dist-electron' : 'dist',
