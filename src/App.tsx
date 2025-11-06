@@ -32,17 +32,23 @@ function AppContent() {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [mountRouter, setMountRouter] = useState(false);
+
+  useEffect(() => {
+    // Mount router after a small delay to ensure splash screen is rendered first
+    const timer = setTimeout(() => setMountRouter(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {showSplash ? (
-          <SplashScreen onComplete={() => setShowSplash(false)} />
-        ) : (
+        {mountRouter && (
           <BrowserRouter>
             <AppContent />
           </BrowserRouter>
         )}
+        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       </ThemeProvider>
     </QueryClientProvider>
   );
