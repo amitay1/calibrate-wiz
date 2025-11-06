@@ -68,36 +68,6 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 className="relative inline-block"
               >
                 <div className="relative">
-                  {/* Outer glow ring */}
-                  <motion.div
-                    className="absolute -inset-8 rounded-full bg-gradient-to-r from-primary via-accent to-primary"
-                    animate={{
-                      rotate: [0, 360],
-                      scale: [1, 1.1, 1],
-                      opacity: [0.3, 0.6, 0.3],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    style={{ filter: 'blur(20px)' }}
-                  />
-                  
-                  {/* Inner pulse effect */}
-                  <motion.div
-                    className="absolute -inset-4 rounded-full bg-primary/30"
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.5, 0, 0.5],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                  
                   {/* Logo container with glass effect */}
                   <motion.div
                     className="relative bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm p-12 rounded-3xl shadow-2xl border border-primary/30 overflow-hidden"
