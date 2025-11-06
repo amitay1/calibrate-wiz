@@ -30,6 +30,11 @@ win:
         - x64
   icon: build/icon.ico
   artifactName: ${productName}-Setup-${version}.${ext}
+  signingHashAlgorithms:
+    - sha256
+  sign: null
+  publisherName: null
+  verifyUpdateCodeSignature: false
   publish:
     provider: generic
     url: https://updates.scanmaster.com
