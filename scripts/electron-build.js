@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-const { build } = require('vite');
-const { build: electronBuild } = require('electron-builder');
-const path = require('path');
+import { build } from 'vite';
+import { build as electronBuild } from 'electron-builder';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function buildApp() {
   try {
