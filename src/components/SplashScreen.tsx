@@ -68,11 +68,48 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 className="relative inline-block"
               >
                 <div className="relative">
-                  {/* Logo container - circular radar style */}
+                  {/* Logo container - 3D circular radar style */}
                   <motion.div
                     className="relative overflow-hidden rounded-full p-16"
                     style={{
-                      background: 'radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0.05) 50%, transparent 100%)',
+                      background: 'radial-gradient(circle at 40% 40%, rgba(74, 144, 226, 0.25) 0%, rgba(74, 144, 226, 0.15) 30%, rgba(74, 144, 226, 0.05) 60%, transparent 100%)',
+                      boxShadow: `
+                        0 10px 40px rgba(74, 144, 226, 0.5),
+                        0 20px 80px rgba(74, 144, 226, 0.4),
+                        0 30px 120px rgba(74, 144, 226, 0.3),
+                        inset 0 -20px 40px rgba(74, 144, 226, 0.15),
+                        inset 0 20px 40px rgba(255, 255, 255, 0.1)
+                      `,
+                      transform: 'perspective(1000px) translateZ(50px)',
+                    }}
+                    animate={{
+                      boxShadow: [
+                        `0 10px 40px rgba(74, 144, 226, 0.5),
+                         0 20px 80px rgba(74, 144, 226, 0.4),
+                         0 30px 120px rgba(74, 144, 226, 0.3),
+                         inset 0 -20px 40px rgba(74, 144, 226, 0.15),
+                         inset 0 20px 40px rgba(255, 255, 255, 0.1)`,
+                        `0 15px 50px rgba(74, 144, 226, 0.7),
+                         0 25px 100px rgba(74, 144, 226, 0.6),
+                         0 40px 150px rgba(74, 144, 226, 0.5),
+                         inset 0 -25px 50px rgba(74, 144, 226, 0.2),
+                         inset 0 25px 50px rgba(255, 255, 255, 0.15)`,
+                        `0 10px 40px rgba(74, 144, 226, 0.5),
+                         0 20px 80px rgba(74, 144, 226, 0.4),
+                         0 30px 120px rgba(74, 144, 226, 0.3),
+                         inset 0 -20px 40px rgba(74, 144, 226, 0.15),
+                         inset 0 20px 40px rgba(255, 255, 255, 0.1)`,
+                      ],
+                      transform: [
+                        'perspective(1000px) translateZ(50px) scale(1)',
+                        'perspective(1000px) translateZ(60px) scale(1.05)',
+                        'perspective(1000px) translateZ(50px) scale(1)',
+                      ],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
                     }}
                   >
                     {/* Advanced Ultrasonic Scan Lines - Multiple Layers */}
