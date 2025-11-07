@@ -22,7 +22,16 @@ export default defineConfig(({ mode }) => {
       "@": path.resolve(__dirname, "./src"),
     },
     // Critical: Dedupe React to prevent multiple instances
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "react-router", "react-router-dom"],
+    dedupe: [
+      "react", 
+      "react-dom", 
+      "react/jsx-runtime", 
+      "react-router", 
+      "react-router-dom",
+      "@react-three/fiber",
+      "@react-three/drei",
+      "three"
+    ],
   },
   
   optimizeDeps: {
@@ -31,7 +40,10 @@ export default defineConfig(({ mode }) => {
       "react-dom", 
       "react/jsx-runtime", 
       "react-router-dom",
-      "react-router"
+      "react-router",
+      "@react-three/fiber",
+      "@react-three/drei",
+      "three"
     ],
     exclude: [],
     force: true, // Force re-optimization
