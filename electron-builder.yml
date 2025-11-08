@@ -1,0 +1,147 @@
+appId: com.scanmaster.inspectionpro
+productName: Scan Master Inspection Pro
+copyright: Copyright © 2025 Scan Master
+
+# Directories
+directories:
+  buildResources: build
+  output: release
+
+# Files to include
+files:
+  - dist/**/*
+  - electron/**/*
+  - package.json
+  - node_modules/**/*
+
+# Excluded files
+asarUnpack:
+  - node_modules/@esbuild/**/*
+  - node_modules/sharp/**/*
+
+# Windows configuration
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  icon: build/icon.ico
+  artifactName: ${productName}-Setup-${version}.${ext}
+  signingHashAlgorithms:
+    - sha256
+  sign: null
+  publisherName: null
+  verifyUpdateCodeSignature: false
+  publish:
+    provider: generic
+    url: https://updates.scanmaster.com
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Scan Master Pro
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeader: build/installerHeader.bmp
+  installerSidebar: build/installerSidebar.bmp
+  uninstallerSidebar: build/installerSidebar.bmp
+  license: LICENSE
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
+
+# macOS configuration
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  icon: build/icon.icns
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  darkModeSupport: true
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+dmg:
+  background: build/dmg-background.png
+  icon: build/icon.icns
+  iconSize: 100
+  contents:
+    - x: 380
+      y: 180
+      type: link
+      path: /Applications
+    - x: 122
+      y: 180
+      type: file
+  window:
+    width: 540
+    height: 380
+  sign: false
+
+# Linux configuration
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+    - target: rpm
+      arch:
+        - x64
+  icon: build/icons
+  category: Office
+  synopsis: Professional Ultrasonic Inspection Technique Sheet Management
+  description: |
+    Scan Master Inspection Pro is a professional desktop application for creating, 
+    managing, and exporting ultrasonic inspection technique sheets according to 
+    MIL-STD-2154 and AMS 2631 standards.
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  maintainer: Scan Master Team <support@scanmaster.com>
+
+appImage:
+  license: LICENSE
+
+deb:
+  depends:
+    - gconf2
+    - gconf-service
+    - libnotify4
+    - libappindicator1
+    - libxtst6
+    - libnss3
+
+# Publish configuration (for auto-updates)
+publish:
+  provider: generic
+  url: https://updates.scanmaster.com
+  channel: latest
+
+# Compression
+compression: maximum
+
+# Additional metadata
+extraMetadata:
+  main: electron/main.js
+  author:
+    name: Scan Master Team
+    email: support@scanmaster.com
+  repository:
+    type: git
+    url: https://github.com/scanmaster/inspection-pro

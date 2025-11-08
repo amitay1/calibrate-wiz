@@ -1,0 +1,340 @@
+/**
+ * Box Technical Drawing Module
+ * Generates multi-view technical drawings for rectangular box parts
+ */
+
+import { TechnicalDrawingGenerator, Dimensions, LayoutConfig } from './TechnicalDrawingGenerator';
+import {
+  generateScanZones,
+  addBoxScanCoverage,
+  drawScanDirectionIndicator,
+  type ScanCoverageConfig,
+  type BeamAngle,
+  type ScanDirection
+} from './scanCoverageRenderer';
+
+export interface BoxDrawingOptions {
+  showScanCoverage?: boolean;
+  scanDepth?: number;           // Depth of penetration in mm
+  beamAngle?: BeamAngle;        // 0, 45, 60, or 70 degrees
+  scanDirection?: ScanDirection;
+  numberOfZones?: number;       // Number of depth zones to show
+  waveType?: 'longitudinal' | 'shear';  // NEW: Wave type for intelligent depth calculation
+  probeFrequency?: number;      // NEW: Probe frequency in MHz
+}
+
+export function drawBoxTechnicalDrawing(
+  generator: TechnicalDrawingGenerator,
+  dimensions: Dimensions,
+  layout: LayoutConfig,
+  scans: Array<{ id: string; waveType: string; beamAngle: number; side: 'A' | 'B' }> = [],
+  options: BoxDrawingOptions = {}
+): void {
+  const { length, width, thickness } = dimensions;
+  const {
+    showScanCoverage = false,
+    scanDepth = thickness,
+    beamAngle = 0,
+    scanDirection = 'longitudinal',
+    numberOfZones = 5,
+    waveType = 'longitudinal',
+    probeFrequency = 5
+  } = options;
+  
+  // Generate INTELLIGENT scan zones if scan coverage is enabled
+  let scanConfig: ScanCoverageConfig | undefined;
+  if (showScanCoverage) {
+    const zones = generateScanZones(
+      scanDepth, 
+      numberOfZones,
+      undefined, // Use default colors
+      waveType,
+      beamAngle,
+      probeFrequency
+    );
+    scanConfig = {
+      zones,
+      beamAngle,
+      scanDirection,
+      showLabels: true
+    };
+  }
+  
+  // FRONT VIEW (Length × Thickness) - with scan coverage
+  drawFrontView(generator, length, thickness, layout.frontView, scanConfig);
+  
+  // TOP VIEW (Length × Width)
+  drawTopView(generator, length, width, layout.topView);
+  
+  // SIDE VIEW (Width × Thickness) - with scan coverage
+  drawSideView(generator, width, thickness, layout.sideView, scanConfig);
+  
+  // ISOMETRIC VIEW
+  drawIsometricView(generator, length, width, thickness, layout.isometric);
+}
+
+function drawFrontView(
+  generator: TechnicalDrawingGenerator,
+  length: number,
+  thickness: number,
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanConfig?: ScanCoverageConfig
+) {
+  const { x, y, width, height } = viewConfig;
+  
+  // View label
+  generator.drawViewLabel(x + width / 2, y, 'FRONT VIEW - SIDE A');
+  
+  // Scale to fit
+  const scale = Math.min(width / length, height / thickness) * 0.6;
+  const scaledLength = length * scale;
+  const scaledThickness = thickness * scale;
+  
+  const rectX = x + (width - scaledLength) / 2;
+  const rectY = y + (height - scaledThickness) / 2;
+  
+  // Add scan coverage BEFORE drawing the rectangle outline
+  if (scanConfig) {
+    addBoxScanCoverage(
+      generator,
+      viewConfig,
+      { length, width: 0, thickness },
+      scanConfig
+    );
+    
+    // Add scan direction indicator
+    drawScanDirectionIndicator(
+      generator,
+      rectX + scaledLength + 60,
+      rectY + scaledThickness / 2,
+      scanConfig.scanDirection,
+      scanConfig.beamAngle,
+      'Beam Direction'
+    );
+  }
+  
+  // Main rectangle (draw AFTER scan coverage)
+  generator.drawRectangle(rectX, rectY, scaledLength, scaledThickness, 'visible');
+  
+  // Centerlines
+  generator.drawCenterlines(
+    x + width / 2,
+    y + height / 2,
+    scaledLength,
+    scaledThickness
+  );
+  
+  // Dimensions
+  generator.drawDimension(
+    rectX,
+    rectY + scaledThickness + 30,
+    rectX + scaledLength,
+    rectY + scaledThickness + 30,
+    `L=${length}mm`,
+    5
+  );
+  
+  generator.drawDimension(
+    rectX + scaledLength + 30,
+    rectY,
+    rectX + scaledLength + 30,
+    rectY + scaledThickness,
+    `T=${thickness}mm`,
+    5
+  );
+}
+
+function drawTopView(
+  generator: TechnicalDrawingGenerator,
+  length: number,
+  width: number,
+  viewConfig: { x: number; y: number; width: number; height: number }
+) {
+  const { x, y, width: viewWidth, height } = viewConfig;
+  
+  // View label
+  generator.drawViewLabel(x + viewWidth / 2, y, 'TOP VIEW');
+  
+  // Scale to fit
+  const scale = Math.min(viewWidth / length, height / width) * 0.6;
+  const scaledLength = length * scale;
+  const scaledWidth = width * scale;
+  
+  const rectX = x + (viewWidth - scaledLength) / 2;
+  const rectY = y + (height - scaledWidth) / 2;
+  
+  // Main rectangle
+  generator.drawRectangle(rectX, rectY, scaledLength, scaledWidth, 'visible');
+  
+  // Centerlines
+  generator.drawCenterlines(
+    x + viewWidth / 2,
+    y + height / 2,
+    scaledLength,
+    scaledWidth
+  );
+  
+  // Dimensions
+  generator.drawDimension(
+    rectX,
+    rectY + scaledWidth + 30,
+    rectX + scaledLength,
+    rectY + scaledWidth + 30,
+    `L=${length}mm`,
+    5
+  );
+  
+  generator.drawDimension(
+    rectX + scaledLength + 30,
+    rectY,
+    rectX + scaledLength + 30,
+    rectY + scaledWidth,
+    `W=${width}mm`,
+    5
+  );
+}
+
+function drawSideView(
+  generator: TechnicalDrawingGenerator,
+  width: number,
+  thickness: number,
+  viewConfig: { x: number; y: number; width: number; height: number },
+  scanConfig?: ScanCoverageConfig
+) {
+  const { x, y, width: viewWidth, height } = viewConfig;
+  
+  // View label
+  generator.drawViewLabel(x + viewWidth / 2, y, 'SIDE VIEW - SIDE B');
+  
+  // Scale to fit
+  const scale = Math.min(viewWidth / width, height / thickness) * 0.6;
+  const scaledWidth = width * scale;
+  const scaledThickness = thickness * scale;
+  
+  const rectX = x + (viewWidth - scaledWidth) / 2;
+  const rectY = y + (height - scaledThickness) / 2;
+  
+  // Add scan coverage if enabled
+  if (scanConfig) {
+    // Create a modified config for the side view
+    const sideConfig = {
+      ...scanConfig,
+      scanDirection: 'transverse' as ScanDirection
+    };
+    
+    addBoxScanCoverage(
+      generator,
+      viewConfig,
+      { length: width, width: 0, thickness },
+      sideConfig
+    );
+  }
+  
+  // Main rectangle
+  generator.drawRectangle(rectX, rectY, scaledWidth, scaledThickness, 'visible');
+  
+  // Centerlines
+  generator.drawCenterlines(
+    x + viewWidth / 2,
+    y + height / 2,
+    scaledWidth,
+    scaledThickness
+  );
+  
+  // Dimensions
+  generator.drawDimension(
+    rectX,
+    rectY + scaledThickness + 30,
+    rectX + scaledWidth,
+    rectY + scaledThickness + 30,
+    `W=${width}mm`,
+    5
+  );
+}
+
+function drawIsometricView(
+  generator: TechnicalDrawingGenerator,
+  length: number,
+  width: number,
+  thickness: number,
+  viewConfig: { x: number; y: number; width: number; height: number }
+) {
+  const { x, y, width: viewWidth, height } = viewConfig;
+  
+  // View label
+  generator.drawViewLabel(x + viewWidth / 2, y, 'ISOMETRIC VIEW');
+  
+  // Isometric angles
+  const angle30 = Math.PI / 6; // 30 degrees
+  
+  // Scale to fit
+  const maxDim = Math.max(length, width, thickness);
+  const scale = Math.min(viewWidth, height) / maxDim * 0.4;
+  
+  const scaledLength = length * scale;
+  const scaledWidth = width * scale;
+  const scaledThickness = thickness * scale;
+  
+  const centerX = x + viewWidth / 2;
+  const centerY = y + height / 2;
+  
+  // Calculate isometric coordinates
+  const scope = generator.getScope();
+  
+  // Front face (bottom)
+  const p1 = { x: centerX - scaledLength / 2, y: centerY + scaledThickness / 2 };
+  const p2 = { x: centerX + scaledLength / 2, y: centerY + scaledThickness / 2 };
+  const p3 = { 
+    x: centerX + scaledLength / 2 + scaledWidth * Math.cos(angle30), 
+    y: centerY + scaledThickness / 2 - scaledWidth * Math.sin(angle30) 
+  };
+  const p4 = { 
+    x: centerX - scaledLength / 2 + scaledWidth * Math.cos(angle30), 
+    y: centerY + scaledThickness / 2 - scaledWidth * Math.sin(angle30) 
+  };
+  
+  // Top face
+  const p5 = { x: p1.x, y: p1.y - scaledThickness };
+  const p6 = { x: p2.x, y: p2.y - scaledThickness };
+  const p7 = { x: p3.x, y: p3.y - scaledThickness };
+  const p8 = { x: p4.x, y: p4.y - scaledThickness };
+  
+  // Draw bottom face
+  const bottomFace = new scope.Path();
+  bottomFace.add(new scope.Point(p1.x, p1.y));
+  bottomFace.add(new scope.Point(p2.x, p2.y));
+  bottomFace.add(new scope.Point(p3.x, p3.y));
+  bottomFace.add(new scope.Point(p4.x, p4.y));
+  bottomFace.closed = true;
+  bottomFace.strokeColor = new scope.Color('#000000');
+  bottomFace.strokeWidth = 2;
+  bottomFace.fillColor = new scope.Color('#E0E0E0');
+  
+  // Draw top face
+  const topFace = new scope.Path();
+  topFace.add(new scope.Point(p5.x, p5.y));
+  topFace.add(new scope.Point(p6.x, p6.y));
+  topFace.add(new scope.Point(p7.x, p7.y));
+  topFace.add(new scope.Point(p8.x, p8.y));
+  topFace.closed = true;
+  topFace.strokeColor = new scope.Color('#000000');
+  topFace.strokeWidth = 2;
+  topFace.fillColor = new scope.Color('#F5F5F5');
+  
+  // Draw side face
+  const sideFace = new scope.Path();
+  sideFace.add(new scope.Point(p2.x, p2.y));
+  sideFace.add(new scope.Point(p3.x, p3.y));
+  sideFace.add(new scope.Point(p7.x, p7.y));
+  sideFace.add(new scope.Point(p6.x, p6.y));
+  sideFace.closed = true;
+  sideFace.strokeColor = new scope.Color('#000000');
+  sideFace.strokeWidth = 2;
+  sideFace.fillColor = new scope.Color('#C8C8C8');
+  
+  // Draw vertical edges
+  generator.drawLine(p1.x, p1.y, p5.x, p5.y, 'visible');
+  generator.drawLine(p2.x, p2.y, p6.x, p6.y, 'visible');
+  generator.drawLine(p3.x, p3.y, p7.x, p7.y, 'visible');
+  generator.drawLine(p4.x, p4.y, p8.x, p8.y, 'visible');
+}

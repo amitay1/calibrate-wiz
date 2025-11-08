@@ -1,0 +1,79 @@
+_format_version: "1.1"
+
+services:
+  - name: auth
+    url: http://supabase-auth:9999/
+    routes:
+      - name: auth-routes
+        strip_path: true
+        paths:
+          - /auth/v1/
+    plugins:
+      - name: cors
+
+  - name: rest
+    url: http://supabase-rest:3000/
+    routes:
+      - name: rest-routes
+        strip_path: true
+        paths:
+          - /rest/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+
+  - name: realtime
+    url: http://supabase-realtime:4000/socket
+    routes:
+      - name: realtime-routes
+        strip_path: true
+        paths:
+          - /realtime/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+
+  - name: storage
+    url: http://supabase-storage:5000/
+    routes:
+      - name: storage-routes
+        strip_path: true
+        paths:
+          - /storage/v1/
+    plugins:
+      - name: cors
+
+consumers:
+  - username: anon
+    keyauth_credentials:
+      - key: ${SUPABASE_ANON_KEY}
+  - username: service_role
+    keyauth_credentials:
+      - key: ${SUPABASE_SERVICE_ROLE_KEY}
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - apikey
+        - X-Client-Info
+      exposed_headers:
+        - X-Total-Count
+      credentials: true
+      max_age: 3600

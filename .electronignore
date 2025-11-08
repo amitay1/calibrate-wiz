@@ -1,0 +1,56 @@
+# Node modules
+node_modules
+
+# Source files
+src
+public
+
+# Build files
+dist-electron
+.vite
+
+# Configuration files
+*.config.ts
+*.config.js
+tsconfig*.json
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Documentation
+*.md
+docs
+
+# Docker
+docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Scripts (except electron scripts)
+scripts/*.sh
+
+# Other
+.env.example
+LICENSE
