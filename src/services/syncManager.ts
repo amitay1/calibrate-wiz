@@ -28,8 +28,8 @@ class SyncManager {
       await this.configureBackend(backendConfig);
     }
     
-    // Initial sync when app loads
-    if (navigator.onLine) {
+    // Initial sync when app loads (only if backend is configured)
+    if (navigator.onLine && canUseSupabase() && this.cloudBackend) {
       await this.syncToActiveBackend();
       await this.syncFromActiveBackend();
     }
@@ -135,8 +135,8 @@ class SyncManager {
   /**
    * Sync data to specific backend
    */
-  private async syncToBackend(backend: SupabaseClient): Promise<void> {
-    if (this.isSyncing || !navigator.onLine) return;
+  private async syncToBackend(backend: SupabaseClient | null): Promise<void> {
+    if (this.isSyncing || !navigator.onLine || !backend) return;
 
     this.isSyncing = true;
     try {
@@ -226,8 +226,8 @@ class SyncManager {
   /**
    * Sync data from specific backend
    */
-  private async syncFromBackend(backend: SupabaseClient): Promise<void> {
-    if (!navigator.onLine) return;
+  private async syncFromBackend(backend: SupabaseClient | null): Promise<void> {
+    if (!navigator.onLine || !backend) return;
 
     try {
       const { data: { user } } = await backend.auth.getUser();
@@ -305,7 +305,9 @@ class SyncManager {
   /**
    * Get sheets from a backend
    */
-  private async getSheetsFromBackend(backend: SupabaseClient): Promise<any[]> {
+  private async getSheetsFromBackend(backend: SupabaseClient | null): Promise<any[]> {
+    if (!backend) return [];
+    
     const { data: { user } } = await backend.auth.getUser();
     if (!user) return [];
 
@@ -329,8 +331,8 @@ class SyncManager {
   /**
    * Push sheets to a backend
    */
-  private async pushSheetsToBackend(backend: SupabaseClient, sheets: any[]): Promise<void> {
-    if (sheets.length === 0) return;
+  private async pushSheetsToBackend(backend: SupabaseClient | null, sheets: any[]): Promise<void> {
+    if (!backend || sheets.length === 0) return;
 
     await backend
       .from('technique_sheets')
