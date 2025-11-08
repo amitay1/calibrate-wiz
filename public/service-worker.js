@@ -60,8 +60,8 @@ self.addEventListener('fetch', (event) => {
           // Clone the response
           const responseToCache = response.clone();
 
-          // Cache successful responses
-          if (response && response.status === 200) {
+          // Cache successful GET responses only
+          if (response && response.status === 200 && request.method === 'GET') {
             caches.open(DYNAMIC_CACHE).then((cache) => {
               cache.put(request, responseToCache);
             });
