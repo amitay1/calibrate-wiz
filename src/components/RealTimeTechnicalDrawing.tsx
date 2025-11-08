@@ -5,6 +5,8 @@ import { drawBoxTechnicalDrawing, type BoxDrawingOptions } from '@/utils/technic
 import { drawCylinderTechnicalDrawing } from '@/utils/technicalDrawings/cylinderDrawing';
 import { drawTubeTechnicalDrawing } from '@/utils/technicalDrawings/tubeDrawing';
 import { drawHexagonTechnicalDrawing } from '@/utils/technicalDrawings/hexagonDrawing';
+import { drawSphereTechnicalDrawing } from '@/utils/technicalDrawings/sphereDrawing';
+import { drawConeTechnicalDrawing } from '@/utils/technicalDrawings/coneDrawing';
 import {
   drawLProfileTechnicalDrawing,
   drawTProfileTechnicalDrawing,
@@ -12,6 +14,7 @@ import {
   drawUProfileTechnicalDrawing,
   drawZProfileTechnicalDrawing,
 } from '@/utils/technicalDrawings/profileDrawings';
+import { normalizePartType } from '@/utils/technicalDrawings/shapeNormalizer';
 
 // Debounce hook to prevent flickering during input
 function useDebounce<T>(value: T, delay: number): T {
@@ -112,8 +115,12 @@ export const RealTimeTechnicalDrawing = ({
     // Clear previous drawing
     generator.clear();
 
-    // Draw title
-    generator.drawText(425, 30, `TECHNICAL DRAWING - ${partType.toUpperCase()}`, 18, '#000000');
+    // Normalize part type for consistent handling
+    const normalized = normalizePartType(partType);
+    const baseGeometry = normalized.baseGeometry;
+    
+    // Draw title with display name
+    generator.drawText(425, 30, `TECHNICAL DRAWING - ${normalized.displayName.toUpperCase()}`, 18, '#000000');
 
     // Prepare INTELLIGENT scan coverage options based on actual scan data
     const scanDepth = scanDepthPenetration || dimensions.thickness || dimensions.diameter || 50;
@@ -140,9 +147,9 @@ export const RealTimeTechnicalDrawing = ({
       probeFrequency
     };
 
-      // Draw based on part type
+      // Draw based on normalized base geometry
       try {
-        switch (partType) {
+        switch (baseGeometry) {
           case 'box':
           case 'rectangular_tube':
             drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans, scanOptions);
@@ -153,9 +160,11 @@ export const RealTimeTechnicalDrawing = ({
             break;
 
           case 'sphere':
+            drawSphereTechnicalDrawing(generator, drawingDimensions, layout, scans);
+            break;
+
           case 'cone':
-            // Use cylinder as base for sphere/cone
-            drawCylinderTechnicalDrawing(generator, drawingDimensions, layout, scans);
+            drawConeTechnicalDrawing(generator, drawingDimensions, layout, scans);
             break;
 
           case 'tube':
@@ -187,7 +196,8 @@ export const RealTimeTechnicalDrawing = ({
             break;
 
           default:
-            // Default to box
+            // Fallback to box for any unhandled types
+            console.warn(`Unhandled part type: ${partType}, using box drawing`);
             drawBoxTechnicalDrawing(generator, drawingDimensions, layout, scans, scanOptions);
         }
 
