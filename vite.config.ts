@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => {
   return {
     base: isElectron ? './' : '/',
     
+    // Ensure environment variables are properly loaded
+    envPrefix: 'VITE_',
+    
     server: {
       host: "::",
       port: 8080,
