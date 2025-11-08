@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
+import { canUseSupabase } from '@/integrations/supabase/safeClient';
 
 const INACTIVITY_TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
 const CHECK_INTERVAL = 60 * 1000; // Check every minute
@@ -12,7 +13,7 @@ export function useInactivityLogout() {
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !canUseSupabase()) return;
 
     // Update last activity time
     const updateActivity = () => {

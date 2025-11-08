@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 
 export interface CreateTenantData {
   name: string;
@@ -13,6 +13,10 @@ export const tenantService = {
     data: CreateTenantData
   ): Promise<{ success: boolean; error?: string; tenant?: any }> {
     try {
+      if (!canUseSupabase() || !supabase) {
+        return { success: false, error: 'Backend not configured' };
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {

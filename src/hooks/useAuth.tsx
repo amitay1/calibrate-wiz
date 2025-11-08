@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 import { toast } from 'sonner';
 
 export function useAuth() {
@@ -11,6 +11,11 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!canUseSupabase() || !supabase) {
+      setLoading(false);
+      return;
+    }
+
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -100,7 +105,9 @@ export function useAuth() {
   }, [navigate]);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    if (canUseSupabase() && supabase) {
+      await supabase.auth.signOut();
+    }
     navigate('/auth');
   };
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 import { Loader2 } from 'lucide-react';
 import { useInactivityLogout } from '@/hooks/useInactivityLogout';
 
@@ -20,6 +20,14 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     const checkAuth = async () => {
       try {
+        if (!canUseSupabase() || !supabase) {
+          if (isMounted) {
+            setIsAuthenticated(false);
+            setLoading(false);
+          }
+          return;
+        }
+        
         const { data: { session } } = await supabase.auth.getSession();
         
         if (isMounted) {
@@ -36,6 +44,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     };
 
     checkAuth();
+
+    if (!supabase) {
+      return () => {
+        isMounted = false;
+      };
+    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (isMounted) {

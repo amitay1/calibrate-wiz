@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { indexedDbService } from './indexedDbService';
 import { toast } from '@/hooks/use-toast';
