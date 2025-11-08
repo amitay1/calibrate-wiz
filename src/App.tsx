@@ -33,18 +33,27 @@ function AppContent() {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const [envChecked, setEnvChecked] = useState(false);
+  
+  // Check if backend is configured
+  const backendConfigured = canUseSupabase();
 
-  useEffect(() => {
-    // Check if environment is properly configured
-    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
-      console.error('Lovable Cloud environment variables not loaded. Please refresh the preview or check your backend connection.');
-    }
-    setEnvChecked(true);
-  }, []);
-
-  if (!envChecked) {
-    return null; // Brief pause to check environment
+  if (!backendConfigured) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="max-w-md w-full space-y-4 text-center">
+          <h1 className="text-2xl font-bold text-foreground">Backend Not Configured</h1>
+          <p className="text-muted-foreground">
+            The application requires Lovable Cloud to be configured. Please refresh the preview or check your backend connection.
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (showSplash) {
