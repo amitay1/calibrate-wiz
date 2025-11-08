@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SplashScreen } from "@/components/SplashScreen";
+import { canUseSupabase } from "@/integrations/supabase/safeClient";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Standards from "./pages/Standards";
@@ -32,6 +33,19 @@ function AppContent() {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [envChecked, setEnvChecked] = useState(false);
+
+  useEffect(() => {
+    // Check if environment is properly configured
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+      console.error('Lovable Cloud environment variables not loaded. Please refresh the preview or check your backend connection.');
+    }
+    setEnvChecked(true);
+  }, []);
+
+  if (!envChecked) {
+    return null; // Brief pause to check environment
+  }
 
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
