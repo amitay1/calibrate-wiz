@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 import { StandardType } from '@/types/techniqueSheet';
 import { toast } from 'sonner';
 
@@ -26,6 +26,14 @@ export const useStandardAccess = (standardCode: StandardType): StandardAccess =>
     
     // First, wait for auth to be ready
     const initAuth = async () => {
+      if (!canUseSupabase() || !supabase) {
+        if (isMounted) {
+          setAuthReady(true);
+          setIsLoading(false);
+        }
+        return;
+      }
+      
       const { data: { session } } = await supabase.auth.getSession();
       if (isMounted) {
         setAuthReady(true);

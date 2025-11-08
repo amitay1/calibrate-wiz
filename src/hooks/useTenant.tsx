@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 
 export interface Tenant {
   id: string;
@@ -22,6 +22,11 @@ export const useTenant = () => {
 
   const loadTenant = async () => {
     try {
+      if (!canUseSupabase() || !supabase) {
+        setLoading(false);
+        return;
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {

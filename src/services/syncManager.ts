@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { indexedDbService } from './indexedDbService';
 import { toast } from '@/hooks/use-toast';
@@ -14,7 +14,7 @@ class SyncManager {
   // Hybrid mode support
   private syncMode: SyncMode = 'cloud-only';
   private localBackend: SupabaseClient | null = null;
-  private cloudBackend: SupabaseClient = supabase;
+  private cloudBackend: SupabaseClient | null = supabase;
   private lastSyncTime: Date | null = null;
 
   /**
