@@ -18,7 +18,7 @@ function AppContent() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/standards" element={<ProtectedRoute><Standards /></ProtectedRoute>} />
         <Route path="/my-standards" element={<ProtectedRoute><MyStandards /></ProtectedRoute>} />

@@ -64,13 +64,6 @@ const Index = () => {
     };
   }, []);
   
-  // Check authentication
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
-  
   const [inspectionSetup, setInspectionSetup] = useState<InspectionSetupData>({
     partNumber: "",
     partName: "",
