@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,11 +34,6 @@ export default function Standards() {
 
   const loadStandards = async () => {
     try {
-      if (!canUseSupabase() || !supabase) {
-        setLoading(false);
-        return;
-      }
-      
       setLoading(true);
 
       // Load all standards

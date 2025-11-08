@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
+import { supabase } from '@/integrations/supabase/client';
 
 type UserRole = 'developer' | 'customer' | null;
 
@@ -12,12 +12,6 @@ export const useUserRole = () => {
 
     const fetchRole = async () => {
       try {
-        if (!canUseSupabase() || !supabase) {
-          setRole(null);
-          setLoading(false);
-          return;
-        }
-        
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user || !isMounted) {
@@ -49,12 +43,6 @@ export const useUserRole = () => {
     };
 
     fetchRole();
-
-    if (!supabase) {
-      return () => {
-        isMounted = false;
-      };
-    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
       if (isMounted) {

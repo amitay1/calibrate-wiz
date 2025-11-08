@@ -1,4 +1,4 @@
-import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
+import { supabase } from '@/integrations/supabase/client';
 import { TechniqueSheet } from '@/types/techniqueSheet';
 import { indexedDbService } from './indexedDbService';
 
@@ -23,10 +23,6 @@ export const techniqueSheetService = {
     sheetId?: string
   ): Promise<{ success: boolean; error?: string; id?: string }> {
     try {
-      if (!canUseSupabase() || !supabase) {
-        return { success: false, error: 'Backend not configured' };
-      }
-      
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {

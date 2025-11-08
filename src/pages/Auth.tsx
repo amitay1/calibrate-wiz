@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, canUseSupabase } from '@/integrations/supabase/safeClient';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,8 +40,6 @@ export default function Auth() {
     return () => clearTimeout(timeoutId);
   }, []);
   useEffect(() => {
-    if (!canUseSupabase() || !supabase) return;
-    
     // Check if user is already logged in
     supabase.auth.getSession().then(({
       data: {
@@ -68,11 +66,6 @@ export default function Auth() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-
-    if (!canUseSupabase() || !supabase) {
-      toast.error('Backend is not configured');
-      return;
-    }
 
     // Validate input
     const validation = signUpSchema.safeParse({
@@ -125,11 +118,6 @@ export default function Auth() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-
-    if (!canUseSupabase() || !supabase) {
-      toast.error('Backend is not configured');
-      return;
-    }
 
     // Dev mode: Allow "0" as shortcut for developer credentials
     let finalEmail = email;
