@@ -131,69 +131,10 @@ export default function Auth() {
       return;
     }
 
-    // Dev mode: Allow "0" as shortcut for developer credentials
-    let finalEmail = email;
-    let finalPassword = password;
-    
-    if (email === '0' && password === '0') {
-      finalEmail = 'dev@sm.com';
-      finalPassword = 'dev123';
-      
-      // Skip validation for dev shortcut and go straight to login
-      setLoading(true);
-      try {
-        // Try to sign in first
-        let { error } = await supabase.auth.signInWithPassword({
-          email: finalEmail,
-          password: finalPassword
-        });
-        
-        // If user doesn't exist, create it automatically
-        if (error && error.message.includes('Invalid login credentials')) {
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: finalEmail,
-            password: finalPassword,
-            options: {
-              data: {
-                full_name: 'Developer'
-              },
-              emailRedirectTo: `${window.location.origin}/`
-            }
-          });
-          
-          if (signUpError) {
-            toast.error('Failed to create dev account: ' + signUpError.message);
-            return;
-          }
-          
-          // Now try to sign in again
-          const signInResult = await supabase.auth.signInWithPassword({
-            email: finalEmail,
-            password: finalPassword
-          });
-          
-          if (signInResult.error) {
-            toast.error('Failed to sign in: ' + signInResult.error.message);
-          } else {
-            toast.success('Dev account created and signed in!');
-          }
-        } else if (error) {
-          toast.error(error.message);
-        } else {
-          toast.success('Signed in successfully!');
-        }
-      } catch (error) {
-        toast.error('An unexpected error occurred. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
     // Validate input
     const validation = signInSchema.safeParse({
-      email: finalEmail,
-      password: finalPassword
+      email,
+      password
     });
     if (!validation.success) {
       const newErrors: Record<string, string> = {};
