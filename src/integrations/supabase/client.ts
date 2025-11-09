@@ -6,7 +6,8 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 // Check if Supabase is configured
-const isSupabaseConfigured = !!(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
+// For Lovable Cloud, these are injected automatically
+const isSupabaseConfigured = true;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
